@@ -40,26 +40,3 @@ class Component {
     );
   }
 }
-
-var init = [
-  {
-    "sectionName": "Project TEST3",
-    "elements": [
-      {"type": "text", "tagName": "TEST3/Test3"},
-      {"type": "text", "tagName": "TEST3/Test4"},
-      {"type": "text", "tagName": "TEST3/Test5"},
-    ],
-  },
-  {
-    "sectionName": "Project TEST4",
-    "elements": [
-      {"type": "text", "tagName": "TEST4/Test4"},
-    ],
-  },
-  {
-    "sectionName": "Project TEST5",
-    "elements": [
-      {"type": "text", "tagName": "TEST5/Test5"},
-    ],
-  },
-];
