@@ -1,8 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:zenon_mqtt/classes/index.dart';
 import 'package:zenon_mqtt/helperFunctions/mqtt/mqtt_server_client.dart';
+import 'package:zenon_mqtt/widget_map.dart';
 
 void main() {
   runApp(const MyApp());
@@ -59,6 +61,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  final client = MqttServerClient('iot.coreflux.cloud', '');
+  ConfigStructure? configStructure;
+
+  @override
+  void initState() {
+    super.initState();
+    print('hi there');
+
+    // Or call your function here
+    _subscribeToMQTT();
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -71,54 +84,28 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  void _printFuture() async {
-    var init = [
-      {
-        "sectionName": "Project TEST3",
-        "elements": [
-          {"type": "text", "tagName": "TEST3/Test3"},
-          {"type": "text", "tagName": "TEST3/Test4"},
-          {"type": "text", "tagName": "TEST3/Test5"},
-        ],
-      },
-      {
-        "sectionName": "Project TEST4",
-        "elements": [
-          {"type": "text", "tagName": "TEST4/Test4"},
-        ],
-      },
-      {
-        "sectionName": "Project TEST5",
-        "elements": [
-          {"type": "text", "tagName": "TEST5/Test5"},
-        ],
-      },
-    ];
+  void _subscribeToMQTT() async {
+    print("subscribe to mqtt");
+    await mqttServerClient("ZenonMQTTPublisher/groups/guest", (
+      String value,
+    ) async {
+      print("");
+      // print("value: $value");
+      var decodedInit = jsonDecode(value) as List<dynamic>;
+      if (decodedInit.isEmpty) {
+        print("decodedInit is empty");
+        return;
+      }
 
-    var jsonInit = jsonEncode(init);
-    var decodedInit = jsonDecode(jsonInit) as Map<String, Component>;
+      setState(() {
+        configStructure = ConfigStructure.fromJson(decodedInit);
+      });
 
-    // var initConfig = ConfigStructure.fromJson(decodedInit).structure;
+      print("");
+    });
 
     print("");
-    // print(jsonInit);
-    // print(initConfig);
     print("");
-
-    // print(initConfig);
-
-    // var variable = Component.fromJson({
-    //   "type": "typeOfComponent",
-    //   "value": "value1350",
-    //   "tagName": "component1",
-    // });
-
-    // var compType = variable.type;
-    // print("Component: $variable");
-    // print("Component: $compType");
-
-    // int value = await mqttServerClient();
-    // print("$value");
   }
 
   @override
@@ -157,25 +144,29 @@ class _MyHomePageState extends State<MyHomePage> {
           // action in the IDE, or press "p" in the console), to see the
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-            FloatingActionButton(
-              onPressed: _printFuture,
-              tooltip: 'Fetch',
-              child: const Icon(Icons.add_link),
-            ),
-          ],
+          children:
+              configStructure?.structure.isEmpty == true
+                  ? []
+                  : List<Widget>.generate(
+                    configStructure?.structure.length ?? 0,
+                    (index) => Column(
+                      children: [
+                        Text(
+                          configStructure!.structure[index].sectionName,
+                          style: Theme.of(context).textTheme.headlineMedium,
+                        ),
+                        ...List<Widget>.generate(
+                          configStructure!.structure[0].components.length,
+                          (index) => widgetMap(
+                            configStructure!.structure[0].components[index],
+                          ),
+                        ),
+                        Divider(),
+                      ],
+                    ),
+                  ).toList(),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }

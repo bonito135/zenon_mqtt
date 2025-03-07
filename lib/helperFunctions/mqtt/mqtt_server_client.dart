@@ -30,7 +30,10 @@ final client = MqttServerClient('iot.coreflux.cloud', '');
 var pongCount = 0; // Pong counter
 var pingCount = 0; // Ping counter
 
-Future<int> mqttServerClient() async {
+Future<int> mqttServerClient(
+  String topic,
+  Function(String value) callback,
+) async {
   /// A websocket URL must start with ws:// or wss:// or Dart will throw an exception, consult your websocket MQTT broker
   /// for details.
   /// To use websockets add the following lines -:
@@ -121,32 +124,32 @@ Future<int> mqttServerClient() async {
   }
 
   /// Ok, lets try a subscription
-  const topic = 'ZenonMQTTPublisher/groups/guest'; // Not a wildcard topic
   print('EXAMPLE::Subscribing to the $topic topic');
-  client.subscribe(topic, MqttQos.atMostOnce);
+  client.subscribe(topic, MqttQos.exactlyOnce);
 
   /// The client has a change notifier object(see the Observable class) which we then listen to to get
   /// notifications of published updates to each subscribed topic.
   /// In general you should listen here as soon as possible after connecting, you will not receive any
   /// publish messages until you do this.
   /// Also you must re-listen after disconnecting.
-  client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
+  client.updates!.listen((List<MqttReceivedMessage<MqttMessage?>>? c) async {
     final recMess = c![0].payload as MqttPublishMessage;
     final pt = MqttPublishPayload.bytesToStringAsString(
       recMess.payload.message,
     );
 
-    dynamic dataDict = jsonDecode(pt);
+    // print(pt);
+
+    await callback(pt);
 
     /// The above may seem a little convoluted for users only interested in the
     /// payload, some users however may be interested in the received publish message,
     /// lets not constrain ourselves yet until the package has been in the wild
     /// for a while.
     /// The payload is a byte buffer, this will be specific to the topic
-    print(
-      'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->',
-    );
-    print("dataDict: $dataDict");
+    // print(
+    //   'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $pt -->',
+    // );
     print('');
   });
 
@@ -162,22 +165,26 @@ Future<int> mqttServerClient() async {
   /// Lets publish to our topic
   /// Use the payload builder rather than a raw buffer
   /// Our known topic to publish to
-  const pubTopic = 'ZenonMQTTPublisher/groups/guest';
-  final builder = MqttClientPayloadBuilder();
-  builder.addString('Hello from mqtt_client');
+  // const pubTopic = 'ZenonMQTTPublisher/groups/guest';
+  // final builder = MqttClientPayloadBuilder();
+  // builder.addString('Hello from mqtt_client');
 
-  /// Subscribe to it
-  print('EXAMPLE::Subscribing to the $pubTopic topic');
-  client.subscribe(pubTopic, MqttQos.exactlyOnce);
+  // /// Subscribe to it
+  // print('EXAMPLE::Subscribing to the $pubTopic topic');
+  // client.subscribe(pubTopic, MqttQos.exactlyOnce);
 
+  /////////
   /// Publish it
-  print('EXAMPLE::Publishing our topic');
-  client.publishMessage(pubTopic, MqttQos.exactlyOnce, builder.payload!);
+  // print('EXAMPLE::Publishing our topic');
+  // client.publishMessage(pubTopic, MqttQos.atMostOnce, builder.payload!);
+  /////////
 
   /// Ok, we will now sleep a while, in this gap you will see ping request/response
   /// messages being exchanged by the keep alive mechanism.
-  print('EXAMPLE::Sleeping....');
-  await MqttUtilities.asyncSleep(60);
+  ///
+  ///
+  // print('EXAMPLE::Sleeping....');
+  // await MqttUtilities.asyncSleep(60);
 
   /// Print the ping/pong cycle latency data before disconnecting.
   print('EXAMPLE::Keep alive latencies');
@@ -189,14 +196,14 @@ Future<int> mqttServerClient() async {
   );
 
   /// Finally, unsubscribe and exit gracefully
-  print('EXAMPLE::Unsubscribing');
-  client.unsubscribe(topic);
+  // print('EXAMPLE::Unsubscribing');
+  // client.unsubscribe(topic);
 
   /// Wait for the unsubscribe message from the broker if you wish.
-  await MqttUtilities.asyncSleep(2);
-  print('EXAMPLE::Disconnecting');
-  client.disconnect();
-  print('EXAMPLE::Exiting normally');
+  // await MqttUtilities.asyncSleep(2);
+  // print('EXAMPLE::Disconnecting');
+  // client.disconnect();
+  // print('EXAMPLE::Exiting normally');
   return 0;
 }
 
