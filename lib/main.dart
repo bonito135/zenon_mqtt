@@ -19,9 +19,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Zenon MQTT',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Zenon MQTT Demo'),
     );
   }
 }
@@ -36,14 +36,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int currentPageIndex = 0;
   final client = MqttServerClient('iot.coreflux.cloud', '');
   ConfigStructure? configStructure;
+
+  NavigationDestinationLabelBehavior labelBehavior =
+      NavigationDestinationLabelBehavior.alwaysShow;
 
   @override
   void initState() {
     super.initState();
 
-    // Or call your function here
     _subscribeToMQTT();
   }
 
@@ -72,6 +75,22 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
+      bottomNavigationBar: NavigationBar(
+        labelBehavior: labelBehavior,
+        selectedIndex: currentPageIndex,
+        onDestinationSelected: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
+        destinations: List<Widget>.generate(
+          configStructure?.structure.length ?? 0,
+          (index) => NavigationDestination(
+            icon: Icon(Icons.explore),
+            label: configStructure?.structure[index].sectionName ?? "",
+          ),
+        ),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -79,20 +98,20 @@ class _MyHomePageState extends State<MyHomePage> {
               configStructure?.structure.isEmpty == true
                   ? []
                   : List<Widget>.generate(
-                    configStructure?.structure.length ?? 0,
+                    1,
                     (index) => Column(
                       children: [
-                        Text(
-                          configStructure!.structure[index].sectionName,
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
                         ...List<Widget>.generate(
-                          configStructure!.structure[0].components.length,
+                          configStructure!
+                              .structure[currentPageIndex]
+                              .components
+                              .length,
                           (index) => widgetMap(
-                            configStructure!.structure[0].components[index],
+                            configStructure!
+                                .structure[currentPageIndex]
+                                .components[index],
                           ),
                         ),
-                        Divider(),
                       ],
                     ),
                   ).toList(),
