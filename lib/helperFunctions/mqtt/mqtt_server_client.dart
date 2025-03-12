@@ -6,7 +6,6 @@
  */
 
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -25,13 +24,15 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 /// of 1883 is used.
 /// If you want to use websockets rather than TCP see below.
 
-final client = MqttServerClient('iot.coreflux.cloud', '');
-
 var pongCount = 0; // Pong counter
 var pingCount = 0; // Ping counter
 
 Future<int> mqttServerClient(
+  MqttServerClient client,
   String topic,
+  bool isConnected,
+  Function() onConnected,
+  Function() onDisconnected,
   Function(String value) callback,
 ) async {
   /// A websocket URL must start with ws:// or wss:// or Dart will throw an exception, consult your websocket MQTT broker
@@ -52,12 +53,12 @@ Future<int> mqttServerClient(
   client.setProtocolV311();
 
   /// If you intend to use a keep alive you must set it here otherwise keep alive will be disabled.
-  client.keepAlivePeriod = 20;
+  client.keepAlivePeriod = 2000;
 
   /// The connection timeout period can be set, the default is 5 seconds.
   /// if [client.socketTimeout] is set then this will take precedence and this setting will be
   /// disabled.
-  client.connectTimeoutPeriod = 2000; // milliseconds
+  client.connectTimeoutPeriod = 5000; // milliseconds
 
   /// The socket timeout period can be set, the minimum value is 1000ms.
   /// If set then this setting takes precedence and [client.connectionTimeoutPeriod] is disabled.
@@ -68,6 +69,11 @@ Future<int> mqttServerClient(
 
   /// Add the successful connection callback
   client.onConnected = onConnected;
+  // client.onConnected = () {
+  //   print(
+  //     'EXAMPLE::OnConnected client callback - Client connection was successful',
+  //   );
+  // };
 
   /// Add a subscribed callback, there is also an unsubscribed callback if you need it.
   /// You can add these before connection or change them dynamically after connection if
@@ -78,11 +84,20 @@ Future<int> mqttServerClient(
 
   /// Set a ping received callback if needed, called whenever a ping response(pong) is received
   /// from the broker. Can be used for health monitoring.
-  client.pongCallback = pong;
+  client.pongCallback = () {
+    print('EXAMPLE::Ping response client callback invoked');
+    pongCount++;
+    print(
+      'EXAMPLE::Latency of this ping/pong cycle is ${client.lastCycleLatency} milliseconds',
+    );
+  };
 
   /// Set a ping sent callback if needed, called whenever a ping request(ping) is sent
   /// by the client. Can be used for latency calculations.
-  client.pingCallback = ping;
+  client.pingCallback = () {
+    print('EXAMPLE::Ping sent client callback invoked');
+    pingCount++;
+  };
 
   /// Create a connection message to use or use the default one. The default one sets the
   /// client identifier, any supplied username/password and clean session,
@@ -93,7 +108,7 @@ Future<int> mqttServerClient(
       .withWillMessage('My Will message')
       .startClean() // Non persistent session for testing
       .withWillQos(MqttQos.atLeastOnce);
-  print('EXAMPLE::Mosquitto client connecting....');
+  print('EXAMPLE::Client connecting....');
   client.connectionMessage = connMess;
 
   /// Connect the client, any errors here are communicated by raising of the appropriate exception. Note
@@ -104,11 +119,11 @@ Future<int> mqttServerClient(
   } on NoConnectionException catch (e) {
     // Raised by the client when connection fails.
     print('EXAMPLE::client exception - $e');
-    client.disconnect();
+    // client.disconnect();
   } on SocketException catch (e) {
     // Raised by the socket layer
     print('EXAMPLE::socket exception - $e');
-    client.disconnect();
+    // client.disconnect();
   }
 
   /// Check we are connected
@@ -119,13 +134,19 @@ Future<int> mqttServerClient(
     print(
       'EXAMPLE::ERROR Mosquitto client connection failed - disconnecting, status is ${client.connectionStatus}',
     );
-    client.disconnect();
-    exit(-1);
+
+    // client.disconnect();
+    // exit(-1);
   }
 
   /// Ok, lets try a subscription
-  print('EXAMPLE::Subscribing to the $topic topic');
-  client.subscribe(topic, MqttQos.exactlyOnce);
+  try {
+    print('EXAMPLE::Subscribing to the $topic topic');
+    client.subscribe(topic, MqttQos.exactlyOnce);
+  } catch (e) {
+    print('EXAMPLE::Error subscribing to the $topic topic');
+    print(e);
+  }
 
   /// The client has a change notifier object(see the Observable class) which we then listen to to get
   /// notifications of published updates to each subscribed topic.
@@ -187,13 +208,13 @@ Future<int> mqttServerClient(
   // await MqttUtilities.asyncSleep(60);
 
   /// Print the ping/pong cycle latency data before disconnecting.
-  print('EXAMPLE::Keep alive latencies');
-  print(
-    'The latency of the last ping/pong cycle is ${client.lastCycleLatency} milliseconds',
-  );
-  print(
-    'The average latency of all the ping/pong cycles is ${client.averageCycleLatency} milliseconds',
-  );
+  // print('EXAMPLE::Keep alive latencies');
+  // print(
+  //   'The latency of the last ping/pong cycle is ${client.lastCycleLatency} milliseconds',
+  // );
+  // print(
+  //   'The average latency of all the ping/pong cycles is ${client.averageCycleLatency} milliseconds',
+  // );
 
   /// Finally, unsubscribe and exit gracefully
   // print('EXAMPLE::Unsubscribing');
@@ -213,47 +234,47 @@ void onSubscribed(String topic) {
 }
 
 /// The unsolicited disconnect callback
-void onDisconnected() {
-  print('EXAMPLE::OnDisconnected client callback - Client disconnection');
-  if (client.connectionStatus!.disconnectionOrigin ==
-      MqttDisconnectionOrigin.solicited) {
-    print('EXAMPLE::OnDisconnected callback is solicited, this is correct');
-  } else {
-    print(
-      'EXAMPLE::OnDisconnected callback is unsolicited or none, this is incorrect - exiting',
-    );
-    exit(-1);
-  }
-  if (pongCount == 3) {
-    print('EXAMPLE:: Pong count is correct');
-  } else {
-    print('EXAMPLE:: Pong count is incorrect, expected 3. actual $pongCount');
-  }
-  if (pingCount == 3) {
-    print('EXAMPLE:: Ping count is correct');
-  } else {
-    print('EXAMPLE:: Ping count is incorrect, expected 3. actual $pingCount');
-  }
-}
+// void onDisconnected() {
+//   print('EXAMPLE::OnDisconnected client callback - Client disconnection');
+//   if (client.connectionStatus!.disconnectionOrigin ==
+//       MqttDisconnectionOrigin.solicited) {
+//     print('EXAMPLE::OnDisconnected callback is solicited, this is correct');
+//   } else {
+//     print(
+//       'EXAMPLE::OnDisconnected callback is unsolicited or none, this is incorrect - exiting',
+//     );
+//     exit(-1);
+//   }
+//   if (pongCount == 3) {
+//     print('EXAMPLE:: Pong count is correct');
+//   } else {
+//     print('EXAMPLE:: Pong count is incorrect, expected 3. actual $pongCount');
+//   }
+//   if (pingCount == 3) {
+//     print('EXAMPLE:: Ping count is correct');
+//   } else {
+//     print('EXAMPLE:: Ping count is incorrect, expected 3. actual $pingCount');
+//   }
+// }
 
 /// The successful connect callback
-void onConnected() {
-  print(
-    'EXAMPLE::OnConnected client callback - Client connection was successful',
-  );
-}
+// void onConnected() {
+//   print(
+//     'EXAMPLE::OnConnected client callback - Client connection was successful',
+//   );
+// }
 
 /// Pong callback
-void pong() {
-  print('EXAMPLE::Ping response client callback invoked');
-  pongCount++;
-  print(
-    'EXAMPLE::Latency of this ping/pong cycle is ${client.lastCycleLatency} milliseconds',
-  );
-}
+// void pong() {
+//   print('EXAMPLE::Ping response client callback invoked');
+//   pongCount++;
+//   print(
+//     'EXAMPLE::Latency of this ping/pong cycle is ${client.lastCycleLatency} milliseconds',
+//   );
+// }
 
 /// Ping callback
-void ping() {
-  print('EXAMPLE::Ping sent client callback invoked');
-  pingCount++;
-}
+// void ping() {
+//   print('EXAMPLE::Ping sent client callback invoked');
+//   pingCount++;
+// }

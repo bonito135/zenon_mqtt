@@ -1,0 +1,71 @@
+[
+	{
+		"sectionName": "BMS. Battery",
+		"elements": [
+			{
+				"type": "text",
+				"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.SOC",
+				"description": "Kapacita baterie",
+				"unit": "%",
+				"digits": 3,
+				"value": 0
+			},
+			{
+				"type": "text",
+				"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.SOCAbs",
+				"description": "Celková kapacita baterie",
+				"unit": "kWh",
+				"digits": 4,
+				"value": 0
+			},
+			{
+				"type": "text",
+				"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.Battery Voltage",
+				"description": "Napětí baterie",
+				"unit": "V",
+				"digits": 6,
+				"value": 0
+			},
+			{
+				"type": "text",
+				"tagName": "ZenonMQTTPublisher/BMS/PV.DC.Total_PV_Input_Power",
+				"description": "Celkový příkon baterie",
+				"unit": "kW",
+				"digits": 4,
+				"value": 0
+			},
+			{
+				"type": "text",
+				"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.BMS Pack Temperature",
+				"description": "Teplota baterie",
+				"unit": "°C",
+				"digits": 4,
+				"value": 0
+			},
+			{
+				"type": "text",
+				"tagName": "ZenonMQTTPublisher/BMS/PV.Load.Power Total",
+				"description": "Celkový výkon baterie",
+				"unit": "kW",
+				"digits": 4,
+				"value": 0
+			},
+			{
+				"type": "text",
+				"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.Battery Current",
+				"description": "Proud na baterii",
+				"unit": "A",
+				"digits": 4,
+				"value": 0
+			},
+			{
+				"type": "text",
+				"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.Battery Mode",
+				"description": "Mód baterie",
+				"unit": "",
+				"digits": 4,
+				"value": 0
+			}
+		]
+	}
+]

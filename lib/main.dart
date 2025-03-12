@@ -1,12 +1,17 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:zenon_mqtt/classes/connection.dart';
 import 'package:zenon_mqtt/classes/index.dart';
-import 'package:zenon_mqtt/helperFunctions/mqtt/mqtt_server_client.dart';
-import 'package:zenon_mqtt/widget_map.dart';
+import 'package:zenon_mqtt/components/page/dynamic_page.dart';
+import 'package:zenon_mqtt/data/init_data.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 
@@ -21,100 +26,159 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue),
       ),
-      home: const MyHomePage(title: 'Zenon MQTT Demo'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int currentPageIndex = 0;
-  final client = MqttServerClient('iot.coreflux.cloud', '');
-  ConfigStructure? configStructure;
+  ConfigStructure configStructure = initConfigStructure;
+  final configStorage = Storage("configStructure");
 
-  NavigationDestinationLabelBehavior labelBehavior =
-      NavigationDestinationLabelBehavior.alwaysShow;
+  void setConfig(String value) async {
+    var decodedInit = jsonDecode(value) as List<dynamic>;
+    if (decodedInit.isEmpty) {
+      return;
+    }
+
+    setState(() {
+      configStructure = ConfigStructure.fromJson(decodedInit);
+    });
+  }
+
+  late final configConnection = MQTTConnection(
+    MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
+    dotenv.env['MQTT_CONFIG_TOPIC']!,
+    MqttConnectMessage()
+        .withClientIdentifier('Mqtt_config')
+        .startClean(), // Non persistent session for testing
+    (String value) => setConfig(value),
+    configStorage,
+  );
+
+  int currentPageIndex = 0;
 
   @override
   void initState() {
     super.initState();
 
-    _subscribeToMQTT();
+    _getStorageConfigString();
+
+    configConnection.init();
+
+    configConnection.isConnected.addListener(() {
+      // print(configConnection.isConnected.value);
+      autoReconnect(configConnection.isConnected.value);
+    });
   }
 
-  void _subscribeToMQTT() async {
-    print("subscribe to mqtt");
-    await mqttServerClient("ZenonMQTTPublisher/groups/guest", (
-      String value,
-    ) async {
-      // print("value: $value");
-      var decodedInit = jsonDecode(value) as List<dynamic>;
-      if (decodedInit.isEmpty) {
-        print("decodedInit is empty");
-        return;
-      }
+  void _getStorageConfigString() async {
+    String storageConfigString = await configStorage.readStorage();
 
+    if (storageConfigString != "") {
       setState(() {
-        configStructure = ConfigStructure.fromJson(decodedInit);
+        configStructure = ConfigStructure.fromJson(
+          jsonDecode(storageConfigString) as List<dynamic>,
+        );
       });
-    });
+
+      return;
+    }
+
+    configStructure = initConfigStructure;
+  }
+
+  void reconnect() async {
+    print(configConnection.isConnected.value);
+    if (configConnection.isConnected.value) {
+      return;
+    }
+
+    configConnection.connect();
+  }
+
+  void autoReconnect(bool isConnected) async {
+    print('EXAMPLE::autoReconnect config');
+    if (isConnected) return;
+    Timer(Duration(seconds: 2), () => configConnection.connect());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        backgroundColor: Colors.blueAccent,
+        title: Text(configStructure.structure[currentPageIndex].sectionName),
       ),
-      bottomNavigationBar: NavigationBar(
-        labelBehavior: labelBehavior,
-        selectedIndex: currentPageIndex,
-        onDestinationSelected: (int index) {
-          setState(() {
-            currentPageIndex = index;
-          });
+      bottomNavigationBar: ValueListenableBuilder(
+        valueListenable: configConnection.isConnected,
+        builder: (context, value, child) {
+          if (value == false || configStructure.structure.isEmpty) {
+            return Container(
+              padding: EdgeInsets.all(30),
+              child: ElevatedButton(
+                autofocus: true,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueAccent,
+                ),
+                onPressed: reconnect,
+                child: Text(
+                  "Reconnect",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            );
+          }
+
+          if (configStructure.structure.length < 2) {
+            return SizedBox.shrink();
+          }
+
+          return NavigationBar(
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+            selectedIndex: currentPageIndex,
+            onDestinationSelected: (int index) {
+              setState(() {
+                currentPageIndex = index;
+              });
+            },
+            destinations: List<Widget>.generate(
+              configStructure.structure.length,
+              (index) => NavigationDestination(
+                icon: Icon(Icons.explore),
+                label: configStructure.structure[index].sectionName,
+              ),
+            ),
+          );
         },
-        destinations: List<Widget>.generate(
-          configStructure?.structure.length ?? 0,
-          (index) => NavigationDestination(
-            icon: Icon(Icons.explore),
-            label: configStructure?.structure[index].sectionName ?? "",
-          ),
-        ),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children:
-              configStructure?.structure.isEmpty == true
-                  ? []
-                  : List<Widget>.generate(
-                    1,
-                    (index) => Column(
-                      children: [
-                        ...List<Widget>.generate(
-                          configStructure!
-                              .structure[currentPageIndex]
-                              .components
-                              .length,
-                          (index) => widgetMap(
-                            configStructure!
-                                .structure[currentPageIndex]
-                                .components[index],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ).toList(),
+      body: SafeArea(
+        child: ValueListenableBuilder(
+          valueListenable: configConnection.isConnected,
+          builder: (context, value, child) {
+            if (configStructure.structure.isEmpty) {
+              return Center(child: Text("No configuration applied"));
+            }
+            if (value == false) {
+              return Center(child: Text("No connection"));
+            }
+            return DynamicPage(
+              title: Text(
+                configStructure.structure[currentPageIndex].sectionName,
+              ),
+              structure: configStructure.structure[currentPageIndex],
+            );
+          },
         ),
       ),
     );
