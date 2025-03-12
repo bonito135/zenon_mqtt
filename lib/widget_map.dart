@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:zenon_mqtt/classes/index.dart';
 import 'package:zenon_mqtt/components/chart/bar_chart_sample.dart';
 import 'package:zenon_mqtt/components/gauge/linear_gauge.dart';
 import 'package:zenon_mqtt/components/gauge/radial_gauge.dart';
+import 'package:zenon_mqtt/components/text/timer_text.dart';
+import 'package:zenon_mqtt/functions/time.dart';
 
 Widget widgetMap(BuildContext context, Component oldData, Component? newData) {
   Component returnData = Component(
@@ -15,37 +19,47 @@ Widget widgetMap(BuildContext context, Component oldData, Component? newData) {
     newData?.lastUpdateTime ?? oldData.lastUpdateTime,
   );
 
-  print("returnDataType: ${returnData.type}");
-  print("returnDataTagName: ${returnData.tagName}");
-  print("returnDataValue: ${returnData.value}");
-  print("returnDataDescription: ${returnData.description}");
-  print("returnDataUnit: ${returnData.unit}");
-  print("returnDataDigits: ${returnData.digits}");
-  print("returnDataLastUpdateTime: ${returnData.lastUpdateTime}");
-
   if (returnData.type == "text") {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Divider(),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Column(
           children: [
-            Text(
-              returnData.description.toString(),
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: MediaQuery.of(context).size.width * 0.045,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text(
+                  returnData.description.toString(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: MediaQuery.of(context).size.width * 0.045,
+                  ),
+                ),
+                Text(
+                  "${returnData.value.toString().length <= (returnData.digits ?? 0) ? returnData.value.toString() : returnData.value.toString().substring(0, returnData.digits)} ${returnData.unit.toString().replaceAll("@", "")}",
+                  style: TextStyle(
+                    // fontFamily: "Montserrat",
+                    fontWeight: FontWeight.bold,
+                    fontSize: MediaQuery.of(context).size.width * 0.05,
+                  ),
+                ),
+              ],
             ),
-            Text(
-            
-              "${returnData.value.toString().length <= (returnData.digits ?? 0) ? returnData.value.toString() : returnData.value.toString().substring(0, returnData.digits)} ${returnData.unit.toString().replaceAll("@", "")}",
-              style: TextStyle(
-              
-                fontWeight: FontWeight.bold,
-                fontSize: MediaQuery.of(context).size.width * 0.05,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text("Poslední změna před:"),
+                FutureBuilder(
+                  future: Storage(returnData.tagName!).readStorage(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      return TimerText(text: snapshot.data as String);
+                    }
+                    return Text("No data");
+                  },
+                ),
+              ],
             ),
           ],
         ),

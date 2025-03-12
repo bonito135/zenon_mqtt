@@ -39,6 +39,8 @@ dependencies:
   flutter_dotenv: ^5.2.1
   flutter_secure_storage: ^9.2.4
   syncfusion_flutter_gauges: ^28.2.9
+  jiffy: ^6.3.2
+  timer_builder: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -65,11 +67,6 @@ flutter:
   assets:
     - .env
 
-  fonts:
-    - family: Montserrat
-      fonts:
-        - asset: - assets/fonts/Montserrat-VariableFont_wght.ttf
-
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images
 
@@ -81,17 +78,17 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+  fonts:
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/Montserrat-VariableFont_wght.ttf
+        # - asset: fonts/Schyler-Italic.ttf
+        # style: italic
+    # - family: Trajan Pro
+    # fonts:
+    #   - asset: fonts/TrajanPro.ttf
+    #   - asset: fonts/TrajanPro_Bold.ttf
+    #     weight: 700
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package

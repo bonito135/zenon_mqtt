@@ -11,13 +11,10 @@ class Storage {
   AndroidOptions getAndroidOptions() =>
       const AndroidOptions(encryptedSharedPreferences: true);
 
-  readStorage() async {
-    String storageConfigString =
-        await FlutterSecureStorage().read(key: key) ?? "";
-
-    if (storageConfigString != "") {
-      return storageConfigString;
-    }
+  Future<String?> readStorage() async {
+    String? value = await FlutterSecureStorage().read(key: key);
+    print("Dynamic value: $value");
+    return value;
   }
 
   writeStorage(dynamic value) async {

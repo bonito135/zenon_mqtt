@@ -48,15 +48,15 @@ class MQTTConnection with ChangeNotifier {
     await connect();
 
     client.pongCallback = () {
-      print('EXAMPLE::Ping response client callback invoked');
+      // print('EXAMPLE::Ping response client callback invoked');
       pongCount++;
-      print(
-        'EXAMPLE::Latency of this ping/pong cycle is ${client.lastCycleLatency} milliseconds',
-      );
+      // print(
+      //   'EXAMPLE::Latency of this ping/pong cycle is ${client.lastCycleLatency} milliseconds',
+      // );
     };
 
     client.pingCallback = () {
-      print('EXAMPLE::Ping sent client callback invoked');
+      // print('EXAMPLE::Ping sent client callback invoked');
       pingCount++;
     };
 
@@ -74,23 +74,23 @@ class MQTTConnection with ChangeNotifier {
     client.onSubscribed = _onSubscribed;
 
     if (client.connectionStatus!.state == MqttConnectionState.connected) {
-      print('EXAMPLE:Client connected');
+      // print('EXAMPLE:Client connected');
       isConnected.value = true;
     } else {
       /// Use status here rather than state if you also want the broker return code.
-      print(
-        'EXAMPLE::ERROR Client connection failed - disconnecting, status is ${client.connectionStatus}',
-      );
+      // print(
+      //   'EXAMPLE::ERROR Client connection failed - disconnecting, status is ${client.connectionStatus}',
+      // );
 
       client.disconnect();
     }
 
     try {
-      print('EXAMPLE::Subscribing to the $topic topic');
+      // print('EXAMPLE::Subscribing to the $topic topic');
       client.subscribe(topic, MqttQos.exactlyOnce);
     } catch (e) {
-      print('EXAMPLE::Error subscribing to the $topic topic');
-      print(e);
+      // print('EXAMPLE::Error subscribing to the $topic topic');
+      // print(e);
     }
   }
 
@@ -114,7 +114,7 @@ class MQTTConnection with ChangeNotifier {
 
           await onMessage(value);
         } catch (e) {
-          print('EXAMPLE::exception - $e');
+          // print('EXAMPLE::exception - $e');
           // client.disconnect();
         }
 
@@ -147,9 +147,9 @@ class MQTTConnection with ChangeNotifier {
 
   void onConnected() {
     isConnected.value = true;
-    print(
-      'EXAMPLE::OnConnected client callback - Client connection was successful',
-    );
+    // print(
+    //   'EXAMPLE::OnConnected client callback - Client connection was successful',
+    // );
   }
 
   void onDisconnected() {

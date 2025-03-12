@@ -184,6 +184,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.20.2"
+  jiffy:
+    dependency: "direct main"
+    description:
+      name: jiffy
+      sha256: "1c1b86459969ff9f32dc5b0ffe392f1e08181e66396cf9dd8fa7c90552a691af"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.3.2"
   js:
     dependency: transitive
     description:
@@ -369,18 +377,18 @@ packages:
     dependency: transitive
     description:
       name: syncfusion_flutter_core
-      sha256: "5a1a76eef118e511443b299925d4a802eb8259388d6a580e0ad6413d1a70f987"
+      sha256: "59b6d2a7deacade6129d2f15615ca49ed56278fea055cd2e52cace78a343dd5e"
       url: "https://pub.dev"
     source: hosted
-    version: "28.2.9"
+    version: "28.2.11"
   syncfusion_flutter_gauges:
     dependency: "direct main"
     description:
       name: syncfusion_flutter_gauges
-      sha256: cea541c5d71d0eb68d63e9da58c4b72bd82c8f3d49362fe597ec4a93dcf3ab1f
+      sha256: aa06bd6ddec908ac7b4a8e762e268b43b7a6f08da4f8de9719719807db5cef77
       url: "https://pub.dev"
     source: hosted
-    version: "28.2.9"
+    version: "28.2.11"
   term_glyph:
     dependency: transitive
     description:
@@ -397,6 +405,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.7.4"
+  timer_builder:
+    dependency: "direct main"
+    description:
+      name: timer_builder
+      sha256: "67c5653a8d9f6ce62fe9121e520736e9da74418a919fe1c0e181b5d2627dbc4a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   typed_data:
     dependency: transitive
     description:
@@ -433,10 +449,10 @@ packages:
     dependency: transitive
     description:
       name: win32
-      sha256: b89e6e24d1454e149ab20fbb225af58660f0c0bf4475544650700d8e2da54aef
+      sha256: dc6ecaa00a7c708e5b4d10ee7bec8c270e9276dfcab1783f57e9962d7884305f
       url: "https://pub.dev"
     source: hosted
-    version: "5.11.0"
+    version: "5.12.0"
   xdg_directories:
     dependency: transitive
     description:

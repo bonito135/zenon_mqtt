@@ -38,7 +38,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
         .withClientIdentifier('Mqtt_${widget.component.tagName}')
         .startClean(), // Non persistent session for testing,
     (String value) => setComponentData(value),
-    null,
+    Storage(widget.component.tagName!),
   );
 
   void initConnection() async {
@@ -52,16 +52,16 @@ class _DynamicComponentState extends State<DynamicComponent> {
     initConnection();
     componentConnection.isConnected.addListener(() {
       print(componentConnection.isConnected.value);
-      autoReconnect(componentConnection.isConnected.value);
+      // autoReconnect(componentConnection.isConnected.value);
     });
   }
 
-  void autoReconnect(bool isConnected) async {
-    print('EXAMPLE::autoReconnect');
-    if (!isConnected) {
-      componentConnection.connect();
-    }
-  }
+  // void autoReconnect(bool isConnected) async {
+  //   print('EXAMPLE::autoReconnect');
+  //   if (!isConnected) {
+  //     componentConnection.connect();
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

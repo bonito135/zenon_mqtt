@@ -75,12 +75,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
     configConnection.isConnected.addListener(() {
       // print(configConnection.isConnected.value);
-      autoReconnect(configConnection.isConnected.value);
+      // autoReconnect(configConnection.isConnected.value);
     });
   }
 
   void _getStorageConfigString() async {
-    String storageConfigString = await configStorage.readStorage();
+    String storageConfigString = await configStorage.readStorage() ?? "";
 
     if (storageConfigString != "") {
       setState(() {
@@ -96,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void reconnect() async {
-    print(configConnection.isConnected.value);
+    // print(configConnection.isConnected.value);
     if (configConnection.isConnected.value) {
       return;
     }
@@ -104,16 +104,17 @@ class _MyHomePageState extends State<MyHomePage> {
     configConnection.connect();
   }
 
-  void autoReconnect(bool isConnected) async {
-    print('EXAMPLE::autoReconnect config');
-    if (isConnected) return;
-    Timer(Duration(seconds: 2), () => configConnection.connect());
-  }
+  // void autoReconnect(bool isConnected) async {
+  //   print('EXAMPLE::autoReconnect config');
+  //   if (isConnected) return;
+  //   Timer(Duration(seconds: 2), () => configConnection.connect());
+  // }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.blueAccent,
         title: Text(configStructure.structure[currentPageIndex].sectionName),
       ),

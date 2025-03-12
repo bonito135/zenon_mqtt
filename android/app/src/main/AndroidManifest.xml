@@ -2,9 +2,10 @@
     <application
         android:allowBackup="false"
         android:fullBackupContent="false"
-        android:label="zenon_mqtt"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:label="zenon_mqtt"
+        >
         <activity
             android:name=".MainActivity"
             android:exported="true"
