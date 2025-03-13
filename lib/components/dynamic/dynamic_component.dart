@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -22,21 +20,20 @@ class _DynamicComponentState extends State<DynamicComponent> {
   Component? componentData;
 
   void setComponentData(value) async {
-    print(value);
     setState(() {
       componentData = Component.fromJson(
         jsonDecode(value) as Map<String, dynamic>,
       );
-      print("componentData: ${componentData?.value}");
     });
   }
 
   late final componentConnection = MQTTConnection(
     MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
     widget.component.tagName!,
-    MqttConnectMessage()
-        .withClientIdentifier('Mqtt_${widget.component.tagName}')
-        .startClean(), // Non persistent session for testing,
+    MqttConnectMessage().withClientIdentifier(
+      'Mqtt_${widget.component.tagName}',
+    ),
+    // .startClean(), // Non persistent session for testing,
     (String value) => setComponentData(value),
     Storage(widget.component.tagName!),
   );
@@ -50,18 +47,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
     super.initState();
 
     initConnection();
-    componentConnection.isConnected.addListener(() {
-      print(componentConnection.isConnected.value);
-      // autoReconnect(componentConnection.isConnected.value);
-    });
   }
-
-  // void autoReconnect(bool isConnected) async {
-  //   print('EXAMPLE::autoReconnect');
-  //   if (!isConnected) {
-  //     componentConnection.connect();
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {

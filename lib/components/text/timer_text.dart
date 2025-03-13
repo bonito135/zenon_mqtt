@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:timer_builder/timer_builder.dart';
 import 'package:zenon_mqtt/classes/structure.dart';
 import 'package:zenon_mqtt/functions/time.dart';
@@ -21,6 +21,7 @@ class _TimerTextState extends State<TimerText> {
       Duration(seconds: 1),
       builder: (context) {
         return Text(
+          style: Theme.of(context).textTheme.bodySmall,
           representTimeDifferenceInWords(
             getTimeDifferenceFromNow(
               Component.fromJson(

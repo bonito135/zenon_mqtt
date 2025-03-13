@@ -9,11 +9,10 @@ class Storage {
     accessibility: KeychainAccessibility.first_unlock,
   );
   AndroidOptions getAndroidOptions() =>
-      const AndroidOptions(encryptedSharedPreferences: true);
+      const AndroidOptions(encryptedSharedPreferences: false);
 
   Future<String?> readStorage() async {
     String? value = await FlutterSecureStorage().read(key: key);
-    print("Dynamic value: $value");
     return value;
   }
 

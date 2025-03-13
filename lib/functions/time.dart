@@ -22,21 +22,21 @@ String representTimeDifferenceInWords(Duration difference) {
   var minutesToHours = setMinutesToHours(minutes);
   var hoursToDays = setHoursToDays(hours);
 
-  days += hoursToDays["days"] ?? 0;
-  hours = hoursToDays["remainingHours"] ?? 0;
+  minutes += secondsToMinutes["minutes"] ?? 0;
+  seconds = secondsToMinutes["remainingSeconds"] ?? 0;
 
   hours += minutesToHours["hours"] ?? 0;
   minutes = minutesToHours["remainingMinutes"] ?? 0;
 
-  minutes += secondsToMinutes["minutes"] ?? 0;
-  seconds = secondsToMinutes["remainingSeconds"] ?? 0;
+  days += hoursToDays["days"] ?? 0;
+  hours = hoursToDays["remainingHours"] ?? 0;
 
   String resultString = "";
 
   if (days > 0) resultString = "$resultString ${days}d";
   if (hours > 0) resultString = "$resultString ${hours}h";
   if (minutes > 0) resultString = "$resultString ${minutes}m";
-  if (seconds > 0) resultString = "$resultString ${seconds}s";
+  if (seconds >= 0) resultString = "$resultString ${seconds}s";
 
   return resultString;
 }

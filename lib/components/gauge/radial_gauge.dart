@@ -24,11 +24,9 @@ class _RadialGaugeState extends State<RadialGauge> {
           pointers: <GaugePointer>[NeedlePointer(value: 90)],
           annotations: <GaugeAnnotation>[
             GaugeAnnotation(
-              widget: Container(
-                child: Text(
-                  '90.0',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-                ),
+              widget: Text(
+                '90.0',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
               angle: 90,
               positionFactor: 0.5,
