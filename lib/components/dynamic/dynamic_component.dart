@@ -21,9 +21,11 @@ class _DynamicComponentState extends State<DynamicComponent> {
 
   void setComponentData(value) async {
     setState(() {
-      componentData = Component.fromJson(
-        jsonDecode(value) as Map<String, dynamic>,
-      );
+      if (mounted) {
+        componentData = Component.fromJson(
+          jsonDecode(value) as Map<String, dynamic>,
+        );
+      }
     });
   }
 

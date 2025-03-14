@@ -31,7 +31,9 @@ class _LineChartSample11State extends State<LineChartSample11> {
                       value: baselineY,
                       onChanged: (newValue) {
                         setState(() {
-                          baselineY = newValue;
+                          if (mounted) {
+                            baselineY = newValue;
+                          }
                         });
                       },
                       min: -10,
@@ -49,7 +51,9 @@ class _LineChartSample11State extends State<LineChartSample11> {
               value: baselineX,
               onChanged: (newValue) {
                 setState(() {
-                  baselineX = newValue;
+                  if (mounted) {
+                    baselineX = newValue;
+                  }
                 });
               },
               min: -10,

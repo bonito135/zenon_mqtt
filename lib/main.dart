@@ -79,7 +79,9 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     setState(() {
-      configStructure = ConfigStructure.fromJson(decodedInit);
+      if (mounted) {
+        configStructure = ConfigStructure.fromJson(decodedInit);
+      }
     });
   }
 
@@ -108,9 +110,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (storageConfigString != "") {
       setState(() {
-        configStructure = ConfigStructure.fromJson(
-          jsonDecode(storageConfigString) as List<dynamic>,
-        );
+        if (mounted) {
+          configStructure = ConfigStructure.fromJson(
+            jsonDecode(storageConfigString) as List<dynamic>,
+          );
+        }
       });
 
       return;
@@ -169,7 +173,9 @@ class _MyHomePageState extends State<MyHomePage> {
               selectedIndex: currentPageIndex,
               onDestinationSelected: (int index) {
                 setState(() {
-                  currentPageIndex = index;
+                  if (mounted) {
+                    currentPageIndex = index;
+                  }
                 });
               },
               destinations: List<Widget>.generate(

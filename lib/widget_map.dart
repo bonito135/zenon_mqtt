@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:zenon_mqtt/classes/index.dart';
 import 'package:zenon_mqtt/components/chart/bar_chart_sample.dart';
@@ -34,9 +36,27 @@ Widget widgetMap(BuildContext context, Component oldData, Component? newData) {
                     returnData.description.toString(),
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
-                  Text(
-                    "${returnData.value.toString().length <= (returnData.digits ?? 0) ? returnData.value.toString() : returnData.value.toString().substring(0, returnData.digits)} ${returnData.unit.toString().replaceAll("@", "")}",
-                    style: Theme.of(context).textTheme.displayLarge,
+                  FutureBuilder(
+                    future: Storage(returnData.tagName!).readStorage(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasData) {
+                        dynamic returnValue =
+                            Component.fromJson(
+                              jsonDecode(snapshot.data as String)
+                                  as Map<String, dynamic>,
+                            ).value;
+
+                        if (returnData.value != null) {
+                          returnValue = returnData.value.toString();
+                        }
+
+                        return Text(
+                          "${returnValue.length <= (returnData.digits ?? 0) ? returnValue.toString() : returnValue.substring(0, returnData.digits)} ${returnData.unit.toString().replaceAll("@", "")}",
+                          style: Theme.of(context).textTheme.displayLarge,
+                        );
+                      }
+                      return const Text("No data");
+                    },
                   ),
                 ],
               ),

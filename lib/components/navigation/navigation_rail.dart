@@ -23,7 +23,9 @@ class _NavRailExampleState extends State<NavRail> {
           groupAlignment: groupAlignment,
           onDestinationSelected: (int index) {
             setState(() {
-              _selectedIndex = index;
+              if (mounted) {
+                _selectedIndex = index;
+              }
             });
           },
           labelType: labelType,
