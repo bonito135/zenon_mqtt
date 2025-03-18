@@ -33,6 +33,7 @@ class Component {
   String? unit;
   int? digits;
   String? lastUpdateTime;
+  bool? isValid;
 
   Component(
     this.type,
@@ -42,6 +43,7 @@ class Component {
     this.unit,
     this.digits,
     this.lastUpdateTime,
+    this.isValid,
   );
 
   factory Component.fromJson(Map<String, dynamic> json) {
@@ -53,6 +55,7 @@ class Component {
       json["unit"],
       json["digits"],
       json["lastUpdateTime"],
+      json["isValid"],
     );
   }
 }

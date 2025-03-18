@@ -4,14 +4,12 @@ class NavRail extends StatefulWidget {
   const NavRail({super.key});
 
   @override
-  State<NavRail> createState() => _NavRailExampleState();
+  State<NavRail> createState() => _NavRailState();
 }
 
-class _NavRailExampleState extends State<NavRail> {
+class _NavRailState extends State<NavRail> {
   int _selectedIndex = 0;
   NavigationRailLabelType labelType = NavigationRailLabelType.all;
-  bool showLeading = false;
-  bool showTrailing = false;
   double groupAlignment = -1.0;
 
   @override
@@ -29,25 +27,6 @@ class _NavRailExampleState extends State<NavRail> {
             });
           },
           labelType: labelType,
-          leading:
-              showLeading
-                  ? FloatingActionButton(
-                    elevation: 0,
-                    onPressed: () {
-                      // Add your onPressed code here!
-                    },
-                    child: const Icon(Icons.add),
-                  )
-                  : const SizedBox(),
-          trailing:
-              showTrailing
-                  ? IconButton(
-                    onPressed: () {
-                      // Add your onPressed code here!
-                    },
-                    icon: const Icon(Icons.more_horiz_rounded),
-                  )
-                  : const SizedBox(),
           destinations: const <NavigationRailDestination>[
             NavigationRailDestination(
               icon: Icon(Icons.favorite_border),

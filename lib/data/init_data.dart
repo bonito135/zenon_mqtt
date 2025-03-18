@@ -8,6 +8,7 @@ Component initComponent(index) => Component(
   "km/h",
   4,
   "2025.03.11T12:14:38",
+  true,
 );
 
 ConfigStructureItem initConfigStructureItem(index) => ConfigStructureItem(

@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:zenon_mqtt/classes/connection.dart';
 import 'package:zenon_mqtt/classes/index.dart';
+import 'package:zenon_mqtt/classes/mqtt_connection.dart';
+import 'package:zenon_mqtt/components/Indicator/sized_process_indicator.dart';
+import 'package:zenon_mqtt/components/button/primary_button.dart';
 import 'package:zenon_mqtt/components/page/dynamic_page.dart';
-import 'package:zenon_mqtt/data/init_data.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
@@ -69,145 +70,164 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  ConfigStructure configStructure = initConfigStructure;
   final configStorage = Storage("configStructure");
 
-  void setConfig(String value) async {
-    var decodedInit = jsonDecode(value) as List<dynamic>;
-    if (decodedInit.isEmpty) {
-      return;
-    }
-
-    setState(() {
-      if (mounted) {
-        configStructure = ConfigStructure.fromJson(decodedInit);
-      }
-    });
-  }
-
-  late final configConnection = MQTTConnection(
+  late final configConnection = MqttConnection(
     MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
     dotenv.env['MQTT_CONFIG_TOPIC']!,
     MqttConnectMessage().withClientIdentifier('Mqtt_config'),
-    // .startClean(), // Non persistent session for testing
-    (String value) => setConfig(value),
     configStorage,
   );
 
   int currentPageIndex = 0;
 
+  Future<ConfigStructure?> getStorageConfig() async {
+    String storageConfigString = await configStorage.readStorage() ?? "";
+
+    if (storageConfigString == "") {
+      return null;
+    }
+
+    return ConfigStructure.fromJson(
+      jsonDecode(storageConfigString) as List<dynamic>,
+    );
+  }
+
+  Future<void> reconnect() async {
+    await configConnection.connect();
+  }
+
   @override
   void initState() {
     super.initState();
 
-    _getStorageConfigString();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      connectionStartup();
+    });
+  }
 
+  void connectionStartup() async {
     configConnection.init();
+    await configConnection.connect();
   }
 
-  void _getStorageConfigString() async {
-    String storageConfigString = await configStorage.readStorage() ?? "";
+  @override
+  void dispose() {
+    super.dispose();
 
-    if (storageConfigString != "") {
-      setState(() {
-        if (mounted) {
-          configStructure = ConfigStructure.fromJson(
-            jsonDecode(storageConfigString) as List<dynamic>,
-          );
-        }
-      });
-
-      return;
-    }
-
-    configStructure = initConfigStructure;
-  }
-
-  void reconnect() async {
-    if (configConnection.isConnected.value) {
-      return;
-    }
-
-    configConnection.connect();
+    configConnection.client.disconnect();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.primary,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.secondary,
-        title: Text(configStructure.structure[currentPageIndex].sectionName),
-        titleTextStyle: Theme.of(context).textTheme.titleLarge,
-      ),
-      bottomNavigationBar: SafeArea(
-        child: ValueListenableBuilder(
-          valueListenable: configConnection.isConnected,
-          builder: (context, value, child) {
-            if (value == false || configStructure.structure.isEmpty) {
-              return Container(
-                padding: EdgeInsets.all(30),
-                child: ElevatedButton(
-                  autofocus: true,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
-                  ),
-                  onPressed: reconnect,
-                  child: Text(
-                    "Reconnect",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              );
-            }
+    return ValueListenableBuilder(
+      valueListenable: configConnection.state,
+      builder: (context, value, child) {
+        if (value == MqttConnectionState.connected) {
+          configConnection.listen();
 
-            if (configStructure.structure.length < 2) {
-              return SizedBox.shrink();
-            }
+          return ValueListenableBuilder(
+            valueListenable: configConnection.message,
+            builder: (context, value, child) {
+              return FutureBuilder(
+                future: getStorageConfig(),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    ConfigStructure configStructure =
+                        snapshot.data as ConfigStructure;
 
-            return NavigationBar(
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-              selectedIndex: currentPageIndex,
-              onDestinationSelected: (int index) {
-                setState(() {
-                  if (mounted) {
-                    currentPageIndex = index;
+                    return Scaffold(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      appBar: AppBar(
+                        backgroundColor:
+                            Theme.of(context).colorScheme.secondary,
+                        title: Text(
+                          configStructure
+                              .structure[currentPageIndex]
+                              .sectionName,
+                        ),
+                        titleTextStyle: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      bottomNavigationBar: SafeArea(
+                        child:
+                            configStructure.structure.length < 2
+                                ? SizedBox.shrink()
+                                : NavigationBar(
+                                  labelBehavior:
+                                      NavigationDestinationLabelBehavior
+                                          .alwaysShow,
+                                  selectedIndex: currentPageIndex,
+                                  onDestinationSelected: (int index) {
+                                    setState(() {
+                                      if (mounted) {
+                                        currentPageIndex = index;
+                                      }
+                                    });
+                                  },
+                                  destinations: List<Widget>.generate(
+                                    configStructure.structure.length,
+                                    (index) => NavigationDestination(
+                                      icon: Icon(Icons.explore),
+                                      label:
+                                          configStructure
+                                              .structure[index]
+                                              .sectionName,
+                                    ),
+                                  ),
+                                ),
+                      ),
+                      body: SafeArea(
+                        child:
+                            configStructure.structure.isEmpty
+                                ? Center(
+                                  child: Text("No configuration applied"),
+                                )
+                                : DynamicPage(
+                                  title: Text(
+                                    configStructure
+                                        .structure[currentPageIndex]
+                                        .sectionName,
+                                  ),
+                                  structure:
+                                      configStructure
+                                          .structure[currentPageIndex],
+                                ),
+                      ),
+                    );
                   }
-                });
-              },
-              destinations: List<Widget>.generate(
-                configStructure.structure.length,
-                (index) => NavigationDestination(
-                  icon: Icon(Icons.explore),
-                  label: configStructure.structure[index].sectionName,
+
+                  return SizedProcessIndicator();
+                },
+              );
+            },
+          );
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (value == MqttConnectionState.disconnected) {
+          return Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            body: Center(
+              child: PrimaryButton(
+                onPressed: () => reconnect(),
+                child: Text(
+                  "Reconnect",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
-            );
-          },
-        ),
-      ),
-      body: SafeArea(
-        child: ValueListenableBuilder(
-          valueListenable: configConnection.isConnected,
-          builder: (context, value, child) {
-            if (configStructure.structure.isEmpty) {
-              return Center(child: Text("No configuration applied"));
-            }
-            if (value == false) {
-              return Center(child: Text("No connection"));
-            }
-            return DynamicPage(
-              title: Text(
-                configStructure.structure[currentPageIndex].sectionName,
-              ),
-              structure: configStructure.structure[currentPageIndex],
-            );
-          },
-        ),
-      ),
+            ),
+          );
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        return Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          body: Center(child: SizedProcessIndicator()),
+        );
+      },
     );
   }
 }

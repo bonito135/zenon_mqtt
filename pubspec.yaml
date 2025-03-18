@@ -3,6 +3,7 @@ description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: "none" # Remove this line if you wish to publish to pub.dev
+# program: lib/main.dart
 
 # The following defines the version and build number for your application.
 # A version number is three numbers separated by dots, like 1.2.43
@@ -43,6 +44,12 @@ dependencies:
   timer_builder: ^2.0.0
   flutter_launcher_icons: ^0.14.3
   google_fonts: ^6.2.1
+  bloc: ^9.0.0
+  equatable: ^2.0.7
+  # secure_storage:
+  #   path: "./lib/packages/secure_storage"
+  # mqtt_repository:
+  #   path: "./lib/packages/mqtt_repository"
 
 dev_dependencies:
   flutter_test:

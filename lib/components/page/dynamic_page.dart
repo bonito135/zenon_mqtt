@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:zenon_mqtt/classes/index.dart';
 import 'package:zenon_mqtt/components/dynamic/dynamic_component.dart';
 
@@ -19,13 +19,15 @@ class _DynamicPageState extends State<DynamicPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Expanded(
-          child: ListView.builder(
-            itemCount: widget.structure.components.length,
-            itemBuilder: (context, index) {
-              return DynamicComponent(
-                component: widget.structure.components[index],
-              );
-            },
+          child: CupertinoScrollbar(
+            child: ListView.builder(
+              itemCount: widget.structure.components.length,
+              itemBuilder: (context, index) {
+                return DynamicComponent(
+                  component: widget.structure.components[index],
+                );
+              },
+            ),
           ),
         ),
       ],
