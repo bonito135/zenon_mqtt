@@ -24,7 +24,7 @@ class _TimerTextState extends State<TimerText> {
           style: Theme.of(context).textTheme.bodySmall,
           representTimeDifferenceInWords(
             getTimeDifferenceFromNow(
-              Component.fromJson(
+              StructureComponent.fromJson(
                 jsonDecode(widget.text) as Map<String, dynamic>,
               ).lastUpdateTime!.replaceAll('.', '-'),
             ),

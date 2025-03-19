@@ -12,30 +12,30 @@ class ConfigStructure {
 
 class ConfigStructureItem {
   final String sectionName;
-  final List<Component> components;
+  final List<StructureComponent> components;
 
   ConfigStructureItem(this.sectionName, this.components);
 
   factory ConfigStructureItem.fromJson(Map<String, dynamic> json) =>
       ConfigStructureItem(
         json["sectionName"].toString(),
-        List<Component>.from(
-          json["elements"].map((x) => Component.fromJson(x)),
+        List<StructureComponent>.from(
+          json["elements"].map((x) => StructureComponent.fromJson(x)),
         ),
       );
 }
 
-class Component {
+class StructureComponent {
   String? type;
   String? tagName;
-  dynamic value;
+  String? value;
   String? description;
   String? unit;
   int? digits;
   String? lastUpdateTime;
   bool? isValid;
 
-  Component(
+  StructureComponent(
     this.type,
     this.tagName,
     this.value,
@@ -46,11 +46,11 @@ class Component {
     this.isValid,
   );
 
-  factory Component.fromJson(Map<String, dynamic> json) {
-    return Component(
+  factory StructureComponent.fromJson(Map<String, dynamic> json) {
+    return StructureComponent(
       json['type'],
       json["tagName"],
-      json["value"],
+      json["value"]?.toString(),
       json["description"],
       json["unit"],
       json["digits"],

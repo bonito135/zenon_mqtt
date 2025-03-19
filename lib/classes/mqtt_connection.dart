@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -11,11 +12,9 @@ class MqttConnection {
   final String topic;
   final MqttConnectMessage connMess;
   final Storage? storage;
-  final state = ValueNotifier<MqttConnectionState>(
-    MqttConnectionState.disconnected,
-  );
-  final message = ValueNotifier<dynamic>(null);
-  // final StreamController<String> messageStream = StreamController<String>();
+  final ValueNotifier<MqttConnectionState> stateNotifier =
+      ValueNotifier<MqttConnectionState>(MqttConnectionState.disconnected);
+  final ValueNotifier<String?> messageNotifier = ValueNotifier<String?>(null);
 
   var pongCount = 0; // Pong counter
   var pingCount = 0; // Ping counter
@@ -71,9 +70,9 @@ class MqttConnection {
   }
 
   Future<void> connect() async {
-    if (state.value == MqttConnectionState.disconnected) {
+    if (stateNotifier.value == MqttConnectionState.disconnected) {
       try {
-        state.value = MqttConnectionState.connecting;
+        stateNotifier.value = MqttConnectionState.connecting;
 
         await client.connect();
 
@@ -82,7 +81,7 @@ class MqttConnection {
         }
         client.subscribe(topic, MqttQos.exactlyOnce);
       } catch (e) {
-        state.value = MqttConnectionState.disconnecting;
+        stateNotifier.value = MqttConnectionState.disconnecting;
         client.disconnect();
 
         if (kDebugMode) {
@@ -90,11 +89,13 @@ class MqttConnection {
           print(e);
         }
       }
+    } else {
+      log("Can not connect to topic: $topic / Not disconnected");
     }
   }
 
   void onConnected() {
-    state.value = MqttConnectionState.connected;
+    stateNotifier.value = MqttConnectionState.connected;
 
     if (kDebugMode) {
       print(
@@ -103,9 +104,8 @@ class MqttConnection {
     }
   }
 
-  /// The pre auto re connect callback
   void onAutoReconnect() {
-    state.value = MqttConnectionState.connecting;
+    stateNotifier.value = MqttConnectionState.connecting;
 
     if (kDebugMode) {
       print(
@@ -114,9 +114,8 @@ class MqttConnection {
     }
   }
 
-  /// The post auto re connect callback
   void onAutoReconnected() {
-    state.value = MqttConnectionState.connected;
+    stateNotifier.value = MqttConnectionState.connected;
 
     if (kDebugMode) {
       print(
@@ -132,23 +131,14 @@ class MqttConnection {
   }
 
   void listen() async {
-    print("listen");
-    if (state.value == MqttConnectionState.connected) {
-      print("listen connected");
-      var v = client.updates!.listen((
-        List<MqttReceivedMessage<MqttMessage?>>? c,
-      ) async {
-        try {
+    if (stateNotifier.value == MqttConnectionState.connected) {
+      client.updates!.listen(
+        (List<MqttReceivedMessage<MqttMessage?>>? c) async {
           final recMess = c![0].payload as MqttPublishMessage;
           final value = MqttPublishPayload.bytesToStringAsString(
             recMess.payload.message,
           );
 
-          /// The above may seem a little convoluted for users only interested in the
-          /// payload, some users however may be interested in the received publish message,
-          /// lets not constrain ourselves yet until the package has been in the wild
-          /// for a while.
-          /// The payload is a byte buffer, this will be specific to the topic
           if (kDebugMode) {
             print(
               'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $value -->',
@@ -159,21 +149,20 @@ class MqttConnection {
             await storage!.writeStorage(value);
           }
 
-          // await onMessage(value);
-          print(value);
-          message.value = value;
-          // return value;
-        } catch (e) {
-          if (kDebugMode) {
-            print('EXAMPLE::exception - $e');
-          }
-        }
-      });
+          messageNotifier.value = value;
+        },
+        onError:
+            (e) => {
+              if (kDebugMode) {log('MESSAGE_LISTENER::exception - $e')},
+            },
+      );
+    } else {
+      log("Can not listen to topic: $topic / Not connected");
     }
   }
 
   void onDisconnected() {
-    state.value = MqttConnectionState.disconnected;
+    stateNotifier.value = MqttConnectionState.disconnected;
 
     if (kDebugMode) {
       print('EXAMPLE::OnDisconnected client callback - Client disconnection');

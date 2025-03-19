@@ -6,8 +6,12 @@ import 'package:zenon_mqtt/components/gauge/linear_gauge.dart';
 import 'package:zenon_mqtt/components/gauge/radial_gauge.dart';
 import 'package:zenon_mqtt/components/text/timer_text.dart';
 
-Widget widgetMap(BuildContext context, Component oldData, Component? newData) {
-  Component returnData = Component(
+Widget widgetMap(
+  BuildContext context,
+  StructureComponent oldData,
+  StructureComponent? newData,
+) {
+  StructureComponent returnData = StructureComponent(
     newData?.type ?? oldData.type,
     newData?.tagName ?? oldData.tagName,
     newData?.value ?? oldData.value,
@@ -42,7 +46,7 @@ Widget widgetMap(BuildContext context, Component oldData, Component? newData) {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     dynamic returnValue =
-                        Component.fromJson(
+                        StructureComponent.fromJson(
                           jsonDecode(snapshot.data as String)
                               as Map<String, dynamic>,
                         ).value;

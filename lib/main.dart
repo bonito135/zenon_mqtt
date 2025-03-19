@@ -1,18 +1,44 @@
-import 'dart:convert';
+// import 'dart:io';
+// import 'package:sqlite3/sqlite3.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:provider/provider.dart';
 import 'package:zenon_mqtt/classes/index.dart';
-import 'package:zenon_mqtt/classes/mqtt_connection.dart';
 import 'package:zenon_mqtt/components/Indicator/sized_process_indicator.dart';
 import 'package:zenon_mqtt/components/button/primary_button.dart';
 import 'package:zenon_mqtt/components/page/dynamic_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:zenon_mqtt/db/db.dart';
+import 'package:zenon_mqtt/db/functions/index.dart';
+import 'dart:developer';
 
+// bool _hasInitializedSqlite = false;
+
+// // Do this once, before opening a database
+// // see https://github.com/simolus3/moor/issues/876
+// Future<void> _ensureSqlite3Initialized() async {
+//   if(_hasInitializedSqlite){
+//     return;
+//   }
+//   //TODO prevent duplicate execution using synchronized?
+//   if (Platform.isAndroid) {
+//     final cachebase =  (await getTemporaryDirectory()).path;
+//     sqlite3.tempDirectory = cachebase;
+//   }
+//   _hasInitializedSqlite = true;
+// }
 void main() async {
   await dotenv.load(fileName: ".env");
-  runApp(const MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    Provider<AppDatabase>(
+      create: (context) => AppDatabase(),
+      child: MyApp(),
+      dispose: (context, db) => db.close(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -81,18 +107,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int currentPageIndex = 0;
 
-  Future<ConfigStructure?> getStorageConfig() async {
-    String storageConfigString = await configStorage.readStorage() ?? "";
-
-    if (storageConfigString == "") {
-      return null;
-    }
-
-    return ConfigStructure.fromJson(
-      jsonDecode(storageConfigString) as List<dynamic>,
-    );
-  }
-
   Future<void> reconnect() async {
     await configConnection.connect();
   }
@@ -121,21 +135,25 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: configConnection.state,
+      valueListenable: configConnection.stateNotifier,
       builder: (context, value, child) {
         if (value == MqttConnectionState.connected) {
           configConnection.listen();
-
           return ValueListenableBuilder(
-            valueListenable: configConnection.message,
+            valueListenable: configConnection.messageNotifier,
             builder: (context, value, child) {
+              if (value == null) {
+                return SizedProcessIndicator();
+              }
               return FutureBuilder(
-                future: getStorageConfig(),
+                future: writeAndReturnConfigStructure(
+                  context.watch<AppDatabase>(),
+                  value,
+                ),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     ConfigStructure configStructure =
                         snapshot.data as ConfigStructure;
-
                     return Scaffold(
                       backgroundColor: Theme.of(context).colorScheme.primary,
                       appBar: AppBar(
