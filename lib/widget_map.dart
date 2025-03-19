@@ -68,7 +68,7 @@ Widget widgetMap(
                   "Poslední změna před:",
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-                TimerText(lastUpdateTime: component.lastUpdateTime!),
+                TimerText(lastUpdateTime: component.lastUpdateTime),
               ],
             ),
           ],

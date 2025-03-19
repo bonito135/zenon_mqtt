@@ -5,7 +5,8 @@ Duration getTimeDifference(String time, String time2) {
   return date1.difference(date2);
 }
 
-Duration getTimeDifferenceFromNow(String time) {
+Duration getTimeDifferenceFromNow(String? time) {
+  if (time == null) return Duration(seconds: 0);
   var date1 = DateTime.now();
   var date2 = DateTime.parse(time);
 

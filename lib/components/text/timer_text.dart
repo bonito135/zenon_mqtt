@@ -5,7 +5,7 @@ import 'package:zenon_mqtt/functions/time.dart';
 class TimerText extends StatefulWidget {
   const TimerText({super.key, required this.lastUpdateTime});
 
-  final String lastUpdateTime;
+  final String? lastUpdateTime;
 
   @override
   State<TimerText> createState() => _TimerTextState();
@@ -14,18 +14,20 @@ class TimerText extends StatefulWidget {
 class _TimerTextState extends State<TimerText> {
   @override
   Widget build(BuildContext context) {
-    return TimerBuilder.periodic(
-      Duration(seconds: 1),
-      builder: (context) {
-        return Text(
-          style: Theme.of(context).textTheme.bodySmall,
-          representTimeDifferenceInWords(
-            getTimeDifferenceFromNow(
-              widget.lastUpdateTime.replaceAll('.', '-'),
-            ),
-          ),
+    return widget.lastUpdateTime == null
+        ? const Text("N/A")
+        : TimerBuilder.periodic(
+          Duration(seconds: 1),
+          builder: (context) {
+            return Text(
+              style: Theme.of(context).textTheme.bodySmall,
+              representTimeDifferenceInWords(
+                getTimeDifferenceFromNow(
+                  widget.lastUpdateTime?.replaceAll('.', '-') ?? "",
+                ),
+              ),
+            );
+          },
         );
-      },
-    );
   }
 }

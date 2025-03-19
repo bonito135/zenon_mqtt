@@ -74,7 +74,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
                     return widgetMap(context, snapshot.data!, connectionState);
                   }
 
-                  return SizedProcessIndicator();
+                  return widgetMap(context, widget.component, connectionState);
                 },
               );
             },
