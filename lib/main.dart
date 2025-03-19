@@ -99,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
   late final configConnection = MqttConnection(
     MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
     dotenv.env['MQTT_CONFIG_TOPIC']!,
-    MqttConnectMessage().withClientIdentifier('Mqtt_config'),
+    MqttConnectMessage().withClientIdentifier('Mqtt_config').startClean(),
   );
 
   int currentPageIndex = 0;
@@ -113,13 +113,8 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      connectionStartup();
+      reconnect();
     });
-  }
-
-  void connectionStartup() async {
-    configConnection.init();
-    await configConnection.connect();
   }
 
   @override

@@ -20,13 +20,16 @@ class _DynamicPageState extends State<DynamicPage> {
       children: [
         Expanded(
           child: CupertinoScrollbar(
-            child: ListView.builder(
-              itemCount: widget.structure.components.length,
-              itemBuilder: (context, index) {
-                return DynamicComponent(
-                  component: widget.structure.components[index],
-                );
-              },
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              child: ListView.builder(
+                itemCount: widget.structure.components.length,
+                itemBuilder: (context, index) {
+                  return DynamicComponent(
+                    component: widget.structure.components[index],
+                  );
+                },
+              ),
             ),
           ),
         ),

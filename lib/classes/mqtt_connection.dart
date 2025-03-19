@@ -70,22 +70,23 @@ class MqttConnection {
   Future<void> connect() async {
     if (stateNotifier.value == MqttConnectionState.disconnected) {
       try {
+        init();
+
         stateNotifier.value = MqttConnectionState.connecting;
 
         await client.connect();
 
-        if (kDebugMode) {
-          print('EXAMPLE::Subscribing to the $topic topic');
-        }
         client.subscribe(topic, MqttQos.exactlyOnce);
+        if (kDebugMode) {
+          log('EXAMPLE::Subscribing to the $topic topic');
+        }
       } catch (e) {
+        if (kDebugMode) {
+          log('EXAMPLE::Error subscribing to the $topic topic');
+          log("$e");
+        }
         stateNotifier.value = MqttConnectionState.disconnecting;
         client.disconnect();
-
-        if (kDebugMode) {
-          print('EXAMPLE::Error subscribing to the $topic topic');
-          print(e);
-        }
       }
     } else {
       log("Can not connect to topic: $topic / Not disconnected");
@@ -175,6 +176,13 @@ class MqttConnection {
     }
   }
 
+  void onPingCallback() {
+    if (kDebugMode) {
+      print('EXAMPLE::Ping sent client callback invoked');
+    }
+    // pingCount++;
+  }
+
   void onPongCallback() {
     if (kDebugMode) {
       print('EXAMPLE::Ping response client callback invoked');
@@ -185,12 +193,5 @@ class MqttConnection {
         'EXAMPLE::Latency of this ping/pong cycle is ${client.lastCycleLatency} milliseconds',
       );
     }
-  }
-
-  void onPingCallback() {
-    if (kDebugMode) {
-      print('EXAMPLE::Ping sent client callback invoked');
-    }
-    // pingCount++;
   }
 }

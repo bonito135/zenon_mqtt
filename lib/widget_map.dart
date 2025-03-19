@@ -1,16 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:mqtt_client/mqtt_client.dart';
 import 'package:zenon_mqtt/classes/index.dart';
 import 'package:zenon_mqtt/components/chart/bar_chart_sample.dart';
 import 'package:zenon_mqtt/components/gauge/linear_gauge.dart';
 import 'package:zenon_mqtt/components/gauge/radial_gauge.dart';
 import 'package:zenon_mqtt/components/text/timer_text.dart';
 
-Widget widgetMap(BuildContext context, StructureComponent component) {
+Widget widgetMap(
+  BuildContext context,
+  StructureComponent component,
+  MqttConnectionState connectionState,
+) {
   if (component.type == "text") {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Divider(),
+        const Divider(height: 0),
+        if (connectionState == MqttConnectionState.disconnected)
+          LinearProgressIndicator(color: Colors.red),
+        if (connectionState == MqttConnectionState.connecting)
+          LinearProgressIndicator(),
         ExpansionTile(
           shape: LinearBorder.none,
           collapsedShape: LinearBorder.none,

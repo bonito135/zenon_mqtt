@@ -22,14 +22,12 @@ class _DynamicComponentState extends State<DynamicComponent> {
   late final componentConnection = MqttConnection(
     MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
     widget.component.tagName!,
-    MqttConnectMessage().withClientIdentifier(
-      'Mqtt_${widget.component.tagName}',
-    ),
-    // .startClean(), // Non persistent session for testing,
+    MqttConnectMessage()
+        .withClientIdentifier('Mqtt_${widget.component.tagName}')
+        .startClean(),
   );
 
   void connectionStartup() async {
-    componentConnection.init();
     await componentConnection.connect();
   }
 
@@ -54,6 +52,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
     return ValueListenableBuilder(
       valueListenable: componentConnection.stateNotifier,
       builder: (context, value, child) {
+        MqttConnectionState connectionState = value;
         if (value == MqttConnectionState.disconnected) {
           return SizedProcessIndicator();
         }
@@ -61,7 +60,6 @@ class _DynamicComponentState extends State<DynamicComponent> {
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (value == MqttConnectionState.connected) {
           componentConnection.listen();
-
           return ValueListenableBuilder(
             valueListenable: componentConnection.messageNotifier,
             builder: (context, value, child) {
@@ -73,7 +71,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
                 ),
                 builder: (context, snapshot) {
                   if (snapshot.hasData && snapshot.data != null) {
-                    return widgetMap(context, snapshot.data!);
+                    return widgetMap(context, snapshot.data!, connectionState);
                   }
 
                   return SizedProcessIndicator();
@@ -91,7 +89,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
           ),
           builder: (context, snapshot) {
             if (snapshot.hasData && snapshot.data != null) {
-              return widgetMap(context, snapshot.data!);
+              return widgetMap(context, snapshot.data!, connectionState);
             }
 
             return SizedProcessIndicator();

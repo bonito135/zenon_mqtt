@@ -73,22 +73,28 @@ Future<StructureComponent?> readStructureComponentByTagName(
   if (tagName == null) {
     return null;
   }
-  StructureComponentDBData? entry =
-      await (database.select(database.structureComponentDB)
-        ..where((t) => t.tagName.equals(tagName))).getSingleOrNull();
 
-  if (entry == null) return null;
+  try {
+    StructureComponentDBData? entry =
+        await (database.select(database.structureComponentDB)
+          ..where((t) => t.tagName.equals(tagName))).getSingleOrNull();
 
-  return StructureComponent(
-    entry.type,
-    entry.tagName,
-    entry.value,
-    entry.description,
-    entry.unit,
-    entry.digits,
-    entry.lastUpdateTime,
-    entry.isValid,
-  );
+    if (entry == null) return null;
+
+    return StructureComponent(
+      entry.type,
+      entry.tagName,
+      entry.value,
+      entry.description,
+      entry.unit,
+      entry.digits,
+      entry.lastUpdateTime,
+      entry.isValid,
+    );
+  } catch (e) {
+    log("Get entry error: $e");
+    return null;
+  }
 }
 
 Future<StructureComponent?> writeAndReturnStructureComponentByTagName(
