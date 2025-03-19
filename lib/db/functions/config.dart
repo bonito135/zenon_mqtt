@@ -10,13 +10,17 @@ void writeConfigStructure(AppDatabase database, String content) async {
       .insert(ConfigStructureDBCompanion.insert(content: content));
 }
 
-Future<String?> readConfigStructure(AppDatabase database) async {
-  final config = await database
-      .select(database.configStructureDB)
-      .get()
-      .then((value) => value.firstOrNull);
+Future<ConfigStructure?> readConfigStructure(AppDatabase database) async {
+  try {
+    final config = await (database.select(
+      database.configStructureDB,
+    )).get().then((value) => value.last);
 
-  return config?.content;
+    return ConfigStructure.fromJson(jsonDecode(config.content));
+  } catch (e) {
+    log("Config read error: $e");
+    return null;
+  }
 }
 
 Future<ConfigStructure?> writeAndReturnConfigStructure(

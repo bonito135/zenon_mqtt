@@ -3,15 +3,13 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
-import 'package:zenon_mqtt/classes/storage.dart';
 
 class MqttConnection {
-  MqttConnection(this.client, this.topic, this.connMess, this.storage);
+  MqttConnection(this.client, this.topic, this.connMess);
 
   final MqttServerClient client;
   final String topic;
   final MqttConnectMessage connMess;
-  final Storage? storage;
   final ValueNotifier<MqttConnectionState> stateNotifier =
       ValueNotifier<MqttConnectionState>(MqttConnectionState.disconnected);
   final ValueNotifier<String?> messageNotifier = ValueNotifier<String?>(null);
@@ -143,10 +141,6 @@ class MqttConnection {
             print(
               'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $value -->',
             );
-          }
-
-          if (storage != null) {
-            await storage!.writeStorage(value);
           }
 
           messageNotifier.value = value;

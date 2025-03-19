@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:zenon_mqtt/classes/index.dart';
 import 'package:zenon_mqtt/components/chart/bar_chart_sample.dart';
@@ -6,23 +5,8 @@ import 'package:zenon_mqtt/components/gauge/linear_gauge.dart';
 import 'package:zenon_mqtt/components/gauge/radial_gauge.dart';
 import 'package:zenon_mqtt/components/text/timer_text.dart';
 
-Widget widgetMap(
-  BuildContext context,
-  StructureComponent oldData,
-  StructureComponent? newData,
-) {
-  StructureComponent returnData = StructureComponent(
-    newData?.type ?? oldData.type,
-    newData?.tagName ?? oldData.tagName,
-    newData?.value ?? oldData.value,
-    newData?.description ?? oldData.description,
-    newData?.unit ?? oldData.unit,
-    newData?.digits ?? oldData.digits,
-    newData?.lastUpdateTime ?? oldData.lastUpdateTime,
-    newData?.isValid ?? oldData.isValid,
-  );
-
-  if (returnData.type == "text") {
+Widget widgetMap(BuildContext context, StructureComponent component) {
+  if (component.type == "text") {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -38,30 +22,12 @@ Widget widgetMap(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                returnData.description.toString(),
+                component.description.toString(),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              FutureBuilder(
-                future: Storage(returnData.tagName!).readStorage(),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    dynamic returnValue =
-                        StructureComponent.fromJson(
-                          jsonDecode(snapshot.data as String)
-                              as Map<String, dynamic>,
-                        ).value;
-
-                    if (returnData.value != null) {
-                      returnValue = returnData.value.toString();
-                    }
-
-                    return Text(
-                      "${returnValue.length <= (returnData.digits ?? 0) ? returnValue.toString() : returnValue.substring(0, returnData.digits)} ${returnData.unit.toString().replaceAll("@", "")}",
-                      style: Theme.of(context).textTheme.displayLarge,
-                    );
-                  }
-                  return const Text("No data");
-                },
+              Text(
+                "${component.value.toString().length <= (component.digits ?? 0) ? component.value.toString() : component.value.toString().substring(0, component.digits)} ${component.unit.toString().replaceAll("@", "")}",
+                style: Theme.of(context).textTheme.displayLarge,
               ),
             ],
           ),
@@ -73,15 +39,7 @@ Widget widgetMap(
                   "Poslední změna před:",
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-                FutureBuilder(
-                  future: Storage(returnData.tagName!).readStorage(),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return TimerText(text: snapshot.data as String);
-                    }
-                    return const Text("No data");
-                  },
-                ),
+                TimerText(lastUpdateTime: component.lastUpdateTime!),
               ],
             ),
           ],
@@ -91,15 +49,15 @@ Widget widgetMap(
     );
   }
 
-  if (returnData.type == "chart") {
+  if (component.type == "chart") {
     return LineChartSample11();
   }
 
-  if (returnData.type == "linear_gauge") {
+  if (component.type == "linear_gauge") {
     return LinearGauge();
   }
 
-  if (returnData.type == "radial_gauge") {
+  if (component.type == "radial_gauge") {
     return RadialGauge();
   }
 

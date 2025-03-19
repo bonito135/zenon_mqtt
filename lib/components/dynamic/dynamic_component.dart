@@ -1,15 +1,12 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
 import 'package:zenon_mqtt/classes/index.dart';
-import 'package:zenon_mqtt/classes/mqtt_connection.dart';
 import 'package:zenon_mqtt/components/Indicator/sized_process_indicator.dart';
 import 'package:zenon_mqtt/db/db.dart';
 import 'package:zenon_mqtt/db/functions/component.dart';
-import 'package:zenon_mqtt/functions/storage.dart';
 import 'package:zenon_mqtt/widget_map.dart';
 
 class DynamicComponent extends StatefulWidget {
@@ -29,7 +26,6 @@ class _DynamicComponentState extends State<DynamicComponent> {
       'Mqtt_${widget.component.tagName}',
     ),
     // .startClean(), // Non persistent session for testing,
-    Storage(widget.component.tagName!),
   );
 
   void connectionStartup() async {
@@ -58,6 +54,11 @@ class _DynamicComponentState extends State<DynamicComponent> {
     return ValueListenableBuilder(
       valueListenable: componentConnection.stateNotifier,
       builder: (context, value, child) {
+        if (value == MqttConnectionState.disconnected) {
+          return SizedProcessIndicator();
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (value == MqttConnectionState.connected) {
           componentConnection.listen();
 
@@ -71,8 +72,8 @@ class _DynamicComponentState extends State<DynamicComponent> {
                   value,
                 ),
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return widgetMap(context, widget.component, snapshot.data);
+                  if (snapshot.hasData && snapshot.data != null) {
+                    return widgetMap(context, snapshot.data!);
                   }
 
                   return SizedProcessIndicator();
@@ -81,7 +82,21 @@ class _DynamicComponentState extends State<DynamicComponent> {
             },
           );
         }
-        return SizedProcessIndicator();
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        return FutureBuilder(
+          future: readStructureComponentByTagName(
+            context.watch<AppDatabase>(),
+            widget.component.tagName,
+          ),
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.data != null) {
+              return widgetMap(context, snapshot.data!);
+            }
+
+            return SizedProcessIndicator();
+          },
+        );
       },
     );
   }

@@ -1,14 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:timer_builder/timer_builder.dart';
-import 'package:zenon_mqtt/classes/structure.dart';
 import 'package:zenon_mqtt/functions/time.dart';
 
 class TimerText extends StatefulWidget {
-  const TimerText({super.key, required this.text});
+  const TimerText({super.key, required this.lastUpdateTime});
 
-  final String text;
+  final String lastUpdateTime;
 
   @override
   State<TimerText> createState() => _TimerTextState();
@@ -24,9 +21,7 @@ class _TimerTextState extends State<TimerText> {
           style: Theme.of(context).textTheme.bodySmall,
           representTimeDifferenceInWords(
             getTimeDifferenceFromNow(
-              StructureComponent.fromJson(
-                jsonDecode(widget.text) as Map<String, dynamic>,
-              ).lastUpdateTime!.replaceAll('.', '-'),
+              widget.lastUpdateTime.replaceAll('.', '-'),
             ),
           ),
         );

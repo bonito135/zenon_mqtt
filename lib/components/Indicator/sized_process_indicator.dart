@@ -11,7 +11,7 @@ class SizedProcessIndicator extends StatelessWidget {
         children: [
           CircularProgressIndicator(
             backgroundColor: Theme.of(context).colorScheme.secondary,
-            padding: EdgeInsets.fromLTRB(0, 0, 0, 30),
+            padding: EdgeInsets.all(30),
           ),
         ],
       ),

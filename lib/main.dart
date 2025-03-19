@@ -96,13 +96,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final configStorage = Storage("configStructure");
-
   late final configConnection = MqttConnection(
     MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
     dotenv.env['MQTT_CONFIG_TOPIC']!,
     MqttConnectMessage().withClientIdentifier('Mqtt_config'),
-    configStorage,
   );
 
   int currentPageIndex = 0;
@@ -137,6 +134,25 @@ class _MyHomePageState extends State<MyHomePage> {
     return ValueListenableBuilder(
       valueListenable: configConnection.stateNotifier,
       builder: (context, value, child) {
+        if (value == MqttConnectionState.disconnected) {
+          return Scaffold(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            body: Center(
+              child: PrimaryButton(
+                onPressed: () => reconnect(),
+                child: Text(
+                  "Reconnect",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (value == MqttConnectionState.connected) {
           configConnection.listen();
           return ValueListenableBuilder(
@@ -151,7 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   value,
                 ),
                 builder: (context, snapshot) {
-                  if (snapshot.hasData) {
+                  if (snapshot.hasData && snapshot.data != null) {
                     ConfigStructure configStructure =
                         snapshot.data as ConfigStructure;
                     return Scaffold(
@@ -214,7 +230,10 @@ class _MyHomePageState extends State<MyHomePage> {
                     );
                   }
 
-                  return SizedProcessIndicator();
+                  return Scaffold(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    body: Center(child: SizedProcessIndicator()),
+                  );
                 },
               );
             },
@@ -222,28 +241,69 @@ class _MyHomePageState extends State<MyHomePage> {
         }
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (value == MqttConnectionState.disconnected) {
-          return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            body: Center(
-              child: PrimaryButton(
-                onPressed: () => reconnect(),
-                child: Text(
-                  "Reconnect",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
+        return FutureBuilder(
+          future: readConfigStructure(context.watch<AppDatabase>()),
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.data != null) {
+              ConfigStructure configStructure = snapshot.data!;
+              return Scaffold(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                appBar: AppBar(
+                  backgroundColor: Theme.of(context).colorScheme.secondary,
+                  title: Text(
+                    configStructure.structure[currentPageIndex].sectionName,
                   ),
+                  titleTextStyle: Theme.of(context).textTheme.titleLarge,
                 ),
-              ),
-            ),
-          );
-        }
+                bottomNavigationBar: SafeArea(
+                  child:
+                      configStructure.structure.length < 2
+                          ? SizedBox.shrink()
+                          : NavigationBar(
+                            labelBehavior:
+                                NavigationDestinationLabelBehavior.alwaysShow,
+                            selectedIndex: currentPageIndex,
+                            onDestinationSelected: (int index) {
+                              setState(() {
+                                if (mounted) {
+                                  currentPageIndex = index;
+                                }
+                              });
+                            },
+                            destinations: List<Widget>.generate(
+                              configStructure.structure.length,
+                              (index) => NavigationDestination(
+                                icon: Icon(Icons.explore),
+                                label:
+                                    configStructure
+                                        .structure[index]
+                                        .sectionName,
+                              ),
+                            ),
+                          ),
+                ),
+                body: SafeArea(
+                  child:
+                      configStructure.structure.isEmpty
+                          ? Center(child: Text("No configuration applied"))
+                          : DynamicPage(
+                            title: Text(
+                              configStructure
+                                  .structure[currentPageIndex]
+                                  .sectionName,
+                            ),
+                            structure:
+                                configStructure.structure[currentPageIndex],
+                          ),
+                ),
+              );
+            }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          body: Center(child: SizedProcessIndicator()),
+            return Scaffold(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              body: Center(child: SizedProcessIndicator()),
+            );
+          },
         );
       },
     );

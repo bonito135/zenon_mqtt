@@ -68,8 +68,11 @@ void writeStructureComponentByTagName(
 
 Future<StructureComponent?> readStructureComponentByTagName(
   AppDatabase database,
-  String tagName,
+  String? tagName,
 ) async {
+  if (tagName == null) {
+    return null;
+  }
   StructureComponentDBData? entry =
       await (database.select(database.structureComponentDB)
         ..where((t) => t.tagName.equals(tagName))).getSingleOrNull();
