@@ -36,7 +36,7 @@ void writeStructureComponentByTagName(
               unit: Value(widget.unit),
               digits: Value(widget.digits),
               lastUpdateTime: Value(component.lastUpdateTime),
-              isValid: Value(component.isValid),
+              valid: Value(component.valid),
             ),
           );
     } catch (e) {
@@ -56,7 +56,7 @@ void writeStructureComponentByTagName(
           unit: Value(widget.unit),
           digits: Value(widget.digits),
           lastUpdateTime: Value(component.lastUpdateTime),
-          isValid: Value(component.isValid),
+          valid: Value(component.valid),
         ),
       );
     } catch (e) {
@@ -89,7 +89,7 @@ Future<StructureComponent?> readStructureComponentByTagName(
       entry.unit,
       entry.digits,
       entry.lastUpdateTime,
-      entry.isValid,
+      entry.valid,
     );
   } catch (e) {
     log("Get entry error: $e");
@@ -128,7 +128,7 @@ Future<StructureComponent?> writeAndReturnStructureComponentByTagName(
               unit: Value(widget.unit),
               digits: Value(widget.digits),
               lastUpdateTime: Value(component.lastUpdateTime),
-              isValid: Value(component.isValid),
+              valid: Value(component.valid),
             ),
           );
     } catch (e) {
@@ -148,7 +148,7 @@ Future<StructureComponent?> writeAndReturnStructureComponentByTagName(
           unit: Value(widget.unit),
           digits: Value(widget.digits),
           lastUpdateTime: Value(component.lastUpdateTime),
-          isValid: Value(component.isValid),
+          valid: Value(component.valid),
         ),
       );
     } catch (e) {
@@ -174,7 +174,7 @@ Future<StructureComponent?> writeAndReturnStructureComponentByTagName(
       updatedEntry.unit,
       updatedEntry.digits,
       updatedEntry.lastUpdateTime,
-      updatedEntry.isValid,
+      updatedEntry.valid,
     );
   } catch (e) {
     log("Get updated entry error: $e");

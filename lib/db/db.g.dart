@@ -352,11 +352,9 @@ class $StructureComponentDBTable extends StructureComponentDB
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _isValidMeta = const VerificationMeta(
-    'isValid',
-  );
+  static const VerificationMeta _validMeta = const VerificationMeta('valid');
   @override
-  late final GeneratedColumn<bool> isValid = GeneratedColumn<bool>(
+  late final GeneratedColumn<bool> valid = GeneratedColumn<bool>(
     'is_valid',
     aliasedName,
     true,
@@ -376,7 +374,7 @@ class $StructureComponentDBTable extends StructureComponentDB
     unit,
     digits,
     lastUpdateTime,
-    isValid,
+    valid,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -443,8 +441,8 @@ class $StructureComponentDBTable extends StructureComponentDB
     }
     if (data.containsKey('is_valid')) {
       context.handle(
-        _isValidMeta,
-        isValid.isAcceptableOrUnknown(data['is_valid']!, _isValidMeta),
+        _validMeta,
+        valid.isAcceptableOrUnknown(data['is_valid']!, _validMeta),
       );
     }
     return context;
@@ -492,7 +490,7 @@ class $StructureComponentDBTable extends StructureComponentDB
         DriftSqlType.string,
         data['${effectivePrefix}last_update_time'],
       ),
-      isValid: attachedDatabase.typeMapping.read(
+      valid: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
         data['${effectivePrefix}is_valid'],
       ),
@@ -515,7 +513,7 @@ class StructureComponentDBData extends DataClass
   final String? unit;
   final int? digits;
   final String? lastUpdateTime;
-  final bool? isValid;
+  final bool? valid;
   const StructureComponentDBData({
     required this.id,
     this.type,
@@ -525,7 +523,7 @@ class StructureComponentDBData extends DataClass
     this.unit,
     this.digits,
     this.lastUpdateTime,
-    this.isValid,
+    this.valid,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -552,8 +550,8 @@ class StructureComponentDBData extends DataClass
     if (!nullToAbsent || lastUpdateTime != null) {
       map['last_update_time'] = Variable<String>(lastUpdateTime);
     }
-    if (!nullToAbsent || isValid != null) {
-      map['is_valid'] = Variable<bool>(isValid);
+    if (!nullToAbsent || valid != null) {
+      map['is_valid'] = Variable<bool>(valid);
     }
     return map;
   }
@@ -579,10 +577,8 @@ class StructureComponentDBData extends DataClass
           lastUpdateTime == null && nullToAbsent
               ? const Value.absent()
               : Value(lastUpdateTime),
-      isValid:
-          isValid == null && nullToAbsent
-              ? const Value.absent()
-              : Value(isValid),
+      valid:
+          valid == null && nullToAbsent ? const Value.absent() : Value(valid),
     );
   }
 
@@ -600,7 +596,7 @@ class StructureComponentDBData extends DataClass
       unit: serializer.fromJson<String?>(json['unit']),
       digits: serializer.fromJson<int?>(json['digits']),
       lastUpdateTime: serializer.fromJson<String?>(json['lastUpdateTime']),
-      isValid: serializer.fromJson<bool?>(json['isValid']),
+      valid: serializer.fromJson<bool?>(json['valid']),
     );
   }
   @override
@@ -615,7 +611,7 @@ class StructureComponentDBData extends DataClass
       'unit': serializer.toJson<String?>(unit),
       'digits': serializer.toJson<int?>(digits),
       'lastUpdateTime': serializer.toJson<String?>(lastUpdateTime),
-      'isValid': serializer.toJson<bool?>(isValid),
+      'valid': serializer.toJson<bool?>(valid),
     };
   }
 
@@ -628,7 +624,7 @@ class StructureComponentDBData extends DataClass
     Value<String?> unit = const Value.absent(),
     Value<int?> digits = const Value.absent(),
     Value<String?> lastUpdateTime = const Value.absent(),
-    Value<bool?> isValid = const Value.absent(),
+    Value<bool?> valid = const Value.absent(),
   }) => StructureComponentDBData(
     id: id ?? this.id,
     type: type.present ? type.value : this.type,
@@ -639,7 +635,7 @@ class StructureComponentDBData extends DataClass
     digits: digits.present ? digits.value : this.digits,
     lastUpdateTime:
         lastUpdateTime.present ? lastUpdateTime.value : this.lastUpdateTime,
-    isValid: isValid.present ? isValid.value : this.isValid,
+    valid: valid.present ? valid.value : this.valid,
   );
   StructureComponentDBData copyWithCompanion(
     StructureComponentDBCompanion data,
@@ -657,7 +653,7 @@ class StructureComponentDBData extends DataClass
           data.lastUpdateTime.present
               ? data.lastUpdateTime.value
               : this.lastUpdateTime,
-      isValid: data.isValid.present ? data.isValid.value : this.isValid,
+      valid: data.valid.present ? data.valid.value : this.valid,
     );
   }
 
@@ -672,7 +668,7 @@ class StructureComponentDBData extends DataClass
           ..write('unit: $unit, ')
           ..write('digits: $digits, ')
           ..write('lastUpdateTime: $lastUpdateTime, ')
-          ..write('isValid: $isValid')
+          ..write('valid: $valid')
           ..write(')'))
         .toString();
   }
@@ -687,7 +683,7 @@ class StructureComponentDBData extends DataClass
     unit,
     digits,
     lastUpdateTime,
-    isValid,
+    valid,
   );
   @override
   bool operator ==(Object other) =>
@@ -701,7 +697,7 @@ class StructureComponentDBData extends DataClass
           other.unit == this.unit &&
           other.digits == this.digits &&
           other.lastUpdateTime == this.lastUpdateTime &&
-          other.isValid == this.isValid);
+          other.valid == this.valid);
 }
 
 class StructureComponentDBCompanion
@@ -714,7 +710,7 @@ class StructureComponentDBCompanion
   final Value<String?> unit;
   final Value<int?> digits;
   final Value<String?> lastUpdateTime;
-  final Value<bool?> isValid;
+  final Value<bool?> valid;
   const StructureComponentDBCompanion({
     this.id = const Value.absent(),
     this.type = const Value.absent(),
@@ -724,7 +720,7 @@ class StructureComponentDBCompanion
     this.unit = const Value.absent(),
     this.digits = const Value.absent(),
     this.lastUpdateTime = const Value.absent(),
-    this.isValid = const Value.absent(),
+    this.valid = const Value.absent(),
   });
   StructureComponentDBCompanion.insert({
     this.id = const Value.absent(),
@@ -735,7 +731,7 @@ class StructureComponentDBCompanion
     this.unit = const Value.absent(),
     this.digits = const Value.absent(),
     this.lastUpdateTime = const Value.absent(),
-    this.isValid = const Value.absent(),
+    this.valid = const Value.absent(),
   });
   static Insertable<StructureComponentDBData> custom({
     Expression<int>? id,
@@ -746,7 +742,7 @@ class StructureComponentDBCompanion
     Expression<String>? unit,
     Expression<int>? digits,
     Expression<String>? lastUpdateTime,
-    Expression<bool>? isValid,
+    Expression<bool>? valid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -757,7 +753,7 @@ class StructureComponentDBCompanion
       if (unit != null) 'unit': unit,
       if (digits != null) 'digits': digits,
       if (lastUpdateTime != null) 'last_update_time': lastUpdateTime,
-      if (isValid != null) 'is_valid': isValid,
+      if (valid != null) 'is_valid': valid,
     });
   }
 
@@ -770,7 +766,7 @@ class StructureComponentDBCompanion
     Value<String?>? unit,
     Value<int?>? digits,
     Value<String?>? lastUpdateTime,
-    Value<bool?>? isValid,
+    Value<bool?>? valid,
   }) {
     return StructureComponentDBCompanion(
       id: id ?? this.id,
@@ -781,7 +777,7 @@ class StructureComponentDBCompanion
       unit: unit ?? this.unit,
       digits: digits ?? this.digits,
       lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
-      isValid: isValid ?? this.isValid,
+      valid: valid ?? this.valid,
     );
   }
 
@@ -812,8 +808,8 @@ class StructureComponentDBCompanion
     if (lastUpdateTime.present) {
       map['last_update_time'] = Variable<String>(lastUpdateTime.value);
     }
-    if (isValid.present) {
-      map['is_valid'] = Variable<bool>(isValid.value);
+    if (valid.present) {
+      map['is_valid'] = Variable<bool>(valid.value);
     }
     return map;
   }
@@ -829,7 +825,7 @@ class StructureComponentDBCompanion
           ..write('unit: $unit, ')
           ..write('digits: $digits, ')
           ..write('lastUpdateTime: $lastUpdateTime, ')
-          ..write('isValid: $isValid')
+          ..write('valid: $valid')
           ..write(')'))
         .toString();
   }
@@ -1046,7 +1042,7 @@ typedef $$StructureComponentDBTableCreateCompanionBuilder =
       Value<String?> unit,
       Value<int?> digits,
       Value<String?> lastUpdateTime,
-      Value<bool?> isValid,
+      Value<bool?> valid,
     });
 typedef $$StructureComponentDBTableUpdateCompanionBuilder =
     StructureComponentDBCompanion Function({
@@ -1058,7 +1054,7 @@ typedef $$StructureComponentDBTableUpdateCompanionBuilder =
       Value<String?> unit,
       Value<int?> digits,
       Value<String?> lastUpdateTime,
-      Value<bool?> isValid,
+      Value<bool?> valid,
     });
 
 class $$StructureComponentDBTableFilterComposer
@@ -1110,8 +1106,8 @@ class $$StructureComponentDBTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<bool> get isValid => $composableBuilder(
-    column: $table.isValid,
+  ColumnFilters<bool> get valid => $composableBuilder(
+    column: $table.valid,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1165,8 +1161,8 @@ class $$StructureComponentDBTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<bool> get isValid => $composableBuilder(
-    column: $table.isValid,
+  ColumnOrderings<bool> get valid => $composableBuilder(
+    column: $table.valid,
     builder: (column) => ColumnOrderings(column),
   );
 }
@@ -1208,8 +1204,8 @@ class $$StructureComponentDBTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<bool> get isValid =>
-      $composableBuilder(column: $table.isValid, builder: (column) => column);
+  GeneratedColumn<bool> get valid =>
+      $composableBuilder(column: $table.valid, builder: (column) => column);
 }
 
 class $$StructureComponentDBTableTableManager
@@ -1266,7 +1262,7 @@ class $$StructureComponentDBTableTableManager
                 Value<String?> unit = const Value.absent(),
                 Value<int?> digits = const Value.absent(),
                 Value<String?> lastUpdateTime = const Value.absent(),
-                Value<bool?> isValid = const Value.absent(),
+                Value<bool?> valid = const Value.absent(),
               }) => StructureComponentDBCompanion(
                 id: id,
                 type: type,
@@ -1276,7 +1272,7 @@ class $$StructureComponentDBTableTableManager
                 unit: unit,
                 digits: digits,
                 lastUpdateTime: lastUpdateTime,
-                isValid: isValid,
+                valid: valid,
               ),
           createCompanionCallback:
               ({
@@ -1288,7 +1284,7 @@ class $$StructureComponentDBTableTableManager
                 Value<String?> unit = const Value.absent(),
                 Value<int?> digits = const Value.absent(),
                 Value<String?> lastUpdateTime = const Value.absent(),
-                Value<bool?> isValid = const Value.absent(),
+                Value<bool?> valid = const Value.absent(),
               }) => StructureComponentDBCompanion.insert(
                 id: id,
                 type: type,
@@ -1298,7 +1294,7 @@ class $$StructureComponentDBTableTableManager
                 unit: unit,
                 digits: digits,
                 lastUpdateTime: lastUpdateTime,
-                isValid: isValid,
+                valid: valid,
               ),
           withReferenceMapper:
               (p0) =>

@@ -33,7 +33,7 @@ class StructureComponent {
   String? unit;
   int? digits;
   String? lastUpdateTime;
-  bool? isValid;
+  bool? valid;
 
   StructureComponent(
     this.type,
@@ -43,7 +43,7 @@ class StructureComponent {
     this.unit,
     this.digits,
     this.lastUpdateTime,
-    this.isValid,
+    this.valid,
   );
 
   factory StructureComponent.fromJson(Map<String, dynamic> json) {
@@ -55,7 +55,7 @@ class StructureComponent {
       json["unit"],
       json["digits"],
       json["lastUpdateTime"],
-      json["isValid"],
+      json["valid"],
     );
   }
 }

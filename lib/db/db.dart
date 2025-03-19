@@ -20,7 +20,7 @@ class StructureComponentDB extends Table {
   TextColumn get unit => text().nullable()();
   IntColumn get digits => integer().nullable()();
   TextColumn get lastUpdateTime => text().nullable()();
-  BoolColumn get isValid => boolean().nullable()();
+  BoolColumn get valid => boolean().nullable()();
 }
 
 @DriftDatabase(tables: [ConfigStructureDB, StructureComponentDB])
