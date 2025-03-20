@@ -12,7 +12,6 @@ import 'package:zenon_mqtt/components/page/dynamic_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:zenon_mqtt/db/db.dart';
 import 'package:zenon_mqtt/db/functions/index.dart';
-import 'dart:developer';
 
 // bool _hasInitializedSqlite = false;
 
@@ -129,174 +128,86 @@ class _MyHomePageState extends State<MyHomePage> {
     return ValueListenableBuilder(
       valueListenable: configConnection.stateNotifier,
       builder: (context, value, child) {
-        if (value == MqttConnectionState.disconnected) {
-          return Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            body: Center(
-              child: PrimaryButton(
-                onPressed: () => reconnect(),
-                child: Text(
-                  "Reconnect",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }
+        final connectionState = value;
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (value == MqttConnectionState.connected) {
           configConnection.listen();
-          return ValueListenableBuilder(
-            valueListenable: configConnection.messageNotifier,
-            builder: (context, value, child) {
-              if (value == null) {
-                return SizedProcessIndicator();
-              }
-              return FutureBuilder(
-                future: writeAndReturnConfigStructure(
-                  context.watch<AppDatabase>(),
-                  value,
-                ),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData && snapshot.data != null) {
-                    ConfigStructure configStructure =
-                        snapshot.data as ConfigStructure;
-                    return Scaffold(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      appBar: AppBar(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.secondary,
-                        title: Text(
-                          configStructure
-                              .structure[currentPageIndex]
-                              .sectionName,
-                        ),
-                        titleTextStyle: Theme.of(context).textTheme.titleLarge,
-                      ),
-                      bottomNavigationBar: SafeArea(
-                        child:
-                            configStructure.structure.length < 2
-                                ? SizedBox.shrink()
-                                : NavigationBar(
-                                  labelBehavior:
-                                      NavigationDestinationLabelBehavior
-                                          .alwaysShow,
-                                  selectedIndex: currentPageIndex,
-                                  onDestinationSelected: (int index) {
-                                    setState(() {
-                                      if (mounted) {
-                                        currentPageIndex = index;
-                                      }
-                                    });
-                                  },
-                                  destinations: List<Widget>.generate(
-                                    configStructure.structure.length,
-                                    (index) => NavigationDestination(
-                                      icon: Icon(Icons.explore),
-                                      label:
-                                          configStructure
-                                              .structure[index]
-                                              .sectionName,
-                                    ),
-                                  ),
-                                ),
-                      ),
-                      body: SafeArea(
-                        child:
-                            configStructure.structure.isEmpty
-                                ? Center(
-                                  child: Text("No configuration applied"),
-                                )
-                                : DynamicPage(
-                                  title: Text(
-                                    configStructure
-                                        .structure[currentPageIndex]
-                                        .sectionName,
-                                  ),
-                                  structure:
-                                      configStructure
-                                          .structure[currentPageIndex],
-                                ),
-                      ),
-                    );
-                  }
-
+        }
+        return ValueListenableBuilder(
+          valueListenable: configConnection.messageNotifier,
+          builder: (context, value, child) {
+            return FutureBuilder(
+              future:
+                  connectionState == MqttConnectionState.connected
+                      ? writeAndReturnConfigStructure(
+                        context.watch<AppDatabase>(),
+                        value,
+                      )
+                      : readConfigStructure(context.watch<AppDatabase>()),
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data != null) {
+                  ConfigStructure configStructure =
+                      snapshot.data as ConfigStructure;
                   return Scaffold(
                     backgroundColor: Theme.of(context).colorScheme.primary,
-                    body: Center(child: SizedProcessIndicator()),
-                  );
-                },
-              );
-            },
-          );
-        }
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        return FutureBuilder(
-          future: readConfigStructure(context.watch<AppDatabase>()),
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data != null) {
-              ConfigStructure configStructure = snapshot.data!;
-              return Scaffold(
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                appBar: AppBar(
-                  backgroundColor: Theme.of(context).colorScheme.secondary,
-                  title: Text(
-                    configStructure.structure[currentPageIndex].sectionName,
-                  ),
-                  titleTextStyle: Theme.of(context).textTheme.titleLarge,
-                ),
-                bottomNavigationBar: SafeArea(
-                  child:
-                      configStructure.structure.length < 2
-                          ? SizedBox.shrink()
-                          : NavigationBar(
-                            labelBehavior:
-                                NavigationDestinationLabelBehavior.alwaysShow,
-                            selectedIndex: currentPageIndex,
-                            onDestinationSelected: (int index) {
-                              setState(() {
-                                if (mounted) {
-                                  currentPageIndex = index;
-                                }
-                              });
-                            },
-                            destinations: List<Widget>.generate(
-                              configStructure.structure.length,
-                              (index) => NavigationDestination(
-                                icon: Icon(Icons.explore),
-                                label:
-                                    configStructure
-                                        .structure[index]
-                                        .sectionName,
+                    appBar: AppBar(
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                      title: Text(
+                        configStructure.structure[currentPageIndex].sectionName,
+                      ),
+                      titleTextStyle: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    bottomNavigationBar: SafeArea(
+                      child:
+                          configStructure.structure.length < 2
+                              ? SizedBox.shrink()
+                              : NavigationBar(
+                                labelBehavior:
+                                    NavigationDestinationLabelBehavior
+                                        .alwaysShow,
+                                selectedIndex: currentPageIndex,
+                                onDestinationSelected: (int index) {
+                                  setState(() {
+                                    if (mounted) {
+                                      currentPageIndex = index;
+                                    }
+                                  });
+                                },
+                                destinations: List<Widget>.generate(
+                                  configStructure.structure.length,
+                                  (index) => NavigationDestination(
+                                    icon: Icon(Icons.explore),
+                                    label:
+                                        configStructure
+                                            .structure[index]
+                                            .sectionName,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                ),
-                body: SafeArea(
-                  child:
-                      configStructure.structure.isEmpty
-                          ? Center(child: Text("No configuration applied"))
-                          : DynamicPage(
-                            title: Text(
-                              configStructure
-                                  .structure[currentPageIndex]
-                                  .sectionName,
-                            ),
-                            structure:
-                                configStructure.structure[currentPageIndex],
-                          ),
-                ),
-              );
-            }
+                    ),
+                    body: SafeArea(
+                      child:
+                          configStructure.structure.isEmpty
+                              ? Center(child: Text("No configuration applied"))
+                              : DynamicPage(
+                                title: Text(
+                                  configStructure
+                                      .structure[currentPageIndex]
+                                      .sectionName,
+                                ),
+                                structure:
+                                    configStructure.structure[currentPageIndex],
+                              ),
+                    ),
+                  );
+                }
 
-            return Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              body: Center(child: SizedProcessIndicator()),
+                return Scaffold(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                  body: Center(child: SizedProcessIndicator()),
+                );
+              },
             );
           },
         );

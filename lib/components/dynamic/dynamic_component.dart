@@ -4,7 +4,6 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
 import 'package:zenon_mqtt/classes/index.dart';
-import 'package:zenon_mqtt/components/Indicator/sized_process_indicator.dart';
 import 'package:zenon_mqtt/db/db.dart';
 import 'package:zenon_mqtt/db/functions/component.dart';
 import 'package:zenon_mqtt/widget_map.dart';
@@ -53,46 +52,33 @@ class _DynamicComponentState extends State<DynamicComponent> {
       valueListenable: componentConnection.stateNotifier,
       builder: (context, value, child) {
         MqttConnectionState connectionState = value;
-        if (value == MqttConnectionState.disconnected) {
-          return SizedProcessIndicator();
-        }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (value == MqttConnectionState.connected) {
           componentConnection.listen();
-          return ValueListenableBuilder(
-            valueListenable: componentConnection.messageNotifier,
-            builder: (context, value, child) {
-              return FutureBuilder(
-                future: writeAndReturnStructureComponentByTagName(
-                  context.watch<AppDatabase>(),
-                  widget.component,
-                  value,
-                ),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData && snapshot.data != null) {
-                    return widgetMap(context, snapshot.data!, connectionState);
-                  }
-
-                  return widgetMap(context, widget.component, connectionState);
-                },
-              );
-            },
-          );
         }
+        return ValueListenableBuilder(
+          valueListenable: componentConnection.messageNotifier,
+          builder: (context, value, child) {
+            return FutureBuilder(
+              future:
+                  connectionState == MqttConnectionState.connected
+                      ? writeAndReturnStructureComponentByTagName(
+                        context.watch<AppDatabase>(),
+                        widget.component,
+                        value,
+                      )
+                      : readStructureComponentByTagName(
+                        context.watch<AppDatabase>(),
+                        widget.component.tagName,
+                      ),
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data != null) {
+                  return widgetMap(context, snapshot.data!, connectionState);
+                }
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        return FutureBuilder(
-          future: readStructureComponentByTagName(
-            context.watch<AppDatabase>(),
-            widget.component.tagName,
-          ),
-          builder: (context, snapshot) {
-            if (snapshot.hasData && snapshot.data != null) {
-              return widgetMap(context, snapshot.data!, connectionState);
-            }
-
-            return SizedProcessIndicator();
+                return widgetMap(context, widget.component, connectionState);
+              },
+            );
           },
         );
       },
