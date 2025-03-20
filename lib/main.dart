@@ -7,27 +7,11 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
 import 'package:zenon_mqtt/classes/index.dart';
 import 'package:zenon_mqtt/components/Indicator/sized_process_indicator.dart';
-import 'package:zenon_mqtt/components/button/primary_button.dart';
 import 'package:zenon_mqtt/components/page/dynamic_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:zenon_mqtt/db/db.dart';
 import 'package:zenon_mqtt/db/functions/index.dart';
 
-// bool _hasInitializedSqlite = false;
-
-// // Do this once, before opening a database
-// // see https://github.com/simolus3/moor/issues/876
-// Future<void> _ensureSqlite3Initialized() async {
-//   if(_hasInitializedSqlite){
-//     return;
-//   }
-//   //TODO prevent duplicate execution using synchronized?
-//   if (Platform.isAndroid) {
-//     final cachebase =  (await getTemporaryDirectory()).path;
-//     sqlite3.tempDirectory = cachebase;
-//   }
-//   _hasInitializedSqlite = true;
-// }
 void main() async {
   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
@@ -130,7 +114,6 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context, value, child) {
         final connectionState = value;
 
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         if (value == MqttConnectionState.connected) {
           configConnection.listen();
         }

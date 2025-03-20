@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:zenon_mqtt/classes/index.dart';
-import 'package:zenon_mqtt/components/chart/bar_chart_sample.dart';
 import 'package:zenon_mqtt/components/custom/custom_rectangle_clipper.dart';
-import 'package:zenon_mqtt/components/gauge/linear_gauge.dart';
-import 'package:zenon_mqtt/components/gauge/radial_gauge.dart';
 import 'package:zenon_mqtt/components/text/timer_text.dart';
 
 Widget widgetMap(
@@ -18,14 +15,17 @@ Widget widgetMap(
       children: [
         const Divider(height: 0),
         if (connectionState == MqttConnectionState.disconnected)
-          LinearProgressIndicator(color: Colors.red),
+          const LinearProgressIndicator(color: Colors.red),
         if (connectionState == MqttConnectionState.connecting)
-          LinearProgressIndicator(),
+          const LinearProgressIndicator(),
         ExpansionTile(
           shape: LinearBorder.none,
           collapsedShape: LinearBorder.none,
-          tilePadding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
-          childrenPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          tilePadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+          childrenPadding: const EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 5,
+          ),
           iconColor: Colors.white,
           collapsedIconColor: Colors.white,
           title: Row(
@@ -51,7 +51,7 @@ Widget widgetMap(
                           child: SizedBox.square(
                             dimension: 10,
                             child: Container(
-                              color: const Color.fromARGB(202, 244, 67, 54),
+                              color: Color.fromARGB(202, 244, 67, 54),
                             ),
                           ),
                         ),
@@ -76,18 +76,6 @@ Widget widgetMap(
         const Divider(),
       ],
     );
-  }
-
-  if (component.type == "chart") {
-    return LineChartSample11();
-  }
-
-  if (component.type == "linear_gauge") {
-    return LinearGauge();
-  }
-
-  if (component.type == "radial_gauge") {
-    return RadialGauge();
   }
 
   return Text("Unknown type");
