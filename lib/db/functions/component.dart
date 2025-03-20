@@ -15,7 +15,7 @@ void writeStructureComponentByTagName(
   }
 
   StructureComponent component = StructureComponent.fromJson(
-    jsonDecode(content),
+    jsonDecode(content) as Map<String, dynamic>,
   );
 
   StructureComponentDBData? entry =
@@ -107,7 +107,7 @@ Future<StructureComponent?> writeAndReturnStructureComponentByTagName(
   }
 
   StructureComponent component = StructureComponent.fromJson(
-    jsonDecode(content),
+    jsonDecode(content) as Map<String, dynamic>,
   );
 
   StructureComponentDBData? entry =

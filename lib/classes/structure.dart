@@ -5,7 +5,7 @@ class ConfigStructure {
 
   factory ConfigStructure.fromJson(List<dynamic> json) => ConfigStructure(
     List<ConfigStructureItem>.from(
-      json.map((x) => ConfigStructureItem.fromJson(x)),
+      json.map((x) => ConfigStructureItem.fromJson(x as Map<String, dynamic>)),
     ),
   );
 }
@@ -20,7 +20,9 @@ class ConfigStructureItem {
       ConfigStructureItem(
         json["sectionName"].toString(),
         List<StructureComponent>.from(
-          json["elements"].map((x) => StructureComponent.fromJson(x)),
+          (json["elements"] as List).map(
+            (x) => StructureComponent.fromJson(x as Map<String, dynamic>),
+          ),
         ),
       );
 }
@@ -48,14 +50,14 @@ class StructureComponent {
 
   factory StructureComponent.fromJson(Map<String, dynamic> json) {
     return StructureComponent(
-      json['type'],
-      json["tagName"],
+      json['type'] as String?,
+      json["tagName"] as String?,
       json["value"]?.toString(),
-      json["description"],
-      json["unit"],
-      json["digits"],
-      json["lastUpdateTime"],
-      json["valid"],
+      json["description"] as String?,
+      json["unit"] as String?,
+      json["digits"] as int?,
+      json["lastUpdateTime"] as String?,
+      json["valid"] as bool?,
     );
   }
 }

@@ -16,7 +16,9 @@ Future<ConfigStructure?> readConfigStructure(AppDatabase database) async {
       database.configStructureDB,
     )).get().then((value) => value.last);
 
-    return ConfigStructure.fromJson(jsonDecode(config.content));
+    return ConfigStructure.fromJson(
+      jsonDecode(config.content) as List<dynamic>,
+    );
   } catch (e) {
     log("Config read error: $e");
     return null;
@@ -41,7 +43,6 @@ Future<ConfigStructure?> writeAndReturnConfigStructure(
   }
 
   try {
-    print("Database $database");
     await database
         .into(database.configStructureDB)
         .insert(ConfigStructureDBCompanion.insert(content: content));
