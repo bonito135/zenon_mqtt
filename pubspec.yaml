@@ -37,7 +37,6 @@ dependencies:
   cupertino_icons: ^1.0.8
   mqtt_client: ^10.8.0
   flutter_dotenv: ^5.2.1
-  flutter_secure_storage: ^9.2.4
   jiffy: ^6.3.2
   timer_builder: ^2.0.0
   flutter_launcher_icons: ^0.14.3
