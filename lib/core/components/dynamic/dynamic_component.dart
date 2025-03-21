@@ -4,9 +4,9 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
 import 'package:zenon_mqtt/classes/index.dart';
-import 'package:zenon_mqtt/db/db.dart';
 import 'package:zenon_mqtt/db/functions/component.dart';
-import 'package:zenon_mqtt/widget_map.dart';
+import 'package:zenon_mqtt/features/zenon/domain/_index.dart';
+import 'package:zenon_mqtt/core/widget_map.dart';
 
 class DynamicComponent extends StatefulWidget {
   const DynamicComponent({super.key, required this.component});
@@ -20,7 +20,7 @@ class DynamicComponent extends StatefulWidget {
 class _DynamicComponentState extends State<DynamicComponent> {
   late final componentConnection = MqttConnection(
     MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
-    widget.component.tagName!,
+    widget.component.tagName,
     MqttConnectMessage()
         .withClientIdentifier('Mqtt_${widget.component.tagName}')
         .startClean(),
@@ -62,7 +62,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
             return FutureBuilder(
               future:
                   connectionState == MqttConnectionState.connected
-                      ? writeAndReturnStructureComponentByTagName(
+                      ? writeAndReturnStructureComponentFromZenonValueUpdate(
                         context.watch<AppDatabase>(),
                         widget.component,
                         value,

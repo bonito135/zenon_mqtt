@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:timer_builder/timer_builder.dart';
-import 'package:zenon_mqtt/functions/time.dart';
+import 'package:zenon_mqtt/core/functions/time.dart';
 
 class TimerText extends StatefulWidget {
   const TimerText({super.key, required this.lastUpdateTime});

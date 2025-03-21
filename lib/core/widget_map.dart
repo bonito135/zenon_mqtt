@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
-import 'package:zenon_mqtt/classes/index.dart';
-import 'package:zenon_mqtt/components/custom/custom_rectangle_clipper.dart';
-import 'package:zenon_mqtt/components/text/timer_text.dart';
+import 'package:zenon_mqtt/core/components/custom/custom_rectangle_clipper.dart';
+import 'package:zenon_mqtt/core/components/text/timer_text.dart';
+import 'package:zenon_mqtt/features/zenon/domain/_index.dart';
 
 Widget widgetMap(
   BuildContext context,
@@ -38,7 +38,7 @@ Widget widgetMap(
               Stack(
                 children: [
                   Text(
-                    "${component.value.toString().length <= (component.digits ?? 0) ? component.value.toString() : component.value.toString().substring(0, component.digits)} ${component.unit.toString().replaceAll("@", "")}",
+                    "${component.value.toString().length <= (component.digits) ? component.value.toString() : component.value.toString().substring(0, component.digits)} ${component.unit.toString().replaceAll("@", "")}",
                     style: Theme.of(context).textTheme.displayLarge,
                   ),
                   component.valid == true

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'db.dart';
+part of 'database.dart';
 
 // ignore_for_file: type=lint
 class $ConfigStructureDBTable extends ConfigStructureDB
@@ -288,9 +288,9 @@ class $StructureComponentDBTable extends StructureComponentDB
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
     'type',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _tagNameMeta = const VerificationMeta(
     'tagName',
@@ -299,18 +299,9 @@ class $StructureComponentDBTable extends StructureComponentDB
   late final GeneratedColumn<String> tagName = GeneratedColumn<String>(
     'tag_name',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _valueMeta = const VerificationMeta('value');
-  @override
-  late final GeneratedColumn<String> value = GeneratedColumn<String>(
-    'value',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _descriptionMeta = const VerificationMeta(
     'description',
@@ -319,26 +310,35 @@ class $StructureComponentDBTable extends StructureComponentDB
   late final GeneratedColumn<String> description = GeneratedColumn<String>(
     'description',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _unitMeta = const VerificationMeta('unit');
   @override
   late final GeneratedColumn<String> unit = GeneratedColumn<String>(
     'unit',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.string,
-    requiredDuringInsert: false,
+    requiredDuringInsert: true,
   );
   static const VerificationMeta _digitsMeta = const VerificationMeta('digits');
   @override
   late final GeneratedColumn<int> digits = GeneratedColumn<int>(
     'digits',
     aliasedName,
-    true,
+    false,
     type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<String> value = GeneratedColumn<String>(
+    'value',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
   static const VerificationMeta _lastUpdateTimeMeta = const VerificationMeta(
@@ -355,13 +355,13 @@ class $StructureComponentDBTable extends StructureComponentDB
   static const VerificationMeta _validMeta = const VerificationMeta('valid');
   @override
   late final GeneratedColumn<bool> valid = GeneratedColumn<bool>(
-    'is_valid',
+    'valid',
     aliasedName,
     true,
     type: DriftSqlType.bool,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'CHECK ("is_valid" IN (0, 1))',
+      'CHECK ("valid" IN (0, 1))',
     ),
   );
   @override
@@ -369,10 +369,10 @@ class $StructureComponentDBTable extends StructureComponentDB
     id,
     type,
     tagName,
-    value,
     description,
     unit,
     digits,
+    value,
     lastUpdateTime,
     valid,
   ];
@@ -396,18 +396,16 @@ class $StructureComponentDBTable extends StructureComponentDB
         _typeMeta,
         type.isAcceptableOrUnknown(data['type']!, _typeMeta),
       );
+    } else if (isInserting) {
+      context.missing(_typeMeta);
     }
     if (data.containsKey('tag_name')) {
       context.handle(
         _tagNameMeta,
         tagName.isAcceptableOrUnknown(data['tag_name']!, _tagNameMeta),
       );
-    }
-    if (data.containsKey('value')) {
-      context.handle(
-        _valueMeta,
-        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
-      );
+    } else if (isInserting) {
+      context.missing(_tagNameMeta);
     }
     if (data.containsKey('description')) {
       context.handle(
@@ -417,17 +415,29 @@ class $StructureComponentDBTable extends StructureComponentDB
           _descriptionMeta,
         ),
       );
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
     }
     if (data.containsKey('unit')) {
       context.handle(
         _unitMeta,
         unit.isAcceptableOrUnknown(data['unit']!, _unitMeta),
       );
+    } else if (isInserting) {
+      context.missing(_unitMeta);
     }
     if (data.containsKey('digits')) {
       context.handle(
         _digitsMeta,
         digits.isAcceptableOrUnknown(data['digits']!, _digitsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_digitsMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
       );
     }
     if (data.containsKey('last_update_time')) {
@@ -439,10 +449,10 @@ class $StructureComponentDBTable extends StructureComponentDB
         ),
       );
     }
-    if (data.containsKey('is_valid')) {
+    if (data.containsKey('valid')) {
       context.handle(
         _validMeta,
-        valid.isAcceptableOrUnknown(data['is_valid']!, _validMeta),
+        valid.isAcceptableOrUnknown(data['valid']!, _validMeta),
       );
     }
     return context;
@@ -462,29 +472,34 @@ class $StructureComponentDBTable extends StructureComponentDB
             DriftSqlType.int,
             data['${effectivePrefix}id'],
           )!,
-      type: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}type'],
-      ),
-      tagName: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}tag_name'],
-      ),
+      type:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}type'],
+          )!,
+      tagName:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}tag_name'],
+          )!,
+      description:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}description'],
+          )!,
+      unit:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.string,
+            data['${effectivePrefix}unit'],
+          )!,
+      digits:
+          attachedDatabase.typeMapping.read(
+            DriftSqlType.int,
+            data['${effectivePrefix}digits'],
+          )!,
       value: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}value'],
-      ),
-      description: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}description'],
-      ),
-      unit: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}unit'],
-      ),
-      digits: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}digits'],
       ),
       lastUpdateTime: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
@@ -492,7 +507,7 @@ class $StructureComponentDBTable extends StructureComponentDB
       ),
       valid: attachedDatabase.typeMapping.read(
         DriftSqlType.bool,
-        data['${effectivePrefix}is_valid'],
+        data['${effectivePrefix}valid'],
       ),
     );
   }
@@ -506,22 +521,22 @@ class $StructureComponentDBTable extends StructureComponentDB
 class StructureComponentDBData extends DataClass
     implements Insertable<StructureComponentDBData> {
   final int id;
-  final String? type;
-  final String? tagName;
+  final String type;
+  final String tagName;
+  final String description;
+  final String unit;
+  final int digits;
   final String? value;
-  final String? description;
-  final String? unit;
-  final int? digits;
   final String? lastUpdateTime;
   final bool? valid;
   const StructureComponentDBData({
     required this.id,
-    this.type,
-    this.tagName,
+    required this.type,
+    required this.tagName,
+    required this.description,
+    required this.unit,
+    required this.digits,
     this.value,
-    this.description,
-    this.unit,
-    this.digits,
     this.lastUpdateTime,
     this.valid,
   });
@@ -529,29 +544,19 @@ class StructureComponentDBData extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    if (!nullToAbsent || type != null) {
-      map['type'] = Variable<String>(type);
-    }
-    if (!nullToAbsent || tagName != null) {
-      map['tag_name'] = Variable<String>(tagName);
-    }
+    map['type'] = Variable<String>(type);
+    map['tag_name'] = Variable<String>(tagName);
+    map['description'] = Variable<String>(description);
+    map['unit'] = Variable<String>(unit);
+    map['digits'] = Variable<int>(digits);
     if (!nullToAbsent || value != null) {
       map['value'] = Variable<String>(value);
-    }
-    if (!nullToAbsent || description != null) {
-      map['description'] = Variable<String>(description);
-    }
-    if (!nullToAbsent || unit != null) {
-      map['unit'] = Variable<String>(unit);
-    }
-    if (!nullToAbsent || digits != null) {
-      map['digits'] = Variable<int>(digits);
     }
     if (!nullToAbsent || lastUpdateTime != null) {
       map['last_update_time'] = Variable<String>(lastUpdateTime);
     }
     if (!nullToAbsent || valid != null) {
-      map['is_valid'] = Variable<bool>(valid);
+      map['valid'] = Variable<bool>(valid);
     }
     return map;
   }
@@ -559,20 +564,13 @@ class StructureComponentDBData extends DataClass
   StructureComponentDBCompanion toCompanion(bool nullToAbsent) {
     return StructureComponentDBCompanion(
       id: Value(id),
-      type: type == null && nullToAbsent ? const Value.absent() : Value(type),
-      tagName:
-          tagName == null && nullToAbsent
-              ? const Value.absent()
-              : Value(tagName),
+      type: Value(type),
+      tagName: Value(tagName),
+      description: Value(description),
+      unit: Value(unit),
+      digits: Value(digits),
       value:
           value == null && nullToAbsent ? const Value.absent() : Value(value),
-      description:
-          description == null && nullToAbsent
-              ? const Value.absent()
-              : Value(description),
-      unit: unit == null && nullToAbsent ? const Value.absent() : Value(unit),
-      digits:
-          digits == null && nullToAbsent ? const Value.absent() : Value(digits),
       lastUpdateTime:
           lastUpdateTime == null && nullToAbsent
               ? const Value.absent()
@@ -589,12 +587,12 @@ class StructureComponentDBData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return StructureComponentDBData(
       id: serializer.fromJson<int>(json['id']),
-      type: serializer.fromJson<String?>(json['type']),
-      tagName: serializer.fromJson<String?>(json['tagName']),
+      type: serializer.fromJson<String>(json['type']),
+      tagName: serializer.fromJson<String>(json['tagName']),
+      description: serializer.fromJson<String>(json['description']),
+      unit: serializer.fromJson<String>(json['unit']),
+      digits: serializer.fromJson<int>(json['digits']),
       value: serializer.fromJson<String?>(json['value']),
-      description: serializer.fromJson<String?>(json['description']),
-      unit: serializer.fromJson<String?>(json['unit']),
-      digits: serializer.fromJson<int?>(json['digits']),
       lastUpdateTime: serializer.fromJson<String?>(json['lastUpdateTime']),
       valid: serializer.fromJson<bool?>(json['valid']),
     );
@@ -604,12 +602,12 @@ class StructureComponentDBData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'type': serializer.toJson<String?>(type),
-      'tagName': serializer.toJson<String?>(tagName),
+      'type': serializer.toJson<String>(type),
+      'tagName': serializer.toJson<String>(tagName),
+      'description': serializer.toJson<String>(description),
+      'unit': serializer.toJson<String>(unit),
+      'digits': serializer.toJson<int>(digits),
       'value': serializer.toJson<String?>(value),
-      'description': serializer.toJson<String?>(description),
-      'unit': serializer.toJson<String?>(unit),
-      'digits': serializer.toJson<int?>(digits),
       'lastUpdateTime': serializer.toJson<String?>(lastUpdateTime),
       'valid': serializer.toJson<bool?>(valid),
     };
@@ -617,22 +615,22 @@ class StructureComponentDBData extends DataClass
 
   StructureComponentDBData copyWith({
     int? id,
-    Value<String?> type = const Value.absent(),
-    Value<String?> tagName = const Value.absent(),
+    String? type,
+    String? tagName,
+    String? description,
+    String? unit,
+    int? digits,
     Value<String?> value = const Value.absent(),
-    Value<String?> description = const Value.absent(),
-    Value<String?> unit = const Value.absent(),
-    Value<int?> digits = const Value.absent(),
     Value<String?> lastUpdateTime = const Value.absent(),
     Value<bool?> valid = const Value.absent(),
   }) => StructureComponentDBData(
     id: id ?? this.id,
-    type: type.present ? type.value : this.type,
-    tagName: tagName.present ? tagName.value : this.tagName,
+    type: type ?? this.type,
+    tagName: tagName ?? this.tagName,
+    description: description ?? this.description,
+    unit: unit ?? this.unit,
+    digits: digits ?? this.digits,
     value: value.present ? value.value : this.value,
-    description: description.present ? description.value : this.description,
-    unit: unit.present ? unit.value : this.unit,
-    digits: digits.present ? digits.value : this.digits,
     lastUpdateTime:
         lastUpdateTime.present ? lastUpdateTime.value : this.lastUpdateTime,
     valid: valid.present ? valid.value : this.valid,
@@ -644,11 +642,11 @@ class StructureComponentDBData extends DataClass
       id: data.id.present ? data.id.value : this.id,
       type: data.type.present ? data.type.value : this.type,
       tagName: data.tagName.present ? data.tagName.value : this.tagName,
-      value: data.value.present ? data.value.value : this.value,
       description:
           data.description.present ? data.description.value : this.description,
       unit: data.unit.present ? data.unit.value : this.unit,
       digits: data.digits.present ? data.digits.value : this.digits,
+      value: data.value.present ? data.value.value : this.value,
       lastUpdateTime:
           data.lastUpdateTime.present
               ? data.lastUpdateTime.value
@@ -663,10 +661,10 @@ class StructureComponentDBData extends DataClass
           ..write('id: $id, ')
           ..write('type: $type, ')
           ..write('tagName: $tagName, ')
-          ..write('value: $value, ')
           ..write('description: $description, ')
           ..write('unit: $unit, ')
           ..write('digits: $digits, ')
+          ..write('value: $value, ')
           ..write('lastUpdateTime: $lastUpdateTime, ')
           ..write('valid: $valid')
           ..write(')'))
@@ -678,10 +676,10 @@ class StructureComponentDBData extends DataClass
     id,
     type,
     tagName,
-    value,
     description,
     unit,
     digits,
+    value,
     lastUpdateTime,
     valid,
   );
@@ -692,10 +690,10 @@ class StructureComponentDBData extends DataClass
           other.id == this.id &&
           other.type == this.type &&
           other.tagName == this.tagName &&
-          other.value == this.value &&
           other.description == this.description &&
           other.unit == this.unit &&
           other.digits == this.digits &&
+          other.value == this.value &&
           other.lastUpdateTime == this.lastUpdateTime &&
           other.valid == this.valid);
 }
@@ -703,44 +701,48 @@ class StructureComponentDBData extends DataClass
 class StructureComponentDBCompanion
     extends UpdateCompanion<StructureComponentDBData> {
   final Value<int> id;
-  final Value<String?> type;
-  final Value<String?> tagName;
+  final Value<String> type;
+  final Value<String> tagName;
+  final Value<String> description;
+  final Value<String> unit;
+  final Value<int> digits;
   final Value<String?> value;
-  final Value<String?> description;
-  final Value<String?> unit;
-  final Value<int?> digits;
   final Value<String?> lastUpdateTime;
   final Value<bool?> valid;
   const StructureComponentDBCompanion({
     this.id = const Value.absent(),
     this.type = const Value.absent(),
     this.tagName = const Value.absent(),
-    this.value = const Value.absent(),
     this.description = const Value.absent(),
     this.unit = const Value.absent(),
     this.digits = const Value.absent(),
+    this.value = const Value.absent(),
     this.lastUpdateTime = const Value.absent(),
     this.valid = const Value.absent(),
   });
   StructureComponentDBCompanion.insert({
     this.id = const Value.absent(),
-    this.type = const Value.absent(),
-    this.tagName = const Value.absent(),
+    required String type,
+    required String tagName,
+    required String description,
+    required String unit,
+    required int digits,
     this.value = const Value.absent(),
-    this.description = const Value.absent(),
-    this.unit = const Value.absent(),
-    this.digits = const Value.absent(),
     this.lastUpdateTime = const Value.absent(),
     this.valid = const Value.absent(),
-  });
+  }) : type = Value(type),
+       tagName = Value(tagName),
+       description = Value(description),
+       unit = Value(unit),
+       digits = Value(digits);
   static Insertable<StructureComponentDBData> custom({
     Expression<int>? id,
     Expression<String>? type,
     Expression<String>? tagName,
-    Expression<String>? value,
     Expression<String>? description,
     Expression<String>? unit,
     Expression<int>? digits,
+    Expression<String>? value,
     Expression<String>? lastUpdateTime,
     Expression<bool>? valid,
   }) {
@@ -748,23 +750,23 @@ class StructureComponentDBCompanion
       if (id != null) 'id': id,
       if (type != null) 'type': type,
       if (tagName != null) 'tag_name': tagName,
-      if (value != null) 'value': value,
       if (description != null) 'description': description,
       if (unit != null) 'unit': unit,
       if (digits != null) 'digits': digits,
+      if (value != null) 'value': value,
       if (lastUpdateTime != null) 'last_update_time': lastUpdateTime,
-      if (valid != null) 'is_valid': valid,
+      if (valid != null) 'valid': valid,
     });
   }
 
   StructureComponentDBCompanion copyWith({
     Value<int>? id,
-    Value<String?>? type,
-    Value<String?>? tagName,
+    Value<String>? type,
+    Value<String>? tagName,
+    Value<String>? description,
+    Value<String>? unit,
+    Value<int>? digits,
     Value<String?>? value,
-    Value<String?>? description,
-    Value<String?>? unit,
-    Value<int?>? digits,
     Value<String?>? lastUpdateTime,
     Value<bool?>? valid,
   }) {
@@ -772,10 +774,10 @@ class StructureComponentDBCompanion
       id: id ?? this.id,
       type: type ?? this.type,
       tagName: tagName ?? this.tagName,
-      value: value ?? this.value,
       description: description ?? this.description,
       unit: unit ?? this.unit,
       digits: digits ?? this.digits,
+      value: value ?? this.value,
       lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
       valid: valid ?? this.valid,
     );
@@ -793,9 +795,6 @@ class StructureComponentDBCompanion
     if (tagName.present) {
       map['tag_name'] = Variable<String>(tagName.value);
     }
-    if (value.present) {
-      map['value'] = Variable<String>(value.value);
-    }
     if (description.present) {
       map['description'] = Variable<String>(description.value);
     }
@@ -805,11 +804,14 @@ class StructureComponentDBCompanion
     if (digits.present) {
       map['digits'] = Variable<int>(digits.value);
     }
+    if (value.present) {
+      map['value'] = Variable<String>(value.value);
+    }
     if (lastUpdateTime.present) {
       map['last_update_time'] = Variable<String>(lastUpdateTime.value);
     }
     if (valid.present) {
-      map['is_valid'] = Variable<bool>(valid.value);
+      map['valid'] = Variable<bool>(valid.value);
     }
     return map;
   }
@@ -820,10 +822,10 @@ class StructureComponentDBCompanion
           ..write('id: $id, ')
           ..write('type: $type, ')
           ..write('tagName: $tagName, ')
-          ..write('value: $value, ')
           ..write('description: $description, ')
           ..write('unit: $unit, ')
           ..write('digits: $digits, ')
+          ..write('value: $value, ')
           ..write('lastUpdateTime: $lastUpdateTime, ')
           ..write('valid: $valid')
           ..write(')'))
@@ -1035,24 +1037,24 @@ typedef $$ConfigStructureDBTableProcessedTableManager =
 typedef $$StructureComponentDBTableCreateCompanionBuilder =
     StructureComponentDBCompanion Function({
       Value<int> id,
-      Value<String?> type,
-      Value<String?> tagName,
+      required String type,
+      required String tagName,
+      required String description,
+      required String unit,
+      required int digits,
       Value<String?> value,
-      Value<String?> description,
-      Value<String?> unit,
-      Value<int?> digits,
       Value<String?> lastUpdateTime,
       Value<bool?> valid,
     });
 typedef $$StructureComponentDBTableUpdateCompanionBuilder =
     StructureComponentDBCompanion Function({
       Value<int> id,
-      Value<String?> type,
-      Value<String?> tagName,
+      Value<String> type,
+      Value<String> tagName,
+      Value<String> description,
+      Value<String> unit,
+      Value<int> digits,
       Value<String?> value,
-      Value<String?> description,
-      Value<String?> unit,
-      Value<int?> digits,
       Value<String?> lastUpdateTime,
       Value<bool?> valid,
     });
@@ -1081,11 +1083,6 @@ class $$StructureComponentDBTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get value => $composableBuilder(
-    column: $table.value,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get description => $composableBuilder(
     column: $table.description,
     builder: (column) => ColumnFilters(column),
@@ -1098,6 +1095,11 @@ class $$StructureComponentDBTableFilterComposer
 
   ColumnFilters<int> get digits => $composableBuilder(
     column: $table.digits,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get value => $composableBuilder(
+    column: $table.value,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -1136,11 +1138,6 @@ class $$StructureComponentDBTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get value => $composableBuilder(
-    column: $table.value,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get description => $composableBuilder(
     column: $table.description,
     builder: (column) => ColumnOrderings(column),
@@ -1153,6 +1150,11 @@ class $$StructureComponentDBTableOrderingComposer
 
   ColumnOrderings<int> get digits => $composableBuilder(
     column: $table.digits,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get value => $composableBuilder(
+    column: $table.value,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -1185,9 +1187,6 @@ class $$StructureComponentDBTableAnnotationComposer
   GeneratedColumn<String> get tagName =>
       $composableBuilder(column: $table.tagName, builder: (column) => column);
 
-  GeneratedColumn<String> get value =>
-      $composableBuilder(column: $table.value, builder: (column) => column);
-
   GeneratedColumn<String> get description => $composableBuilder(
     column: $table.description,
     builder: (column) => column,
@@ -1198,6 +1197,9 @@ class $$StructureComponentDBTableAnnotationComposer
 
   GeneratedColumn<int> get digits =>
       $composableBuilder(column: $table.digits, builder: (column) => column);
+
+  GeneratedColumn<String> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
 
   GeneratedColumn<String> get lastUpdateTime => $composableBuilder(
     column: $table.lastUpdateTime,
@@ -1255,44 +1257,44 @@ class $$StructureComponentDBTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                Value<String?> type = const Value.absent(),
-                Value<String?> tagName = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<String> tagName = const Value.absent(),
+                Value<String> description = const Value.absent(),
+                Value<String> unit = const Value.absent(),
+                Value<int> digits = const Value.absent(),
                 Value<String?> value = const Value.absent(),
-                Value<String?> description = const Value.absent(),
-                Value<String?> unit = const Value.absent(),
-                Value<int?> digits = const Value.absent(),
                 Value<String?> lastUpdateTime = const Value.absent(),
                 Value<bool?> valid = const Value.absent(),
               }) => StructureComponentDBCompanion(
                 id: id,
                 type: type,
                 tagName: tagName,
-                value: value,
                 description: description,
                 unit: unit,
                 digits: digits,
+                value: value,
                 lastUpdateTime: lastUpdateTime,
                 valid: valid,
               ),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                Value<String?> type = const Value.absent(),
-                Value<String?> tagName = const Value.absent(),
+                required String type,
+                required String tagName,
+                required String description,
+                required String unit,
+                required int digits,
                 Value<String?> value = const Value.absent(),
-                Value<String?> description = const Value.absent(),
-                Value<String?> unit = const Value.absent(),
-                Value<int?> digits = const Value.absent(),
                 Value<String?> lastUpdateTime = const Value.absent(),
                 Value<bool?> valid = const Value.absent(),
               }) => StructureComponentDBCompanion.insert(
                 id: id,
                 type: type,
                 tagName: tagName,
-                value: value,
                 description: description,
                 unit: unit,
                 digits: digits,
+                value: value,
                 lastUpdateTime: lastUpdateTime,
                 valid: valid,
               ),

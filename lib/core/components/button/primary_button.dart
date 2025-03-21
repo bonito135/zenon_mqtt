@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:zenon_mqtt/mixins/error_handler_mixin.dart';
-import 'package:zenon_mqtt/mixins/loading_state_mixin.dart';
+import 'package:zenon_mqtt/core/mixins/error_handler_mixin.dart';
+import 'package:zenon_mqtt/core/mixins/loading_state_mixin.dart';
 
 class PrimaryButton extends StatefulWidget {
   const PrimaryButton({

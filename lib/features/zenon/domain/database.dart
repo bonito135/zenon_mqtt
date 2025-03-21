@@ -3,7 +3,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
 
-part 'db.g.dart';
+part 'database.g.dart';
 
 class ConfigStructureDB extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -13,12 +13,12 @@ class ConfigStructureDB extends Table {
 
 class StructureComponentDB extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get type => text().nullable()();
-  TextColumn get tagName => text().nullable()();
+  TextColumn get type => text()();
+  TextColumn get tagName => text()();
+  TextColumn get description => text()();
+  TextColumn get unit => text()();
+  IntColumn get digits => integer()();
   TextColumn get value => text().nullable()();
-  TextColumn get description => text().nullable()();
-  TextColumn get unit => text().nullable()();
-  IntColumn get digits => integer().nullable()();
   TextColumn get lastUpdateTime => text().nullable()();
   BoolColumn get valid => boolean().nullable()();
 }

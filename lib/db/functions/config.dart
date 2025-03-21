@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
-
-import 'package:zenon_mqtt/classes/structure.dart';
-import 'package:zenon_mqtt/db/db.dart';
+import 'package:zenon_mqtt/features/zenon/domain/_index.dart';
 
 void writeConfigStructure(AppDatabase database, String content) async {
   await database

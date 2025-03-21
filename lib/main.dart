@@ -1,16 +1,14 @@
-// import 'dart:io';
-// import 'package:sqlite3/sqlite3.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
 import 'package:zenon_mqtt/classes/index.dart';
-import 'package:zenon_mqtt/components/Indicator/sized_process_indicator.dart';
-import 'package:zenon_mqtt/components/page/dynamic_page.dart';
+import 'package:zenon_mqtt/core/components/Indicator/sized_process_indicator.dart';
+import 'package:zenon_mqtt/core/components/page/dynamic_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:zenon_mqtt/db/db.dart';
 import 'package:zenon_mqtt/db/functions/index.dart';
+import 'package:zenon_mqtt/features/zenon/domain/_index.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");

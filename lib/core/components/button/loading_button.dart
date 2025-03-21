@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:zenon_mqtt/mixins/error_handler_mixin.dart';
-import 'package:zenon_mqtt/mixins/loading_state_mixin.dart';
+import 'package:zenon_mqtt/core/mixins/error_handler_mixin.dart';
+import 'package:zenon_mqtt/core/mixins/loading_state_mixin.dart';
 
 class LoadingButton extends StatefulWidget {
   const LoadingButton({
@@ -23,7 +23,6 @@ class _LoadingButtonState extends State<LoadingButton>
     return ValueListenableBuilder(
       valueListenable: isLoading,
       builder: (context, value, child) {
-        print(value);
         return Container(
           padding: EdgeInsets.all(30),
           child: ElevatedButton(

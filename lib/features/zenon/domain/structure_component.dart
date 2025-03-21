@@ -1,41 +1,50 @@
-import 'package:zenon_mqtt/features/zenon/domain/shared.dart';
+import '_index.dart';
 
 class StructureComponent {
   StructureComponent(
     this.type,
     this.tagName,
-    this.value,
     this.description,
     this.unit,
     this.digits,
+    this.value,
+    this.lastUpdateTime,
+    this.valid,
   );
 
   String type;
   TagName tagName;
-  dynamic value;
   String description;
   String unit;
   int digits;
+  dynamic value;
+  String? lastUpdateTime;
+  bool? valid;
 
   factory StructureComponent.fromJson(Map<String, dynamic> json) {
     if (json case {
       "type": String type,
       "tagName": TagName tagName,
-      "value": dynamic value,
       "description": String description,
       "unit": String unit,
       "digits": int digits,
+      "value": dynamic value,
     }) {
+      String? lastUpdateTime = json["lastUpdateTime"] as String?;
+      bool? valid = json["valid"] as bool?;
+
       return StructureComponent(
         type,
         tagName,
-        value,
         description,
         unit,
         digits,
+        value,
+        lastUpdateTime,
+        valid,
       );
     } else {
-      if (json["type"] is! TagName) {
+      if (json["type"] is! String) {
         throw FormatException(
           'Invalid JSON: required "tagName" field of type String in $json',
         );
