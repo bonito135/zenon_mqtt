@@ -4,6 +4,7 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
 import 'package:zenon_mqtt/classes/index.dart';
+import 'package:zenon_mqtt/core/utils/debouncer_util.dart';
 import 'package:zenon_mqtt/db/functions/component.dart';
 import 'package:zenon_mqtt/features/zenon/domain/_index.dart';
 import 'package:zenon_mqtt/core/widget_map.dart';
@@ -25,6 +26,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
         .withClientIdentifier('Mqtt_${widget.component.tagName}')
         .startClean(),
   );
+  final _debouncer = Debouncer();
 
   void connectionStartup() async {
     await componentConnection.connect();
@@ -35,7 +37,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      connectionStartup();
+      _debouncer.call(connectionStartup);
     });
   }
 
@@ -43,6 +45,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
   void dispose() {
     super.dispose();
 
+    _debouncer.dispose();
     componentConnection.client.disconnect();
   }
 

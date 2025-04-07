@@ -7,6 +7,7 @@ import 'package:zenon_mqtt/classes/index.dart';
 import 'package:zenon_mqtt/core/components/Indicator/sized_process_indicator.dart';
 import 'package:zenon_mqtt/core/components/page/dynamic_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:zenon_mqtt/core/utils/debouncer_util.dart';
 import 'package:zenon_mqtt/db/functions/index.dart';
 import 'package:zenon_mqtt/features/zenon/domain/_index.dart';
 
@@ -82,11 +83,12 @@ class _MyHomePageState extends State<MyHomePage> {
     dotenv.env['MQTT_CONFIG_TOPIC']!,
     MqttConnectMessage().withClientIdentifier('Mqtt_config').startClean(),
   );
+  final _debouncer = Debouncer();
 
   int currentPageIndex = 0;
 
   Future<void> reconnect() async {
-    await configConnection.connect();
+    _debouncer.call(configConnection.connect);
   }
 
   @override
@@ -102,6 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     super.dispose();
 
+    _debouncer.dispose();
     configConnection.client.disconnect();
   }
 
