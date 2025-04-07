@@ -3,11 +3,12 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
-import 'package:zenon_mqtt/classes/index.dart';
 import 'package:zenon_mqtt/core/utils/debouncer_util.dart';
-import 'package:zenon_mqtt/db/functions/component.dart';
-import 'package:zenon_mqtt/features/zenon/domain/_index.dart';
-import 'package:zenon_mqtt/core/widget_map.dart';
+import 'package:zenon_mqtt/features/database/viewmodel/component.dart';
+import 'package:zenon_mqtt/features/database/model/database.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/model/structure_component.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/repository/mqtt_connection_repository.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/view/widgets/widget_map.dart';
 
 class DynamicComponent extends StatefulWidget {
   const DynamicComponent({super.key, required this.component});
@@ -19,7 +20,7 @@ class DynamicComponent extends StatefulWidget {
 }
 
 class _DynamicComponentState extends State<DynamicComponent> {
-  late final componentConnection = MqttConnection(
+  late final componentConnection = MqttConnectionRepository(
     MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
     widget.component.tagName,
     MqttConnectMessage()

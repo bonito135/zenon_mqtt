@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:developer';
 import 'package:drift/drift.dart';
-import 'package:zenon_mqtt/features/zenon/domain/_index.dart';
+import 'package:zenon_mqtt/features/database/model/database.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/model/_index.dart';
 
 void writeStructureComponentFromZenonValueUpdate(
   AppDatabase database,

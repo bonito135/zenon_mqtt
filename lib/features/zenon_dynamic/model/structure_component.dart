@@ -1,5 +1,3 @@
-import '_index.dart';
-
 class StructureComponent {
   StructureComponent(
     this.type,
@@ -13,7 +11,7 @@ class StructureComponent {
   );
 
   String type;
-  TagName tagName;
+  String tagName;
   String description;
   String unit;
   int digits;
@@ -24,7 +22,7 @@ class StructureComponent {
   factory StructureComponent.fromJson(Map<String, dynamic> json) {
     if (json case {
       "type": String type,
-      "tagName": TagName tagName,
+      "tagName": String tagName,
       "description": String description,
       "unit": String unit,
       "digits": int digits,
@@ -49,7 +47,7 @@ class StructureComponent {
           'Invalid JSON: required "tagName" field of type String in $json',
         );
       }
-      if (json["tagName"] is! TagName) {
+      if (json["tagName"] is! String) {
         throw FormatException(
           'Invalid JSON: required "tagName" field of type TagName/String in $json',
         );

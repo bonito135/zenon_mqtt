@@ -3,7 +3,7 @@ import 'package:drift_flutter/drift_flutter.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
 
-part 'database.g.dart';
+part "database.g.dart";
 
 class ConfigStructureDB extends Table {
   IntColumn get id => integer().autoIncrement()();

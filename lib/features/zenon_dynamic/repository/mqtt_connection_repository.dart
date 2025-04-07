@@ -4,8 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
-class MqttConnection {
-  MqttConnection(this.client, this.topic, this.connMess);
+class MqttConnectionRepository {
+  MqttConnectionRepository(this.client, this.topic, this.connMess);
 
   final MqttServerClient client;
   final String topic;

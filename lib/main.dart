@@ -3,13 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
-import 'package:zenon_mqtt/classes/index.dart';
-import 'package:zenon_mqtt/core/components/Indicator/sized_process_indicator.dart';
-import 'package:zenon_mqtt/core/components/page/dynamic_page.dart';
+import 'package:zenon_mqtt/features/database/model/database.dart';
+import 'package:zenon_mqtt/core/view/widgets/sized_process_indicator.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/view/pages/dynamic_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:zenon_mqtt/core/utils/debouncer_util.dart';
-import 'package:zenon_mqtt/db/functions/index.dart';
-import 'package:zenon_mqtt/features/zenon/domain/_index.dart';
+import 'package:zenon_mqtt/features/database/viewmodel/index.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/model/_index.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/repository/mqtt_connection_repository.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -78,7 +79,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late final configConnection = MqttConnection(
+  late final configConnection = MqttConnectionRepository(
     MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
     dotenv.env['MQTT_CONFIG_TOPIC']!,
     MqttConnectMessage().withClientIdentifier('Mqtt_config').startClean(),
