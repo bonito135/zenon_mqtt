@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'package:drift/drift.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 
@@ -34,17 +35,17 @@ Future<ConfigStructureTableData?> writeAndReturnConfigStructure(
 
   log("Content $content");
 
-  try {
-    await database.delete(database.configStructureTable).go();
-  } catch (e) {
-    log("Delete error: $e");
-    return null;
-  }
+  // try {
+  //   await database.delete(database.configStructureTable).go();
+  // } catch (e) {
+  //   log("Delete error: $e");
+
+  // }
 
   try {
     await database
         .into(database.configStructureTable)
-        .insert(ConfigStructureTableCompanion.insert(content: content));
+        .insert(ConfigStructureTableCompanion.insert(content: Value(content)));
   } catch (e) {
     log("Insert error: $e");
     return null;

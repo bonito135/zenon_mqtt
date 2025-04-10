@@ -1,9 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
-import 'package:zenon_mqtt/core/utils/debouncer_util.dart';
 import 'package:zenon_mqtt/features/database/viewmodel/component.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/zenon_value_update.dart';
@@ -27,27 +28,12 @@ class _DynamicComponentState extends State<DynamicComponent> {
         .withClientIdentifier('Mqtt_${widget.element.tagName}')
         .startClean(),
   );
-  final _debouncer = Debouncer();
-
-  void connectionStartup() async {
-    await componentConnection.connect();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _debouncer.call(connectionStartup);
-    });
-  }
 
   @override
   void dispose() {
     super.dispose();
 
-    _debouncer.dispose();
-    componentConnection.client.disconnect();
+    componentConnection.dispose();
   }
 
   @override
@@ -55,14 +41,18 @@ class _DynamicComponentState extends State<DynamicComponent> {
     return ValueListenableBuilder(
       valueListenable: componentConnection.stateNotifier,
       builder: (context, value, child) {
-        MqttConnectionState connectionState = value;
-
-        if (value == MqttConnectionState.connected) {
+        final MqttConnectionState connectionState = value;
+        if (connectionState == MqttConnectionState.disconnected) {
+          // reconnect();
+          componentConnection.connect();
+        }
+        if (connectionState == MqttConnectionState.connected) {
           componentConnection.listen();
         }
         return ValueListenableBuilder(
           valueListenable: componentConnection.messageNotifier,
           builder: (context, value, child) {
+            log("Zenon value update: $value");
             return FutureBuilder(
               future:
                   connectionState == MqttConnectionState.connected

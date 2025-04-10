@@ -15,7 +15,8 @@ part "database.g.dart";
 // }
 class ConfigStructureTable extends Table {
   IntColumn get id => integer().autoIncrement()();
-  BlobColumn get content => blob().map(ConfigStructure.binaryConverter)();
+  BlobColumn get content =>
+      blob().map(ConfigStructure.binaryConverter).nullable()();
 }
 
 class StructureComponentTable extends Table {
@@ -42,7 +43,7 @@ class AppDatabase extends _$AppDatabase {
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
-      name: 'my_database',
+      name: 'database',
       native: const DriftNativeOptions(
         // By default, `driftDatabase` from `package:drift_flutter` stores the
         // database files in `getApplicationDocumentsDirectory()`.

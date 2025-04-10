@@ -4,6 +4,7 @@ import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:zenon_mqtt/core/utils/debouncer_util.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/zenon_value_update.dart';
 
@@ -17,6 +18,9 @@ class MqttConnectionRepository<T> {
       ValueNotifier<MqttConnectionState>(MqttConnectionState.disconnected);
   final ValueNotifier<T?> messageNotifier = ValueNotifier<T?>(null);
 
+  final _connectionDebouncer = Debouncer();
+  final _messageDebouncer = Debouncer();
+
   var pongCount = 0; // Pong counter
   var pingCount = 0; // Ping counter
 
@@ -28,7 +32,7 @@ class MqttConnectionRepository<T> {
     client.setProtocolV311();
 
     /// If you intend to use a keep alive you must set it here otherwise keep alive will be disabled.
-    client.keepAlivePeriod = 2000;
+    client.keepAlivePeriod = 2;
 
     /// The connection timeout period can be set, the default is 5 seconds.
     /// if [client.socketTimeout] is set then this will take precedence and this setting will be
@@ -40,9 +44,9 @@ class MqttConnectionRepository<T> {
     /// an example of a specific one below.
     client.connectionMessage = connMess;
 
-    client.pongCallback = onPongCallback;
+    // client.pingCallback = onPingCallback;
 
-    client.pingCallback = onPingCallback;
+    client.pongCallback = onPongCallback;
 
     /// Add the unsolicited disconnection callback
     client.onDisconnected = onDisconnected;
@@ -51,6 +55,13 @@ class MqttConnectionRepository<T> {
     client.onConnected = onConnected;
 
     client.onSubscribed = _onSubscribed;
+
+    /// Set the ping response disconnect period, if a ping response is not received from the broker in this period
+    /// the client will disconnect itself.
+    /// Note you should somehow get your broker to stop sending ping responses without forcing a disconnect at the
+    /// network level to run this example. On way to do this if you are using a wired network connection is to pull
+    /// the wire, on some platforms no network events will be generated until the wire is re inserted.
+    client.disconnectOnNoResponsePeriod = 1;
 
     /// Set auto reconnect
     client.autoReconnect = true;
@@ -72,25 +83,27 @@ class MqttConnectionRepository<T> {
 
   Future<void> connect() async {
     if (stateNotifier.value == MqttConnectionState.disconnected) {
-      try {
-        init();
+      _connectionDebouncer.call(() async {
+        try {
+          init();
 
-        stateNotifier.value = MqttConnectionState.connecting;
+          stateNotifier.value = MqttConnectionState.connecting;
 
-        await client.connect();
+          await client.connect();
 
-        client.subscribe(topic, MqttQos.exactlyOnce);
-        if (kDebugMode) {
-          log('EXAMPLE::Subscribing to the $topic topic');
+          client.subscribe(topic, MqttQos.exactlyOnce);
+          if (kDebugMode) {
+            log('EXAMPLE::Subscribing to the $topic topic');
+          }
+        } catch (e) {
+          if (kDebugMode) {
+            log('EXAMPLE::Error subscribing to the $topic topic');
+            log("$e");
+          }
+          stateNotifier.value = MqttConnectionState.disconnecting;
+          client.disconnect();
         }
-      } catch (e) {
-        if (kDebugMode) {
-          log('EXAMPLE::Error subscribing to the $topic topic');
-          log("$e");
-        }
-        stateNotifier.value = MqttConnectionState.disconnecting;
-        client.disconnect();
-      }
+      });
     } else {
       log("Can not connect to topic: $topic / Not disconnected");
     }
@@ -142,29 +155,9 @@ class MqttConnectionRepository<T> {
             recMess.payload.message,
           );
 
-          if (kDebugMode) {
-            print(
-              'EXAMPLE::Change notification:: topic is <${c[0].topic}>, payload is <-- $value -->',
-            );
-          }
-
-          // messageNotifier.value = value;
-          // T.fromJson(jsonDecode(value));
-          if (T is ZenonValueUpdate) {
-            log("Is zenon update");
-            messageNotifier.value =
-                ZenonValueUpdate.fromJson(
-                      jsonDecode(value) as Map<String, dynamic>,
-                    )
-                    as T;
-          }
-
-          if (T.toString() == "ConfigStructure") {
-            log("Is config structure");
-            messageNotifier.value =
-                ConfigStructure.fromJson(jsonDecode(value) as List<dynamic>)
-                    as T;
-          }
+          _messageDebouncer.call(() {
+            messageNotifier.value = handleValueTypes(value);
+          });
         },
         onError:
             (e) => {
@@ -172,16 +165,13 @@ class MqttConnectionRepository<T> {
             },
       );
     } else {
-      log("Can not listen to topic: $topic / Not connected");
+      throw Exception("Can not listen to topic: $topic / Not connected");
     }
   }
 
   void onDisconnected() {
     stateNotifier.value = MqttConnectionState.disconnected;
 
-    if (kDebugMode) {
-      print('EXAMPLE::OnDisconnected client callback - Client disconnection');
-    }
     if (client.connectionStatus!.disconnectionOrigin ==
         MqttDisconnectionOrigin.solicited) {
       if (kDebugMode) {
@@ -213,5 +203,31 @@ class MqttConnectionRepository<T> {
         'EXAMPLE::Latency of this ping/pong cycle is ${client.lastCycleLatency} milliseconds',
       );
     }
+  }
+
+  void dispose() {
+    client.disconnect();
+    _connectionDebouncer.dispose();
+    _messageDebouncer.dispose();
+  }
+
+  T? handleValueTypes(String value) {
+    if (T.toString() == "ZenonValueUpdate") {
+      log("Is zenon update");
+
+      return ZenonValueUpdate.fromJson(
+            jsonDecode(value) as Map<String, dynamic>,
+          )
+          as T;
+    }
+
+    if (T.toString() == "ConfigStructure") {
+      log("Is config structure");
+
+      return ConfigStructure.fromJson(jsonDecode(value) as Map<String, dynamic>)
+          as T;
+    }
+
+    return null;
   }
 }

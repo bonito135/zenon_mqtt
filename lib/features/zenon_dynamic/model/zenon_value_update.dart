@@ -1,9 +1,15 @@
-class ZenonValueUpdate {
-  ZenonValueUpdate(this.value, this.lastUpdateTime, this.valid);
+import 'package:equatable/equatable.dart';
 
-  dynamic value;
-  String lastUpdateTime;
-  bool valid;
+class ZenonValueUpdate extends Equatable {
+  const ZenonValueUpdate({
+    required this.value,
+    required this.lastUpdateTime,
+    required this.valid,
+  });
+
+  final dynamic value;
+  final String lastUpdateTime;
+  final bool valid;
 
   factory ZenonValueUpdate.fromJson(Map<String, dynamic> json) {
     if (json case {
@@ -11,7 +17,11 @@ class ZenonValueUpdate {
       "lastUpdateTime": String lastUpdateTime,
       "valid": bool valid,
     }) {
-      return ZenonValueUpdate(value, lastUpdateTime, valid);
+      return ZenonValueUpdate(
+        value: value,
+        lastUpdateTime: lastUpdateTime,
+        valid: valid,
+      );
     } else {
       if (json["lastUpdateTime"] is! String) {
         throw FormatException(
@@ -26,4 +36,10 @@ class ZenonValueUpdate {
       throw FormatException('Invalid JSON: $json');
     }
   }
+
+  @override
+  List<Object> get props => [lastUpdateTime, valid];
+
+  @override
+  bool get stringify => true;
 }

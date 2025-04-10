@@ -11,21 +11,14 @@ class ConfigStructure extends Equatable {
 
   const ConfigStructure({required this.structure});
 
-  factory ConfigStructure.fromJson(List<dynamic> json) {
-    return ConfigStructure(
-      structure: List<ConfigStructureItem>.from(
-        json.map(
-          (x) => ConfigStructureItem.fromJson(x as Map<String, dynamic>),
-        ),
-      ),
-    );
-  }
+  factory ConfigStructure.fromJson(Map<String, dynamic> json) =>
+      _$ConfigStructureFromJson(json);
 
   Map<String, dynamic> toJson() => _$ConfigStructureToJson(this);
 
   static JsonTypeConverter2<ConfigStructure, Uint8List, Object?>
   binaryConverter = TypeConverter.jsonb(
-    fromJson: (json) => ConfigStructure.fromJson(json as List<Object?>),
+    fromJson: (json) => ConfigStructure.fromJson(json as Map<String, Object?>),
     toJson: (data) => data.toJson(),
   );
 

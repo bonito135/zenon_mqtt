@@ -23,15 +23,15 @@ class $ConfigStructureTableTable extends ConfigStructureTable
     ),
   );
   @override
-  late final GeneratedColumnWithTypeConverter<ConfigStructure, Uint8List>
+  late final GeneratedColumnWithTypeConverter<ConfigStructure?, Uint8List>
   content = GeneratedColumn<Uint8List>(
     'content',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.blob,
-    requiredDuringInsert: true,
-  ).withConverter<ConfigStructure>(
-    $ConfigStructureTableTable.$convertercontent,
+    requiredDuringInsert: false,
+  ).withConverter<ConfigStructure?>(
+    $ConfigStructureTableTable.$convertercontentn,
   );
   @override
   List<GeneratedColumn> get $columns => [id, content];
@@ -67,11 +67,11 @@ class $ConfigStructureTableTable extends ConfigStructureTable
             DriftSqlType.int,
             data['${effectivePrefix}id'],
           )!,
-      content: $ConfigStructureTableTable.$convertercontent.fromSql(
+      content: $ConfigStructureTableTable.$convertercontentn.fromSql(
         attachedDatabase.typeMapping.read(
           DriftSqlType.blob,
           data['${effectivePrefix}content'],
-        )!,
+        ),
       ),
     );
   }
@@ -83,20 +83,22 @@ class $ConfigStructureTableTable extends ConfigStructureTable
 
   static JsonTypeConverter2<ConfigStructure, Uint8List, Object?>
   $convertercontent = ConfigStructure.binaryConverter;
+  static JsonTypeConverter2<ConfigStructure?, Uint8List?, Object?>
+  $convertercontentn = JsonTypeConverter2.asNullable($convertercontent);
 }
 
 class ConfigStructureTableData extends DataClass
     implements Insertable<ConfigStructureTableData> {
   final int id;
-  final ConfigStructure content;
-  const ConfigStructureTableData({required this.id, required this.content});
+  final ConfigStructure? content;
+  const ConfigStructureTableData({required this.id, this.content});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    {
+    if (!nullToAbsent || content != null) {
       map['content'] = Variable<Uint8List>(
-        $ConfigStructureTableTable.$convertercontent.toSql(content),
+        $ConfigStructureTableTable.$convertercontentn.toSql(content),
       );
     }
     return map;
@@ -105,7 +107,10 @@ class ConfigStructureTableData extends DataClass
   ConfigStructureTableCompanion toCompanion(bool nullToAbsent) {
     return ConfigStructureTableCompanion(
       id: Value(id),
-      content: Value(content),
+      content:
+          content == null && nullToAbsent
+              ? const Value.absent()
+              : Value(content),
     );
   }
 
@@ -116,7 +121,7 @@ class ConfigStructureTableData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return ConfigStructureTableData(
       id: serializer.fromJson<int>(json['id']),
-      content: $ConfigStructureTableTable.$convertercontent.fromJson(
+      content: $ConfigStructureTableTable.$convertercontentn.fromJson(
         serializer.fromJson<Object?>(json['content']),
       ),
     );
@@ -127,16 +132,18 @@ class ConfigStructureTableData extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'content': serializer.toJson<Object?>(
-        $ConfigStructureTableTable.$convertercontent.toJson(content),
+        $ConfigStructureTableTable.$convertercontentn.toJson(content),
       ),
     };
   }
 
-  ConfigStructureTableData copyWith({int? id, ConfigStructure? content}) =>
-      ConfigStructureTableData(
-        id: id ?? this.id,
-        content: content ?? this.content,
-      );
+  ConfigStructureTableData copyWith({
+    int? id,
+    Value<ConfigStructure?> content = const Value.absent(),
+  }) => ConfigStructureTableData(
+    id: id ?? this.id,
+    content: content.present ? content.value : this.content,
+  );
   ConfigStructureTableData copyWithCompanion(
     ConfigStructureTableCompanion data,
   ) {
@@ -168,15 +175,15 @@ class ConfigStructureTableData extends DataClass
 class ConfigStructureTableCompanion
     extends UpdateCompanion<ConfigStructureTableData> {
   final Value<int> id;
-  final Value<ConfigStructure> content;
+  final Value<ConfigStructure?> content;
   const ConfigStructureTableCompanion({
     this.id = const Value.absent(),
     this.content = const Value.absent(),
   });
   ConfigStructureTableCompanion.insert({
     this.id = const Value.absent(),
-    required ConfigStructure content,
-  }) : content = Value(content);
+    this.content = const Value.absent(),
+  });
   static Insertable<ConfigStructureTableData> custom({
     Expression<int>? id,
     Expression<Uint8List>? content,
@@ -189,7 +196,7 @@ class ConfigStructureTableCompanion
 
   ConfigStructureTableCompanion copyWith({
     Value<int>? id,
-    Value<ConfigStructure>? content,
+    Value<ConfigStructure?>? content,
   }) {
     return ConfigStructureTableCompanion(
       id: id ?? this.id,
@@ -205,7 +212,7 @@ class ConfigStructureTableCompanion
     }
     if (content.present) {
       map['content'] = Variable<Uint8List>(
-        $ConfigStructureTableTable.$convertercontent.toSql(content.value),
+        $ConfigStructureTableTable.$convertercontentn.toSql(content.value),
       );
     }
     return map;
@@ -776,12 +783,12 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 typedef $$ConfigStructureTableTableCreateCompanionBuilder =
     ConfigStructureTableCompanion Function({
       Value<int> id,
-      required ConfigStructure content,
+      Value<ConfigStructure?> content,
     });
 typedef $$ConfigStructureTableTableUpdateCompanionBuilder =
     ConfigStructureTableCompanion Function({
       Value<int> id,
-      Value<ConfigStructure> content,
+      Value<ConfigStructure?> content,
     });
 
 class $$ConfigStructureTableTableFilterComposer
@@ -798,7 +805,7 @@ class $$ConfigStructureTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnWithTypeConverterFilters<ConfigStructure, ConfigStructure, Uint8List>
+  ColumnWithTypeConverterFilters<ConfigStructure?, ConfigStructure, Uint8List>
   get content => $composableBuilder(
     column: $table.content,
     builder: (column) => ColumnWithTypeConverterFilters(column),
@@ -837,7 +844,7 @@ class $$ConfigStructureTableTableAnnotationComposer
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumnWithTypeConverter<ConfigStructure, Uint8List> get content =>
+  GeneratedColumnWithTypeConverter<ConfigStructure?, Uint8List> get content =>
       $composableBuilder(column: $table.content, builder: (column) => column);
 }
 
@@ -888,12 +895,12 @@ class $$ConfigStructureTableTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                Value<ConfigStructure> content = const Value.absent(),
+                Value<ConfigStructure?> content = const Value.absent(),
               }) => ConfigStructureTableCompanion(id: id, content: content),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                required ConfigStructure content,
+                Value<ConfigStructure?> content = const Value.absent(),
               }) => ConfigStructureTableCompanion.insert(
                 id: id,
                 content: content,
