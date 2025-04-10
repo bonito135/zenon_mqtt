@@ -15,7 +15,8 @@
 			"name": "iOS (debug)",
 			"request": "launch",
 			"type": "dart",
-			"flutterMode": "debug"
+			"flutterMode": "debug",
+			"args": ["--flavor", "staging"]
 		},
 		{
 			"name": "zenon_mqtt (profile mode)",

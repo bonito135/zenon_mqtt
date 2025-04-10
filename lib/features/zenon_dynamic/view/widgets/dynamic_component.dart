@@ -5,26 +5,26 @@ import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
 import 'package:zenon_mqtt/core/utils/debouncer_util.dart';
 import 'package:zenon_mqtt/features/database/viewmodel/component.dart';
-import 'package:zenon_mqtt/features/database/model/database.dart';
-import 'package:zenon_mqtt/features/zenon_dynamic/model/structure_component.dart';
+import 'package:zenon_mqtt/features/database/repository/database.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/model/zenon_value_update.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/repository/mqtt_connection_repository.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/view/widgets/widget_map.dart';
 
 class DynamicComponent extends StatefulWidget {
-  const DynamicComponent({super.key, required this.component});
+  const DynamicComponent({super.key, required this.element});
 
-  final StructureComponent component;
+  final StructureComponentTableData element;
 
   @override
   State<DynamicComponent> createState() => _DynamicComponentState();
 }
 
 class _DynamicComponentState extends State<DynamicComponent> {
-  late final componentConnection = MqttConnectionRepository(
+  late final componentConnection = MqttConnectionRepository<ZenonValueUpdate>(
     MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
-    widget.component.tagName,
+    widget.element.tagName,
     MqttConnectMessage()
-        .withClientIdentifier('Mqtt_${widget.component.tagName}')
+        .withClientIdentifier('Mqtt_${widget.element.tagName}')
         .startClean(),
   );
   final _debouncer = Debouncer();
@@ -68,19 +68,19 @@ class _DynamicComponentState extends State<DynamicComponent> {
                   connectionState == MqttConnectionState.connected
                       ? writeAndReturnStructureComponentFromZenonValueUpdate(
                         context.watch<AppDatabase>(),
-                        widget.component,
+                        widget.element,
                         value,
                       )
                       : readStructureComponentByTagName(
                         context.watch<AppDatabase>(),
-                        widget.component.tagName,
+                        widget.element.tagName,
                       ),
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data != null) {
                   return widgetMap(context, snapshot.data!, connectionState);
                 }
 
-                return widgetMap(context, widget.component, connectionState);
+                return widgetMap(context, widget.element, connectionState);
               },
             );
           },

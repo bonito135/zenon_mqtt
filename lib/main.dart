@@ -3,13 +3,14 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
-import 'package:zenon_mqtt/features/database/model/database.dart';
+import 'package:zenon_mqtt/features/database/repository/database.dart';
 import 'package:zenon_mqtt/core/view/widgets/sized_process_indicator.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/view/pages/dynamic_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:zenon_mqtt/core/utils/debouncer_util.dart';
 import 'package:zenon_mqtt/features/database/viewmodel/index.dart';
-import 'package:zenon_mqtt/features/zenon_dynamic/model/_index.dart';
+// import 'package:zenon_mqtt/features/zenon_dynamic/model/_index.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/repository/mqtt_connection_repository.dart';
 
 void main() async {
@@ -79,7 +80,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late final configConnection = MqttConnectionRepository(
+  late final configConnection = MqttConnectionRepository<ConfigStructure>(
     MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
     dotenv.env['MQTT_CONFIG_TOPIC']!,
     MqttConnectMessage().withClientIdentifier('Mqtt_config').startClean(),
@@ -132,20 +133,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       : readConfigStructure(context.watch<AppDatabase>()),
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data != null) {
-                  ConfigStructure configStructure =
-                      snapshot.data as ConfigStructure;
+                  final configStructure = snapshot.data;
                   return Scaffold(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     appBar: AppBar(
                       backgroundColor: Theme.of(context).colorScheme.secondary,
                       title: Text(
-                        configStructure.structure[currentPageIndex].sectionName,
+                        configStructure!
+                            .content
+                            .structure[currentPageIndex]
+                            .sectionName,
                       ),
                       titleTextStyle: Theme.of(context).textTheme.titleLarge,
                     ),
                     bottomNavigationBar: SafeArea(
                       child:
-                          configStructure.structure.length < 2
+                          configStructure.content.structure.length < 2
                               ? SizedBox.shrink()
                               : NavigationBar(
                                 labelBehavior:
@@ -160,11 +163,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                   });
                                 },
                                 destinations: List<Widget>.generate(
-                                  configStructure.structure.length,
+                                  configStructure.content.structure.length,
                                   (index) => NavigationDestination(
                                     icon: Icon(Icons.explore),
                                     label:
                                         configStructure
+                                            .content
                                             .structure[index]
                                             .sectionName,
                                   ),
@@ -173,16 +177,19 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     body: SafeArea(
                       child:
-                          configStructure.structure.isEmpty
+                          configStructure.content.structure.isEmpty
                               ? Center(child: Text("No configuration applied"))
                               : DynamicPage(
                                 title: Text(
                                   configStructure
+                                      .content
                                       .structure[currentPageIndex]
                                       .sectionName,
                                 ),
                                 structure:
-                                    configStructure.structure[currentPageIndex],
+                                    configStructure
+                                        .content
+                                        .structure[currentPageIndex],
                               ),
                     ),
                   );

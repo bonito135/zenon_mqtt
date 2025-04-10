@@ -1,33 +1,32 @@
-import 'dart:convert';
 import 'dart:developer';
+import 'package:zenon_mqtt/features/database/repository/database.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 
-import 'package:zenon_mqtt/features/database/model/database.dart';
-import 'package:zenon_mqtt/features/zenon_dynamic/model/config_structure.dart';
-
-void writeConfigStructure(AppDatabase database, String content) async {
-  await database
-      .into(database.configStructureDB)
-      .insert(ConfigStructureDBCompanion.insert(content: content));
+void writeConfigStructure(
+  AppDatabase database,
+  ConfigStructureTableData data,
+) async {
+  await database.into(database.configStructureTable).insert(data);
 }
 
-Future<ConfigStructure?> readConfigStructure(AppDatabase database) async {
+Future<ConfigStructureTableData?> readConfigStructure(
+  AppDatabase database,
+) async {
   try {
     final config = await (database.select(
-      database.configStructureDB,
+      database.configStructureTable,
     )).get().then((value) => value.last);
 
-    return ConfigStructure.fromJson(
-      jsonDecode(config.content) as List<dynamic>,
-    );
+    return config;
   } catch (e) {
     log("Config read error: $e");
     return null;
   }
 }
 
-Future<ConfigStructure?> writeAndReturnConfigStructure(
+Future<ConfigStructureTableData?> writeAndReturnConfigStructure(
   AppDatabase database,
-  String? content,
+  ConfigStructure? content,
 ) async {
   if (content == null) {
     return null;
@@ -36,7 +35,7 @@ Future<ConfigStructure?> writeAndReturnConfigStructure(
   log("Content $content");
 
   try {
-    await database.delete(database.configStructureDB).go();
+    await database.delete(database.configStructureTable).go();
   } catch (e) {
     log("Delete error: $e");
     return null;
@@ -44,8 +43,8 @@ Future<ConfigStructure?> writeAndReturnConfigStructure(
 
   try {
     await database
-        .into(database.configStructureDB)
-        .insert(ConfigStructureDBCompanion.insert(content: content));
+        .into(database.configStructureTable)
+        .insert(ConfigStructureTableCompanion.insert(content: content));
   } catch (e) {
     log("Insert error: $e");
     return null;
@@ -53,14 +52,12 @@ Future<ConfigStructure?> writeAndReturnConfigStructure(
 
   try {
     final config = await (database.select(
-      database.configStructureDB,
+      database.configStructureTable,
     )).get().then((value) => value.last);
 
     log("config $config");
 
-    return ConfigStructure.fromJson(
-      jsonDecode(config.content) as List<dynamic>,
-    );
+    return config;
   } catch (e) {
     log("Read error: $e");
     return null;

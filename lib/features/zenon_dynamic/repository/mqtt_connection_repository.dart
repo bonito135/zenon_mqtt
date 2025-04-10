@@ -1,10 +1,13 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/model/zenon_value_update.dart';
 
-class MqttConnectionRepository {
+class MqttConnectionRepository<T> {
   MqttConnectionRepository(this.client, this.topic, this.connMess);
 
   final MqttServerClient client;
@@ -12,7 +15,7 @@ class MqttConnectionRepository {
   final MqttConnectMessage connMess;
   final ValueNotifier<MqttConnectionState> stateNotifier =
       ValueNotifier<MqttConnectionState>(MqttConnectionState.disconnected);
-  final ValueNotifier<String?> messageNotifier = ValueNotifier<String?>(null);
+  final ValueNotifier<T?> messageNotifier = ValueNotifier<T?>(null);
 
   var pongCount = 0; // Pong counter
   var pingCount = 0; // Ping counter
@@ -130,6 +133,7 @@ class MqttConnectionRepository {
   }
 
   void listen() async {
+    log(T.toString());
     if (stateNotifier.value == MqttConnectionState.connected) {
       client.updates!.listen(
         (List<MqttReceivedMessage<MqttMessage?>>? c) async {
@@ -144,7 +148,23 @@ class MqttConnectionRepository {
             );
           }
 
-          messageNotifier.value = value;
+          // messageNotifier.value = value;
+          // T.fromJson(jsonDecode(value));
+          if (T is ZenonValueUpdate) {
+            log("Is zenon update");
+            messageNotifier.value =
+                ZenonValueUpdate.fromJson(
+                      jsonDecode(value) as Map<String, dynamic>,
+                    )
+                    as T;
+          }
+
+          if (T.toString() == "ConfigStructure") {
+            log("Is config structure");
+            messageNotifier.value =
+                ConfigStructure.fromJson(jsonDecode(value) as List<dynamic>)
+                    as T;
+          }
         },
         onError:
             (e) => {

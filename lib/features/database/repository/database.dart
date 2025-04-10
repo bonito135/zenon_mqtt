@@ -3,16 +3,23 @@ import 'package:drift_flutter/drift_flutter.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
 
+import '../../zenon_dynamic/model/convert.dart';
+// import 'package:zenon_mqtt/features/zenon_dynamic/model/config_structure.dart';
+
 part "database.g.dart";
 
-class ConfigStructureDB extends Table {
+// class ConfigStructureTable extends Table {
+//   IntColumn get id => integer().autoIncrement()();
+//   TextColumn get content => text()();
+//   DateTimeColumn get lastUpdate => dateTime().nullable()();
+// }
+class ConfigStructureTable extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get content => text()();
-  DateTimeColumn get lastUpdate => dateTime().nullable()();
+  BlobColumn get content => blob().map(ConfigStructure.binaryConverter)();
 }
 
-class StructureComponentDB extends Table {
-  IntColumn get id => integer().autoIncrement()();
+class StructureComponentTable extends Table {
+  // IntColumn get id => integer().autoIncrement()();
   TextColumn get type => text()();
   TextColumn get tagName => text()();
   TextColumn get description => text()();
@@ -23,7 +30,7 @@ class StructureComponentDB extends Table {
   BoolColumn get valid => boolean().nullable()();
 }
 
-@DriftDatabase(tables: [ConfigStructureDB, StructureComponentDB])
+@DriftDatabase(tables: [ConfigStructureTable, StructureComponentTable])
 class AppDatabase extends _$AppDatabase {
   // After generating code, this class needs to define a `schemaVersion` getter
   // and a constructor telling drift where the database should be stored.

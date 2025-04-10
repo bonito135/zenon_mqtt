@@ -3,12 +3,12 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
-class $ConfigStructureDBTable extends ConfigStructureDB
-    with TableInfo<$ConfigStructureDBTable, ConfigStructureDBData> {
+class $ConfigStructureTableTable extends ConfigStructureTable
+    with TableInfo<$ConfigStructureTableTable, ConfigStructureTableData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ConfigStructureDBTable(this.attachedDatabase, [this._alias]);
+  $ConfigStructureTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -22,38 +22,27 @@ class $ConfigStructureDBTable extends ConfigStructureDB
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
-  static const VerificationMeta _contentMeta = const VerificationMeta(
-    'content',
-  );
   @override
-  late final GeneratedColumn<String> content = GeneratedColumn<String>(
+  late final GeneratedColumnWithTypeConverter<ConfigStructure, Uint8List>
+  content = GeneratedColumn<Uint8List>(
     'content',
     aliasedName,
     false,
-    type: DriftSqlType.string,
+    type: DriftSqlType.blob,
     requiredDuringInsert: true,
-  );
-  static const VerificationMeta _lastUpdateMeta = const VerificationMeta(
-    'lastUpdate',
-  );
-  @override
-  late final GeneratedColumn<DateTime> lastUpdate = GeneratedColumn<DateTime>(
-    'last_update',
-    aliasedName,
-    true,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: false,
+  ).withConverter<ConfigStructure>(
+    $ConfigStructureTableTable.$convertercontent,
   );
   @override
-  List<GeneratedColumn> get $columns => [id, content, lastUpdate];
+  List<GeneratedColumn> get $columns => [id, content];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'config_structure_d_b';
+  static const String $name = 'config_structure_table';
   @override
   VerificationContext validateIntegrity(
-    Insertable<ConfigStructureDBData> instance, {
+    Insertable<ConfigStructureTableData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -61,93 +50,75 @@ class $ConfigStructureDBTable extends ConfigStructureDB
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('content')) {
-      context.handle(
-        _contentMeta,
-        content.isAcceptableOrUnknown(data['content']!, _contentMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_contentMeta);
-    }
-    if (data.containsKey('last_update')) {
-      context.handle(
-        _lastUpdateMeta,
-        lastUpdate.isAcceptableOrUnknown(data['last_update']!, _lastUpdateMeta),
-      );
-    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  ConfigStructureDBData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ConfigStructureTableData map(
+    Map<String, dynamic> data, {
+    String? tablePrefix,
+  }) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return ConfigStructureDBData(
+    return ConfigStructureTableData(
       id:
           attachedDatabase.typeMapping.read(
             DriftSqlType.int,
             data['${effectivePrefix}id'],
           )!,
-      content:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.string,
-            data['${effectivePrefix}content'],
-          )!,
-      lastUpdate: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}last_update'],
+      content: $ConfigStructureTableTable.$convertercontent.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.blob,
+          data['${effectivePrefix}content'],
+        )!,
       ),
     );
   }
 
   @override
-  $ConfigStructureDBTable createAlias(String alias) {
-    return $ConfigStructureDBTable(attachedDatabase, alias);
+  $ConfigStructureTableTable createAlias(String alias) {
+    return $ConfigStructureTableTable(attachedDatabase, alias);
   }
+
+  static JsonTypeConverter2<ConfigStructure, Uint8List, Object?>
+  $convertercontent = ConfigStructure.binaryConverter;
 }
 
-class ConfigStructureDBData extends DataClass
-    implements Insertable<ConfigStructureDBData> {
+class ConfigStructureTableData extends DataClass
+    implements Insertable<ConfigStructureTableData> {
   final int id;
-  final String content;
-  final DateTime? lastUpdate;
-  const ConfigStructureDBData({
-    required this.id,
-    required this.content,
-    this.lastUpdate,
-  });
+  final ConfigStructure content;
+  const ConfigStructureTableData({required this.id, required this.content});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['content'] = Variable<String>(content);
-    if (!nullToAbsent || lastUpdate != null) {
-      map['last_update'] = Variable<DateTime>(lastUpdate);
+    {
+      map['content'] = Variable<Uint8List>(
+        $ConfigStructureTableTable.$convertercontent.toSql(content),
+      );
     }
     return map;
   }
 
-  ConfigStructureDBCompanion toCompanion(bool nullToAbsent) {
-    return ConfigStructureDBCompanion(
+  ConfigStructureTableCompanion toCompanion(bool nullToAbsent) {
+    return ConfigStructureTableCompanion(
       id: Value(id),
       content: Value(content),
-      lastUpdate:
-          lastUpdate == null && nullToAbsent
-              ? const Value.absent()
-              : Value(lastUpdate),
     );
   }
 
-  factory ConfigStructureDBData.fromJson(
+  factory ConfigStructureTableData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return ConfigStructureDBData(
+    return ConfigStructureTableData(
       id: serializer.fromJson<int>(json['id']),
-      content: serializer.fromJson<String>(json['content']),
-      lastUpdate: serializer.fromJson<DateTime?>(json['lastUpdate']),
+      content: $ConfigStructureTableTable.$convertercontent.fromJson(
+        serializer.fromJson<Object?>(json['content']),
+      ),
     );
   }
   @override
@@ -155,86 +126,74 @@ class ConfigStructureDBData extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'content': serializer.toJson<String>(content),
-      'lastUpdate': serializer.toJson<DateTime?>(lastUpdate),
+      'content': serializer.toJson<Object?>(
+        $ConfigStructureTableTable.$convertercontent.toJson(content),
+      ),
     };
   }
 
-  ConfigStructureDBData copyWith({
-    int? id,
-    String? content,
-    Value<DateTime?> lastUpdate = const Value.absent(),
-  }) => ConfigStructureDBData(
-    id: id ?? this.id,
-    content: content ?? this.content,
-    lastUpdate: lastUpdate.present ? lastUpdate.value : this.lastUpdate,
-  );
-  ConfigStructureDBData copyWithCompanion(ConfigStructureDBCompanion data) {
-    return ConfigStructureDBData(
+  ConfigStructureTableData copyWith({int? id, ConfigStructure? content}) =>
+      ConfigStructureTableData(
+        id: id ?? this.id,
+        content: content ?? this.content,
+      );
+  ConfigStructureTableData copyWithCompanion(
+    ConfigStructureTableCompanion data,
+  ) {
+    return ConfigStructureTableData(
       id: data.id.present ? data.id.value : this.id,
       content: data.content.present ? data.content.value : this.content,
-      lastUpdate:
-          data.lastUpdate.present ? data.lastUpdate.value : this.lastUpdate,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('ConfigStructureDBData(')
+    return (StringBuffer('ConfigStructureTableData(')
           ..write('id: $id, ')
-          ..write('content: $content, ')
-          ..write('lastUpdate: $lastUpdate')
+          ..write('content: $content')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, content, lastUpdate);
+  int get hashCode => Object.hash(id, content);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is ConfigStructureDBData &&
+      (other is ConfigStructureTableData &&
           other.id == this.id &&
-          other.content == this.content &&
-          other.lastUpdate == this.lastUpdate);
+          other.content == this.content);
 }
 
-class ConfigStructureDBCompanion
-    extends UpdateCompanion<ConfigStructureDBData> {
+class ConfigStructureTableCompanion
+    extends UpdateCompanion<ConfigStructureTableData> {
   final Value<int> id;
-  final Value<String> content;
-  final Value<DateTime?> lastUpdate;
-  const ConfigStructureDBCompanion({
+  final Value<ConfigStructure> content;
+  const ConfigStructureTableCompanion({
     this.id = const Value.absent(),
     this.content = const Value.absent(),
-    this.lastUpdate = const Value.absent(),
   });
-  ConfigStructureDBCompanion.insert({
+  ConfigStructureTableCompanion.insert({
     this.id = const Value.absent(),
-    required String content,
-    this.lastUpdate = const Value.absent(),
+    required ConfigStructure content,
   }) : content = Value(content);
-  static Insertable<ConfigStructureDBData> custom({
+  static Insertable<ConfigStructureTableData> custom({
     Expression<int>? id,
-    Expression<String>? content,
-    Expression<DateTime>? lastUpdate,
+    Expression<Uint8List>? content,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (content != null) 'content': content,
-      if (lastUpdate != null) 'last_update': lastUpdate,
     });
   }
 
-  ConfigStructureDBCompanion copyWith({
+  ConfigStructureTableCompanion copyWith({
     Value<int>? id,
-    Value<String>? content,
-    Value<DateTime?>? lastUpdate,
+    Value<ConfigStructure>? content,
   }) {
-    return ConfigStructureDBCompanion(
+    return ConfigStructureTableCompanion(
       id: id ?? this.id,
       content: content ?? this.content,
-      lastUpdate: lastUpdate ?? this.lastUpdate,
     );
   }
 
@@ -245,44 +204,29 @@ class ConfigStructureDBCompanion
       map['id'] = Variable<int>(id.value);
     }
     if (content.present) {
-      map['content'] = Variable<String>(content.value);
-    }
-    if (lastUpdate.present) {
-      map['last_update'] = Variable<DateTime>(lastUpdate.value);
+      map['content'] = Variable<Uint8List>(
+        $ConfigStructureTableTable.$convertercontent.toSql(content.value),
+      );
     }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('ConfigStructureDBCompanion(')
+    return (StringBuffer('ConfigStructureTableCompanion(')
           ..write('id: $id, ')
-          ..write('content: $content, ')
-          ..write('lastUpdate: $lastUpdate')
+          ..write('content: $content')
           ..write(')'))
         .toString();
   }
 }
 
-class $StructureComponentDBTable extends StructureComponentDB
-    with TableInfo<$StructureComponentDBTable, StructureComponentDBData> {
+class $StructureComponentTableTable extends StructureComponentTable
+    with TableInfo<$StructureComponentTableTable, StructureComponentTableData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $StructureComponentDBTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
+  $StructureComponentTableTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _typeMeta = const VerificationMeta('type');
   @override
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
@@ -366,7 +310,6 @@ class $StructureComponentDBTable extends StructureComponentDB
   );
   @override
   List<GeneratedColumn> get $columns => [
-    id,
     type,
     tagName,
     description,
@@ -380,17 +323,14 @@ class $StructureComponentDBTable extends StructureComponentDB
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'structure_component_d_b';
+  static const String $name = 'structure_component_table';
   @override
   VerificationContext validateIntegrity(
-    Insertable<StructureComponentDBData> instance, {
+    Insertable<StructureComponentTableData> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
     if (data.containsKey('type')) {
       context.handle(
         _typeMeta,
@@ -459,19 +399,14 @@ class $StructureComponentDBTable extends StructureComponentDB
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
+  Set<GeneratedColumn> get $primaryKey => const {};
   @override
-  StructureComponentDBData map(
+  StructureComponentTableData map(
     Map<String, dynamic> data, {
     String? tablePrefix,
   }) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return StructureComponentDBData(
-      id:
-          attachedDatabase.typeMapping.read(
-            DriftSqlType.int,
-            data['${effectivePrefix}id'],
-          )!,
+    return StructureComponentTableData(
       type:
           attachedDatabase.typeMapping.read(
             DriftSqlType.string,
@@ -513,14 +448,13 @@ class $StructureComponentDBTable extends StructureComponentDB
   }
 
   @override
-  $StructureComponentDBTable createAlias(String alias) {
-    return $StructureComponentDBTable(attachedDatabase, alias);
+  $StructureComponentTableTable createAlias(String alias) {
+    return $StructureComponentTableTable(attachedDatabase, alias);
   }
 }
 
-class StructureComponentDBData extends DataClass
-    implements Insertable<StructureComponentDBData> {
-  final int id;
+class StructureComponentTableData extends DataClass
+    implements Insertable<StructureComponentTableData> {
   final String type;
   final String tagName;
   final String description;
@@ -529,8 +463,7 @@ class StructureComponentDBData extends DataClass
   final String? value;
   final String? lastUpdateTime;
   final bool? valid;
-  const StructureComponentDBData({
-    required this.id,
+  const StructureComponentTableData({
     required this.type,
     required this.tagName,
     required this.description,
@@ -543,7 +476,6 @@ class StructureComponentDBData extends DataClass
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
     map['type'] = Variable<String>(type);
     map['tag_name'] = Variable<String>(tagName);
     map['description'] = Variable<String>(description);
@@ -561,9 +493,8 @@ class StructureComponentDBData extends DataClass
     return map;
   }
 
-  StructureComponentDBCompanion toCompanion(bool nullToAbsent) {
-    return StructureComponentDBCompanion(
-      id: Value(id),
+  StructureComponentTableCompanion toCompanion(bool nullToAbsent) {
+    return StructureComponentTableCompanion(
       type: Value(type),
       tagName: Value(tagName),
       description: Value(description),
@@ -580,13 +511,12 @@ class StructureComponentDBData extends DataClass
     );
   }
 
-  factory StructureComponentDBData.fromJson(
+  factory StructureComponentTableData.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return StructureComponentDBData(
-      id: serializer.fromJson<int>(json['id']),
+    return StructureComponentTableData(
       type: serializer.fromJson<String>(json['type']),
       tagName: serializer.fromJson<String>(json['tagName']),
       description: serializer.fromJson<String>(json['description']),
@@ -601,7 +531,6 @@ class StructureComponentDBData extends DataClass
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
       'type': serializer.toJson<String>(type),
       'tagName': serializer.toJson<String>(tagName),
       'description': serializer.toJson<String>(description),
@@ -613,8 +542,7 @@ class StructureComponentDBData extends DataClass
     };
   }
 
-  StructureComponentDBData copyWith({
-    int? id,
+  StructureComponentTableData copyWith({
     String? type,
     String? tagName,
     String? description,
@@ -623,8 +551,7 @@ class StructureComponentDBData extends DataClass
     Value<String?> value = const Value.absent(),
     Value<String?> lastUpdateTime = const Value.absent(),
     Value<bool?> valid = const Value.absent(),
-  }) => StructureComponentDBData(
-    id: id ?? this.id,
+  }) => StructureComponentTableData(
     type: type ?? this.type,
     tagName: tagName ?? this.tagName,
     description: description ?? this.description,
@@ -635,11 +562,10 @@ class StructureComponentDBData extends DataClass
         lastUpdateTime.present ? lastUpdateTime.value : this.lastUpdateTime,
     valid: valid.present ? valid.value : this.valid,
   );
-  StructureComponentDBData copyWithCompanion(
-    StructureComponentDBCompanion data,
+  StructureComponentTableData copyWithCompanion(
+    StructureComponentTableCompanion data,
   ) {
-    return StructureComponentDBData(
-      id: data.id.present ? data.id.value : this.id,
+    return StructureComponentTableData(
       type: data.type.present ? data.type.value : this.type,
       tagName: data.tagName.present ? data.tagName.value : this.tagName,
       description:
@@ -657,8 +583,7 @@ class StructureComponentDBData extends DataClass
 
   @override
   String toString() {
-    return (StringBuffer('StructureComponentDBData(')
-          ..write('id: $id, ')
+    return (StringBuffer('StructureComponentTableData(')
           ..write('type: $type, ')
           ..write('tagName: $tagName, ')
           ..write('description: $description, ')
@@ -673,7 +598,6 @@ class StructureComponentDBData extends DataClass
 
   @override
   int get hashCode => Object.hash(
-    id,
     type,
     tagName,
     description,
@@ -686,8 +610,7 @@ class StructureComponentDBData extends DataClass
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is StructureComponentDBData &&
-          other.id == this.id &&
+      (other is StructureComponentTableData &&
           other.type == this.type &&
           other.tagName == this.tagName &&
           other.description == this.description &&
@@ -698,9 +621,8 @@ class StructureComponentDBData extends DataClass
           other.valid == this.valid);
 }
 
-class StructureComponentDBCompanion
-    extends UpdateCompanion<StructureComponentDBData> {
-  final Value<int> id;
+class StructureComponentTableCompanion
+    extends UpdateCompanion<StructureComponentTableData> {
   final Value<String> type;
   final Value<String> tagName;
   final Value<String> description;
@@ -709,8 +631,8 @@ class StructureComponentDBCompanion
   final Value<String?> value;
   final Value<String?> lastUpdateTime;
   final Value<bool?> valid;
-  const StructureComponentDBCompanion({
-    this.id = const Value.absent(),
+  final Value<int> rowid;
+  const StructureComponentTableCompanion({
     this.type = const Value.absent(),
     this.tagName = const Value.absent(),
     this.description = const Value.absent(),
@@ -719,9 +641,9 @@ class StructureComponentDBCompanion
     this.value = const Value.absent(),
     this.lastUpdateTime = const Value.absent(),
     this.valid = const Value.absent(),
+    this.rowid = const Value.absent(),
   });
-  StructureComponentDBCompanion.insert({
-    this.id = const Value.absent(),
+  StructureComponentTableCompanion.insert({
     required String type,
     required String tagName,
     required String description,
@@ -730,13 +652,13 @@ class StructureComponentDBCompanion
     this.value = const Value.absent(),
     this.lastUpdateTime = const Value.absent(),
     this.valid = const Value.absent(),
+    this.rowid = const Value.absent(),
   }) : type = Value(type),
        tagName = Value(tagName),
        description = Value(description),
        unit = Value(unit),
        digits = Value(digits);
-  static Insertable<StructureComponentDBData> custom({
-    Expression<int>? id,
+  static Insertable<StructureComponentTableData> custom({
     Expression<String>? type,
     Expression<String>? tagName,
     Expression<String>? description,
@@ -745,9 +667,9 @@ class StructureComponentDBCompanion
     Expression<String>? value,
     Expression<String>? lastUpdateTime,
     Expression<bool>? valid,
+    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
-      if (id != null) 'id': id,
       if (type != null) 'type': type,
       if (tagName != null) 'tag_name': tagName,
       if (description != null) 'description': description,
@@ -756,11 +678,11 @@ class StructureComponentDBCompanion
       if (value != null) 'value': value,
       if (lastUpdateTime != null) 'last_update_time': lastUpdateTime,
       if (valid != null) 'valid': valid,
+      if (rowid != null) 'rowid': rowid,
     });
   }
 
-  StructureComponentDBCompanion copyWith({
-    Value<int>? id,
+  StructureComponentTableCompanion copyWith({
     Value<String>? type,
     Value<String>? tagName,
     Value<String>? description,
@@ -769,9 +691,9 @@ class StructureComponentDBCompanion
     Value<String?>? value,
     Value<String?>? lastUpdateTime,
     Value<bool?>? valid,
+    Value<int>? rowid,
   }) {
-    return StructureComponentDBCompanion(
-      id: id ?? this.id,
+    return StructureComponentTableCompanion(
       type: type ?? this.type,
       tagName: tagName ?? this.tagName,
       description: description ?? this.description,
@@ -780,15 +702,13 @@ class StructureComponentDBCompanion
       value: value ?? this.value,
       lastUpdateTime: lastUpdateTime ?? this.lastUpdateTime,
       valid: valid ?? this.valid,
+      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
     if (type.present) {
       map['type'] = Variable<String>(type.value);
     }
@@ -813,13 +733,15 @@ class StructureComponentDBCompanion
     if (valid.present) {
       map['valid'] = Variable<bool>(valid.value);
     }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('StructureComponentDBCompanion(')
-          ..write('id: $id, ')
+    return (StringBuffer('StructureComponentTableCompanion(')
           ..write('type: $type, ')
           ..write('tagName: $tagName, ')
           ..write('description: $description, ')
@@ -827,7 +749,8 @@ class StructureComponentDBCompanion
           ..write('digits: $digits, ')
           ..write('value: $value, ')
           ..write('lastUpdateTime: $lastUpdateTime, ')
-          ..write('valid: $valid')
+          ..write('valid: $valid, ')
+          ..write('rowid: $rowid')
           ..write(')'))
         .toString();
   }
@@ -836,36 +759,34 @@ class StructureComponentDBCompanion
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $ConfigStructureDBTable configStructureDB =
-      $ConfigStructureDBTable(this);
-  late final $StructureComponentDBTable structureComponentDB =
-      $StructureComponentDBTable(this);
+  late final $ConfigStructureTableTable configStructureTable =
+      $ConfigStructureTableTable(this);
+  late final $StructureComponentTableTable structureComponentTable =
+      $StructureComponentTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
-    configStructureDB,
-    structureComponentDB,
+    configStructureTable,
+    structureComponentTable,
   ];
 }
 
-typedef $$ConfigStructureDBTableCreateCompanionBuilder =
-    ConfigStructureDBCompanion Function({
+typedef $$ConfigStructureTableTableCreateCompanionBuilder =
+    ConfigStructureTableCompanion Function({
       Value<int> id,
-      required String content,
-      Value<DateTime?> lastUpdate,
+      required ConfigStructure content,
     });
-typedef $$ConfigStructureDBTableUpdateCompanionBuilder =
-    ConfigStructureDBCompanion Function({
+typedef $$ConfigStructureTableTableUpdateCompanionBuilder =
+    ConfigStructureTableCompanion Function({
       Value<int> id,
-      Value<String> content,
-      Value<DateTime?> lastUpdate,
+      Value<ConfigStructure> content,
     });
 
-class $$ConfigStructureDBTableFilterComposer
-    extends Composer<_$AppDatabase, $ConfigStructureDBTable> {
-  $$ConfigStructureDBTableFilterComposer({
+class $$ConfigStructureTableTableFilterComposer
+    extends Composer<_$AppDatabase, $ConfigStructureTableTable> {
+  $$ConfigStructureTableTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -877,20 +798,16 @@ class $$ConfigStructureDBTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get content => $composableBuilder(
+  ColumnWithTypeConverterFilters<ConfigStructure, ConfigStructure, Uint8List>
+  get content => $composableBuilder(
     column: $table.content,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get lastUpdate => $composableBuilder(
-    column: $table.lastUpdate,
-    builder: (column) => ColumnFilters(column),
+    builder: (column) => ColumnWithTypeConverterFilters(column),
   );
 }
 
-class $$ConfigStructureDBTableOrderingComposer
-    extends Composer<_$AppDatabase, $ConfigStructureDBTable> {
-  $$ConfigStructureDBTableOrderingComposer({
+class $$ConfigStructureTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $ConfigStructureTableTable> {
+  $$ConfigStructureTableTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -902,20 +819,15 @@ class $$ConfigStructureDBTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get content => $composableBuilder(
+  ColumnOrderings<Uint8List> get content => $composableBuilder(
     column: $table.content,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get lastUpdate => $composableBuilder(
-    column: $table.lastUpdate,
     builder: (column) => ColumnOrderings(column),
   );
 }
 
-class $$ConfigStructureDBTableAnnotationComposer
-    extends Composer<_$AppDatabase, $ConfigStructureDBTable> {
-  $$ConfigStructureDBTableAnnotationComposer({
+class $$ConfigStructureTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ConfigStructureTableTable> {
+  $$ConfigStructureTableTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -925,78 +837,66 @@ class $$ConfigStructureDBTableAnnotationComposer
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<String> get content =>
+  GeneratedColumnWithTypeConverter<ConfigStructure, Uint8List> get content =>
       $composableBuilder(column: $table.content, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get lastUpdate => $composableBuilder(
-    column: $table.lastUpdate,
-    builder: (column) => column,
-  );
 }
 
-class $$ConfigStructureDBTableTableManager
+class $$ConfigStructureTableTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $ConfigStructureDBTable,
-          ConfigStructureDBData,
-          $$ConfigStructureDBTableFilterComposer,
-          $$ConfigStructureDBTableOrderingComposer,
-          $$ConfigStructureDBTableAnnotationComposer,
-          $$ConfigStructureDBTableCreateCompanionBuilder,
-          $$ConfigStructureDBTableUpdateCompanionBuilder,
+          $ConfigStructureTableTable,
+          ConfigStructureTableData,
+          $$ConfigStructureTableTableFilterComposer,
+          $$ConfigStructureTableTableOrderingComposer,
+          $$ConfigStructureTableTableAnnotationComposer,
+          $$ConfigStructureTableTableCreateCompanionBuilder,
+          $$ConfigStructureTableTableUpdateCompanionBuilder,
           (
-            ConfigStructureDBData,
+            ConfigStructureTableData,
             BaseReferences<
               _$AppDatabase,
-              $ConfigStructureDBTable,
-              ConfigStructureDBData
+              $ConfigStructureTableTable,
+              ConfigStructureTableData
             >,
           ),
-          ConfigStructureDBData,
+          ConfigStructureTableData,
           PrefetchHooks Function()
         > {
-  $$ConfigStructureDBTableTableManager(
+  $$ConfigStructureTableTableTableManager(
     _$AppDatabase db,
-    $ConfigStructureDBTable table,
+    $ConfigStructureTableTable table,
   ) : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer:
-              () => $$ConfigStructureDBTableFilterComposer(
+              () => $$ConfigStructureTableTableFilterComposer(
                 $db: db,
                 $table: table,
               ),
           createOrderingComposer:
-              () => $$ConfigStructureDBTableOrderingComposer(
+              () => $$ConfigStructureTableTableOrderingComposer(
                 $db: db,
                 $table: table,
               ),
           createComputedFieldComposer:
-              () => $$ConfigStructureDBTableAnnotationComposer(
+              () => $$ConfigStructureTableTableAnnotationComposer(
                 $db: db,
                 $table: table,
               ),
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                Value<String> content = const Value.absent(),
-                Value<DateTime?> lastUpdate = const Value.absent(),
-              }) => ConfigStructureDBCompanion(
-                id: id,
-                content: content,
-                lastUpdate: lastUpdate,
-              ),
+                Value<ConfigStructure> content = const Value.absent(),
+              }) => ConfigStructureTableCompanion(id: id, content: content),
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
-                required String content,
-                Value<DateTime?> lastUpdate = const Value.absent(),
-              }) => ConfigStructureDBCompanion.insert(
+                required ConfigStructure content,
+              }) => ConfigStructureTableCompanion.insert(
                 id: id,
                 content: content,
-                lastUpdate: lastUpdate,
               ),
           withReferenceMapper:
               (p0) =>
@@ -1013,30 +913,29 @@ class $$ConfigStructureDBTableTableManager
       );
 }
 
-typedef $$ConfigStructureDBTableProcessedTableManager =
+typedef $$ConfigStructureTableTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $ConfigStructureDBTable,
-      ConfigStructureDBData,
-      $$ConfigStructureDBTableFilterComposer,
-      $$ConfigStructureDBTableOrderingComposer,
-      $$ConfigStructureDBTableAnnotationComposer,
-      $$ConfigStructureDBTableCreateCompanionBuilder,
-      $$ConfigStructureDBTableUpdateCompanionBuilder,
+      $ConfigStructureTableTable,
+      ConfigStructureTableData,
+      $$ConfigStructureTableTableFilterComposer,
+      $$ConfigStructureTableTableOrderingComposer,
+      $$ConfigStructureTableTableAnnotationComposer,
+      $$ConfigStructureTableTableCreateCompanionBuilder,
+      $$ConfigStructureTableTableUpdateCompanionBuilder,
       (
-        ConfigStructureDBData,
+        ConfigStructureTableData,
         BaseReferences<
           _$AppDatabase,
-          $ConfigStructureDBTable,
-          ConfigStructureDBData
+          $ConfigStructureTableTable,
+          ConfigStructureTableData
         >,
       ),
-      ConfigStructureDBData,
+      ConfigStructureTableData,
       PrefetchHooks Function()
     >;
-typedef $$StructureComponentDBTableCreateCompanionBuilder =
-    StructureComponentDBCompanion Function({
-      Value<int> id,
+typedef $$StructureComponentTableTableCreateCompanionBuilder =
+    StructureComponentTableCompanion Function({
       required String type,
       required String tagName,
       required String description,
@@ -1045,10 +944,10 @@ typedef $$StructureComponentDBTableCreateCompanionBuilder =
       Value<String?> value,
       Value<String?> lastUpdateTime,
       Value<bool?> valid,
+      Value<int> rowid,
     });
-typedef $$StructureComponentDBTableUpdateCompanionBuilder =
-    StructureComponentDBCompanion Function({
-      Value<int> id,
+typedef $$StructureComponentTableTableUpdateCompanionBuilder =
+    StructureComponentTableCompanion Function({
       Value<String> type,
       Value<String> tagName,
       Value<String> description,
@@ -1057,22 +956,18 @@ typedef $$StructureComponentDBTableUpdateCompanionBuilder =
       Value<String?> value,
       Value<String?> lastUpdateTime,
       Value<bool?> valid,
+      Value<int> rowid,
     });
 
-class $$StructureComponentDBTableFilterComposer
-    extends Composer<_$AppDatabase, $StructureComponentDBTable> {
-  $$StructureComponentDBTableFilterComposer({
+class $$StructureComponentTableTableFilterComposer
+    extends Composer<_$AppDatabase, $StructureComponentTableTable> {
+  $$StructureComponentTableTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
   ColumnFilters<String> get type => $composableBuilder(
     column: $table.type,
     builder: (column) => ColumnFilters(column),
@@ -1114,20 +1009,15 @@ class $$StructureComponentDBTableFilterComposer
   );
 }
 
-class $$StructureComponentDBTableOrderingComposer
-    extends Composer<_$AppDatabase, $StructureComponentDBTable> {
-  $$StructureComponentDBTableOrderingComposer({
+class $$StructureComponentTableTableOrderingComposer
+    extends Composer<_$AppDatabase, $StructureComponentTableTable> {
+  $$StructureComponentTableTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
   ColumnOrderings<String> get type => $composableBuilder(
     column: $table.type,
     builder: (column) => ColumnOrderings(column),
@@ -1169,18 +1059,15 @@ class $$StructureComponentDBTableOrderingComposer
   );
 }
 
-class $$StructureComponentDBTableAnnotationComposer
-    extends Composer<_$AppDatabase, $StructureComponentDBTable> {
-  $$StructureComponentDBTableAnnotationComposer({
+class $$StructureComponentTableTableAnnotationComposer
+    extends Composer<_$AppDatabase, $StructureComponentTableTable> {
+  $$StructureComponentTableTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
   GeneratedColumn<String> get type =>
       $composableBuilder(column: $table.type, builder: (column) => column);
 
@@ -1210,53 +1097,52 @@ class $$StructureComponentDBTableAnnotationComposer
       $composableBuilder(column: $table.valid, builder: (column) => column);
 }
 
-class $$StructureComponentDBTableTableManager
+class $$StructureComponentTableTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $StructureComponentDBTable,
-          StructureComponentDBData,
-          $$StructureComponentDBTableFilterComposer,
-          $$StructureComponentDBTableOrderingComposer,
-          $$StructureComponentDBTableAnnotationComposer,
-          $$StructureComponentDBTableCreateCompanionBuilder,
-          $$StructureComponentDBTableUpdateCompanionBuilder,
+          $StructureComponentTableTable,
+          StructureComponentTableData,
+          $$StructureComponentTableTableFilterComposer,
+          $$StructureComponentTableTableOrderingComposer,
+          $$StructureComponentTableTableAnnotationComposer,
+          $$StructureComponentTableTableCreateCompanionBuilder,
+          $$StructureComponentTableTableUpdateCompanionBuilder,
           (
-            StructureComponentDBData,
+            StructureComponentTableData,
             BaseReferences<
               _$AppDatabase,
-              $StructureComponentDBTable,
-              StructureComponentDBData
+              $StructureComponentTableTable,
+              StructureComponentTableData
             >,
           ),
-          StructureComponentDBData,
+          StructureComponentTableData,
           PrefetchHooks Function()
         > {
-  $$StructureComponentDBTableTableManager(
+  $$StructureComponentTableTableTableManager(
     _$AppDatabase db,
-    $StructureComponentDBTable table,
+    $StructureComponentTableTable table,
   ) : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer:
-              () => $$StructureComponentDBTableFilterComposer(
+              () => $$StructureComponentTableTableFilterComposer(
                 $db: db,
                 $table: table,
               ),
           createOrderingComposer:
-              () => $$StructureComponentDBTableOrderingComposer(
+              () => $$StructureComponentTableTableOrderingComposer(
                 $db: db,
                 $table: table,
               ),
           createComputedFieldComposer:
-              () => $$StructureComponentDBTableAnnotationComposer(
+              () => $$StructureComponentTableTableAnnotationComposer(
                 $db: db,
                 $table: table,
               ),
           updateCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
                 Value<String> type = const Value.absent(),
                 Value<String> tagName = const Value.absent(),
                 Value<String> description = const Value.absent(),
@@ -1265,8 +1151,8 @@ class $$StructureComponentDBTableTableManager
                 Value<String?> value = const Value.absent(),
                 Value<String?> lastUpdateTime = const Value.absent(),
                 Value<bool?> valid = const Value.absent(),
-              }) => StructureComponentDBCompanion(
-                id: id,
+                Value<int> rowid = const Value.absent(),
+              }) => StructureComponentTableCompanion(
                 type: type,
                 tagName: tagName,
                 description: description,
@@ -1275,10 +1161,10 @@ class $$StructureComponentDBTableTableManager
                 value: value,
                 lastUpdateTime: lastUpdateTime,
                 valid: valid,
+                rowid: rowid,
               ),
           createCompanionCallback:
               ({
-                Value<int> id = const Value.absent(),
                 required String type,
                 required String tagName,
                 required String description,
@@ -1287,8 +1173,8 @@ class $$StructureComponentDBTableTableManager
                 Value<String?> value = const Value.absent(),
                 Value<String?> lastUpdateTime = const Value.absent(),
                 Value<bool?> valid = const Value.absent(),
-              }) => StructureComponentDBCompanion.insert(
-                id: id,
+                Value<int> rowid = const Value.absent(),
+              }) => StructureComponentTableCompanion.insert(
                 type: type,
                 tagName: tagName,
                 description: description,
@@ -1297,6 +1183,7 @@ class $$StructureComponentDBTableTableManager
                 value: value,
                 lastUpdateTime: lastUpdateTime,
                 valid: valid,
+                rowid: rowid,
               ),
           withReferenceMapper:
               (p0) =>
@@ -1313,33 +1200,36 @@ class $$StructureComponentDBTableTableManager
       );
 }
 
-typedef $$StructureComponentDBTableProcessedTableManager =
+typedef $$StructureComponentTableTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $StructureComponentDBTable,
-      StructureComponentDBData,
-      $$StructureComponentDBTableFilterComposer,
-      $$StructureComponentDBTableOrderingComposer,
-      $$StructureComponentDBTableAnnotationComposer,
-      $$StructureComponentDBTableCreateCompanionBuilder,
-      $$StructureComponentDBTableUpdateCompanionBuilder,
+      $StructureComponentTableTable,
+      StructureComponentTableData,
+      $$StructureComponentTableTableFilterComposer,
+      $$StructureComponentTableTableOrderingComposer,
+      $$StructureComponentTableTableAnnotationComposer,
+      $$StructureComponentTableTableCreateCompanionBuilder,
+      $$StructureComponentTableTableUpdateCompanionBuilder,
       (
-        StructureComponentDBData,
+        StructureComponentTableData,
         BaseReferences<
           _$AppDatabase,
-          $StructureComponentDBTable,
-          StructureComponentDBData
+          $StructureComponentTableTable,
+          StructureComponentTableData
         >,
       ),
-      StructureComponentDBData,
+      StructureComponentTableData,
       PrefetchHooks Function()
     >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
-  $$ConfigStructureDBTableTableManager get configStructureDB =>
-      $$ConfigStructureDBTableTableManager(_db, _db.configStructureDB);
-  $$StructureComponentDBTableTableManager get structureComponentDB =>
-      $$StructureComponentDBTableTableManager(_db, _db.structureComponentDB);
+  $$ConfigStructureTableTableTableManager get configStructureTable =>
+      $$ConfigStructureTableTableTableManager(_db, _db.configStructureTable);
+  $$StructureComponentTableTableTableManager get structureComponentTable =>
+      $$StructureComponentTableTableTableManager(
+        _db,
+        _db.structureComponentTable,
+      );
 }
