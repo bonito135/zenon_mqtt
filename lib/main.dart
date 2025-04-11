@@ -1,21 +1,21 @@
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
 import 'package:zenon_mqtt/core/localizations/default_lang_locale.dart';
 import 'package:zenon_mqtt/core/localizations/dynamic_localizations.dart';
 import 'package:zenon_mqtt/core/localizations/locale_listenable.dart';
-import 'package:zenon_mqtt/features/database/repository/database.dart';
+import 'package:zenon_mqtt/core/theme/theme.dart';
 import 'package:zenon_mqtt/core/view/widgets/sized_process_indicator.dart';
+import 'package:zenon_mqtt/features/database/repository/database.dart';
+import 'package:zenon_mqtt/features/database/viewmodel/config.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/repository/mqtt_connection_repository.dart';
-import 'package:zenon_mqtt/features/zenon_dynamic/view/pages/dynamic_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:zenon_mqtt/features/database/viewmodel/index.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/view/widgets/config_structure_bottom_sheet.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/view/widgets/dynamic_config_structure.dart';
 import 'package:zenon_mqtt/l10n/app_localizations.dart';
 
 void main() async {
@@ -46,7 +46,6 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    log("Locale: ${widget.localeNotifier}");
     DynamicLocalization.init(widget.localeNotifier.value);
   }
 
@@ -60,44 +59,7 @@ class _MyAppState extends State<MyApp> {
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
           locale: defaultLangLocale(value),
-          localeResolutionCallback: (locale, supportedLocales) {
-            log("Locale resolution callback $value");
-            return defaultLangLocale(value);
-          },
-          theme: ThemeData(
-            // Define the default brightness and colors.
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 2, 147, 144),
-              primary: const Color.fromARGB(255, 0, 36, 51),
-              secondary: const Color.fromARGB(255, 107, 165, 93),
-              brightness: Brightness.light,
-            ),
-
-            // Define the default `TextTheme`. Use this to specify the default
-            // text styling for headlines, titles, bodies of text, and more.
-            textTheme: TextTheme(
-              titleLarge: GoogleFonts.montserrat(
-                fontSize: 20,
-                fontWeight: FontWeight.w800,
-                color: Colors.white,
-              ),
-              displayLarge: GoogleFonts.montserrat(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-              bodyMedium: GoogleFonts.montserrat(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
-              bodySmall: GoogleFonts.montserrat(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-              ),
-            ),
-          ),
+          theme: theme,
           home: const MyHomePage(),
         );
       },
@@ -113,11 +75,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late final configConnection = MqttConnectionRepository<ConfigStructure>(
-    MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
-    dotenv.env['MQTT_CONFIG_TOPIC']!,
-    MqttConnectMessage().withClientIdentifier('Mqtt_config').startClean(),
-  );
+  MqttConnectionRepository<ConfigStructure>? configConnection;
 
   int currentPageIndex = 0;
 
@@ -125,23 +83,57 @@ class _MyHomePageState extends State<MyHomePage> {
   void dispose() {
     super.dispose();
 
-    configConnection.dispose();
+    configConnection?.dispose();
+  }
+
+  void setConfig(String? topic) {
+    log("Set config: $topic");
+    if (topic != null) {
+      setState(() {
+        configConnection = MqttConnectionRepository<ConfigStructure>(
+          MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
+          topic,
+          MqttConnectMessage().withClientIdentifier('Mqtt_config').startClean(),
+        );
+      });
+    }
+  }
+
+  void showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      backgroundColor: Theme.of(context).colorScheme.secondary,
+      barrierColor: Colors.black.withValues(alpha: 0.5),
+      builder: (context) {
+        return ConfigStructureBottomSheet(setConfig: setConfig);
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (configConnection == null) {
+      return DynamicConfigStructure(
+        configStructure: null,
+        currentPageIndex: currentPageIndex,
+        showBottomSheet: showBottomSheet,
+        setPageIndex: (index) => {currentPageIndex = index},
+      );
+    }
     return ValueListenableBuilder(
-      valueListenable: configConnection.stateNotifier,
+      valueListenable: configConnection!.stateNotifier,
       builder: (context, value, child) {
         final MqttConnectionState connectionState = value;
         if (connectionState == MqttConnectionState.disconnected) {
-          configConnection.connect();
+          configConnection!.connect();
         }
         if (connectionState == MqttConnectionState.connected) {
-          configConnection.listen();
+          configConnection!.listen();
         }
         return ValueListenableBuilder(
-          valueListenable: configConnection.messageNotifier,
+          valueListenable: configConnection!.messageNotifier,
           builder: (context, value, child) {
             return FutureBuilder(
               future:
@@ -154,91 +146,18 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data != null) {
                   final configStructure = snapshot.data!;
-                  return Scaffold(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    appBar: AppBar(
-                      backgroundColor: Theme.of(context).colorScheme.secondary,
-                      title: Text(
-                        configStructure
-                            .content!
-                            .structure[currentPageIndex]
-                            .sectionName,
-                      ),
-                      titleTextStyle: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    bottomNavigationBar: SafeArea(
-                      child:
-                          configStructure.content!.structure.length < 2
-                              ? SizedBox.shrink()
-                              : NavigationBar(
-                                labelBehavior:
-                                    NavigationDestinationLabelBehavior
-                                        .alwaysShow,
-                                selectedIndex: currentPageIndex,
-                                onDestinationSelected: (int index) {
-                                  setState(() {
-                                    if (mounted) {
-                                      currentPageIndex = index;
-                                    }
-                                  });
-                                },
-                                destinations: List<Widget>.generate(
-                                  configStructure.content!.structure.length,
-                                  (index) => NavigationDestination(
-                                    icon: Icon(Icons.explore),
-                                    label:
-                                        configStructure
-                                            .content!
-                                            .structure[index]
-                                            .sectionName,
-                                  ),
-                                ),
-                              ),
-                    ),
-                    body: SafeArea(
-                      child:
-                          configStructure.content!.structure.isEmpty
-                              ? Center(
-                                child: Text(
-                                  AppLocalizations.of(
-                                    context,
-                                  )!.no_config_applied,
-                                ),
-                              )
-                              : DynamicPage(
-                                title: Text(
-                                  configStructure
-                                      .content!
-                                      .structure[currentPageIndex]
-                                      .sectionName,
-                                ),
-                                structure:
-                                    configStructure
-                                        .content!
-                                        .structure[currentPageIndex],
-                              ),
-                    ),
+                  return DynamicConfigStructure(
+                    configStructure: configStructure,
+                    currentPageIndex: currentPageIndex,
+                    showBottomSheet: showBottomSheet,
+                    setPageIndex: (index) => {currentPageIndex = index},
                   );
                 }
-                return Scaffold(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  body: Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        connectionState != MqttConnectionState.connected
-                            ? Text(
-                              AppLocalizations.of(
-                                context,
-                              )!.reconnecting_to_server,
-                            )
-                            : Text(
-                              AppLocalizations.of(context)!.no_config_found,
-                            ),
-                        SizedProcessIndicator(),
-                      ],
-                    ),
-                  ),
+                return DynamicConfigStructure(
+                  configStructure: null,
+                  currentPageIndex: currentPageIndex,
+                  showBottomSheet: showBottomSheet,
+                  setPageIndex: (index) => {currentPageIndex = index},
                 );
               },
             );

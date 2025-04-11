@@ -49,7 +49,6 @@ class _DynamicComponentState extends State<DynamicComponent> {
         return ValueListenableBuilder(
           valueListenable: componentConnection.messageNotifier,
           builder: (context, value, child) {
-            // log("Zenon value update: $value");
             return FutureBuilder(
               future:
                   connectionState == MqttConnectionState.connected

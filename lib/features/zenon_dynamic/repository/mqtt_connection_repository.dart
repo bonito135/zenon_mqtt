@@ -122,21 +122,21 @@ class MqttConnectionRepository<T> {
   void onAutoReconnect() {
     stateNotifier.value = MqttConnectionState.connecting;
 
-    // if (kDebugMode) {
-    //   print(
-    //     'EXAMPLE::onAutoReconnect client callback - Client auto reconnection sequence will start',
-    //   );
-    // }
+    if (kDebugMode) {
+      print(
+        'EXAMPLE::onAutoReconnect client callback - Client auto reconnection sequence will start',
+      );
+    }
   }
 
   void onAutoReconnected() {
     stateNotifier.value = MqttConnectionState.connected;
 
-    // if (kDebugMode) {
-    //   print(
-    //     'EXAMPLE::onAutoReconnected client callback - Client auto reconnection sequence has completed',
-    //   );
-    // }
+    if (kDebugMode) {
+      print(
+        'EXAMPLE::onAutoReconnected client callback - Client auto reconnection sequence has completed',
+      );
+    }
   }
 
   void _onSubscribed(String topic) {
