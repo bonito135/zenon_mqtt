@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/view/widgets/dynamic_component.dart';
-// import 'package:zenon_mqtt/features/zenon_dynamic/model/_index.dart';
 
 class DynamicPage extends StatefulWidget {
   const DynamicPage({super.key, required this.title, required this.structure});

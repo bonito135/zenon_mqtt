@@ -43,7 +43,6 @@ class _DynamicComponentState extends State<DynamicComponent> {
       builder: (context, value, child) {
         final MqttConnectionState connectionState = value;
         if (connectionState == MqttConnectionState.disconnected) {
-          // reconnect();
           componentConnection.connect();
         }
         if (connectionState == MqttConnectionState.connected) {
@@ -52,7 +51,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
         return ValueListenableBuilder(
           valueListenable: componentConnection.messageNotifier,
           builder: (context, value, child) {
-            log("Zenon value update: $value");
+            // log("Zenon value update: $value");
             return FutureBuilder(
               future:
                   connectionState == MqttConnectionState.connected

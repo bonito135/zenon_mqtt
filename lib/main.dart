@@ -3,13 +3,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
+import 'package:zenon_mqtt/core/localizations/dynamic_localizations.dart';
+import 'package:zenon_mqtt/core/localizations/locale_listenable.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
 import 'package:zenon_mqtt/core/view/widgets/sized_process_indicator.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/repository/mqtt_connection_repository.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/view/pages/dynamic_page.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:zenon_mqtt/features/database/viewmodel/index.dart';
-import 'package:zenon_mqtt/features/zenon_dynamic/repository/mqtt_connection_repository.dart';
+import 'package:zenon_mqtt/l10n/app_localizations.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
@@ -17,20 +20,35 @@ void main() async {
   runApp(
     Provider<AppDatabase>(
       create: (context) => AppDatabase(),
-      child: MyApp(),
+      child: LocaleListener(child: MyApp()),
       dispose: (context, db) => db.close(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  static Locale? appLocale = const Locale('en');
+
+  @override
+  void initState() {
+    DynamicLocalization.init(appLocale);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Zenon MQTT',
+      locale: appLocale,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
         // Define the default brightness and colors.
         colorScheme: ColorScheme.fromSeed(
@@ -100,7 +118,6 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context, value, child) {
         final MqttConnectionState connectionState = value;
         if (connectionState == MqttConnectionState.disconnected) {
-          // reconnect();
           configConnection.connect();
         }
         if (connectionState == MqttConnectionState.connected) {
@@ -119,13 +136,13 @@ class _MyHomePageState extends State<MyHomePage> {
                       : readConfigStructure(context.watch<AppDatabase>()),
               builder: (context, snapshot) {
                 if (snapshot.hasData && snapshot.data != null) {
-                  final configStructure = snapshot.data;
+                  final configStructure = snapshot.data!;
                   return Scaffold(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     appBar: AppBar(
                       backgroundColor: Theme.of(context).colorScheme.secondary,
                       title: Text(
-                        configStructure!
+                        configStructure
                             .content!
                             .structure[currentPageIndex]
                             .sectionName,
@@ -180,10 +197,19 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                   );
                 }
-
                 return Scaffold(
                   backgroundColor: Theme.of(context).colorScheme.primary,
-                  body: Center(child: SizedProcessIndicator()),
+                  body: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        connectionState != MqttConnectionState.connected
+                            ? Text("Reconnecting to server")
+                            : Text("No configuration schema found"),
+                        SizedProcessIndicator(),
+                      ],
+                    ),
+                  ),
                 );
               },
             );

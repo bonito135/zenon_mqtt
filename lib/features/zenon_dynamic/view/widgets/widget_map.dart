@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
+import 'package:zenon_mqtt/core/localizations/dynamic_localizations.dart';
 import 'package:zenon_mqtt/core/utils/custom_rectangle_clipper.dart';
 import 'package:zenon_mqtt/core/view/widgets/timer_text.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
-// import 'package:zenon_mqtt/features/database/repository/database.dart';
-// import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
+// import 'package:zenon_mqtt/l10n/app_localizations.dart';
 
 Widget widgetMap(
   BuildContext context,
@@ -34,7 +34,7 @@ Widget widgetMap(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                component.description.toString(),
+                DynamicLocalization.translate(component.description),
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               Stack(

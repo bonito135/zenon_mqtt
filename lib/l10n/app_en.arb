@@ -1,0 +1,15 @@
+{
+	"@@locale": "en",
+	"current_delivery": "Current delivery",
+	"@current_delivery": {
+		"description": "Current delivery of the ZenonMQTTPublisher/BMS/PV.DC.Total_PV_Input_Power MQTT topic"
+	},
+	"capacity": "Capacity",
+	"@capacity": {
+		"description": "Capacity of the ZenonMQTTPublisher/BMS/PV.Battery.SOC MQTT topic"
+	},
+	"capacity_ah": "Capacity Ah",
+	"@capacity_ah": {
+		"description": "Capacity of the ZenonMQTTPublisher/BMS/PV.Battery.SOCAbs MQTT topic"
+	}
+}

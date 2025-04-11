@@ -2,34 +2,12 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
-
-import '../../zenon_dynamic/model/convert.dart';
-// import 'package:zenon_mqtt/features/zenon_dynamic/model/config_structure.dart';
+// import 'package:zenon_mqtt/features/database/model/index.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 
 part "database.g.dart";
-
-// class ConfigStructureTable extends Table {
-//   IntColumn get id => integer().autoIncrement()();
-//   TextColumn get content => text()();
-//   DateTimeColumn get lastUpdate => dateTime().nullable()();
-// }
-class ConfigStructureTable extends Table {
-  IntColumn get id => integer().autoIncrement()();
-  BlobColumn get content =>
-      blob().map(ConfigStructure.binaryConverter).nullable()();
-}
-
-class StructureComponentTable extends Table {
-  // IntColumn get id => integer().autoIncrement()();
-  TextColumn get type => text()();
-  TextColumn get tagName => text()();
-  TextColumn get description => text()();
-  TextColumn get unit => text()();
-  IntColumn get digits => integer()();
-  TextColumn get value => text().nullable()();
-  TextColumn get lastUpdateTime => text().nullable()();
-  BoolColumn get valid => boolean().nullable()();
-}
+part "config_structure_table.dart";
+part "structure_component_table.dart";
 
 @DriftDatabase(tables: [ConfigStructureTable, StructureComponentTable])
 class AppDatabase extends _$AppDatabase {
@@ -53,3 +31,20 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 }
+
+// class ConfigStructureTable extends Table {
+//   IntColumn get id => integer().autoIncrement()();
+//   BlobColumn get content =>
+//       blob().map(ConfigStructure.binaryConverter).nullable()();
+// }
+
+// class StructureComponentTable extends Table {
+//   TextColumn get type => text()();
+//   TextColumn get tagName => text()();
+//   TextColumn get description => text()();
+//   TextColumn get unit => text()();
+//   IntColumn get digits => integer()();
+//   TextColumn get value => text().nullable()();
+//   TextColumn get lastUpdateTime => text().nullable()();
+//   BoolColumn get valid => boolean().nullable()();
+// }

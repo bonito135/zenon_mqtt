@@ -33,14 +33,11 @@ Future<ConfigStructureTableData?> writeAndReturnConfigStructure(
     return null;
   }
 
-  log("Content $content");
-
-  // try {
-  //   await database.delete(database.configStructureTable).go();
-  // } catch (e) {
-  //   log("Delete error: $e");
-
-  // }
+  try {
+    await database.delete(database.configStructureTable).go();
+  } catch (e) {
+    log("Delete error: $e");
+  }
 
   try {
     await database
@@ -55,8 +52,6 @@ Future<ConfigStructureTableData?> writeAndReturnConfigStructure(
     final config = await (database.select(
       database.configStructureTable,
     )).get().then((value) => value.last);
-
-    log("config $config");
 
     return config;
   } catch (e) {

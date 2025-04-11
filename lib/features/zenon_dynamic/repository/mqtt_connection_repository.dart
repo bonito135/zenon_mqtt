@@ -92,14 +92,14 @@ class MqttConnectionRepository<T> {
           await client.connect();
 
           client.subscribe(topic, MqttQos.exactlyOnce);
-          if (kDebugMode) {
-            log('EXAMPLE::Subscribing to the $topic topic');
-          }
+          // if (kDebugMode) {
+          //   log('EXAMPLE::Subscribing to the $topic topic');
+          // }
         } catch (e) {
-          if (kDebugMode) {
-            log('EXAMPLE::Error subscribing to the $topic topic');
-            log("$e");
-          }
+          // if (kDebugMode) {
+          //   log('EXAMPLE::Error subscribing to the $topic topic');
+          //   log("$e");
+          // }
           stateNotifier.value = MqttConnectionState.disconnecting;
           client.disconnect();
         }
@@ -112,41 +112,40 @@ class MqttConnectionRepository<T> {
   void onConnected() {
     stateNotifier.value = MqttConnectionState.connected;
 
-    if (kDebugMode) {
-      print(
-        'EXAMPLE::OnConnected client callback - Client connection was successful',
-      );
-    }
+    // if (kDebugMode) {
+    //   print(
+    //     'EXAMPLE::OnConnected client callback - Client connection was successful',
+    //   );
+    // }
   }
 
   void onAutoReconnect() {
     stateNotifier.value = MqttConnectionState.connecting;
 
-    if (kDebugMode) {
-      print(
-        'EXAMPLE::onAutoReconnect client callback - Client auto reconnection sequence will start',
-      );
-    }
+    // if (kDebugMode) {
+    //   print(
+    //     'EXAMPLE::onAutoReconnect client callback - Client auto reconnection sequence will start',
+    //   );
+    // }
   }
 
   void onAutoReconnected() {
     stateNotifier.value = MqttConnectionState.connected;
 
-    if (kDebugMode) {
-      print(
-        'EXAMPLE::onAutoReconnected client callback - Client auto reconnection sequence has completed',
-      );
-    }
+    // if (kDebugMode) {
+    //   print(
+    //     'EXAMPLE::onAutoReconnected client callback - Client auto reconnection sequence has completed',
+    //   );
+    // }
   }
 
   void _onSubscribed(String topic) {
-    if (kDebugMode) {
-      print('EXAMPLE::Subscription confirmed for topic $topic');
-    }
+    // if (kDebugMode) {
+    //   print('EXAMPLE::Subscription confirmed for topic $topic');
+    // }
   }
 
   void listen() async {
-    log(T.toString());
     if (stateNotifier.value == MqttConnectionState.connected) {
       client.updates!.listen(
         (List<MqttReceivedMessage<MqttMessage?>>? c) async {
@@ -172,37 +171,37 @@ class MqttConnectionRepository<T> {
   void onDisconnected() {
     stateNotifier.value = MqttConnectionState.disconnected;
 
-    if (client.connectionStatus!.disconnectionOrigin ==
-        MqttDisconnectionOrigin.solicited) {
-      if (kDebugMode) {
-        print('EXAMPLE::OnDisconnected callback is solicited, this is correct');
-      }
-    } else {
-      if (kDebugMode) {
-        print(
-          'EXAMPLE::OnDisconnected callback is unsolicited or none, this is incorrect - exiting',
-        );
-      }
-    }
+    // if (client.connectionStatus!.disconnectionOrigin ==
+    //     MqttDisconnectionOrigin.solicited) {
+    //   if (kDebugMode) {
+    //     print('EXAMPLE::OnDisconnected callback is solicited, this is correct');
+    //   }
+    // } else {
+    //   if (kDebugMode) {
+    //     print(
+    //       'EXAMPLE::OnDisconnected callback is unsolicited or none, this is incorrect - exiting',
+    //     );
+    //   }
+    // }
   }
 
   void onPingCallback() {
-    if (kDebugMode) {
-      print('EXAMPLE::Ping sent client callback invoked');
-    }
+    // if (kDebugMode) {
+    //   print('EXAMPLE::Ping sent client callback invoked');
+    // }
     // pingCount++;
   }
 
   void onPongCallback() {
-    if (kDebugMode) {
-      print('EXAMPLE::Ping response client callback invoked');
-    }
+    // if (kDebugMode) {
+    //   print('EXAMPLE::Ping response client callback invoked');
+    // }
     // pongCount++;
-    if (kDebugMode) {
-      print(
-        'EXAMPLE::Latency of this ping/pong cycle is ${client.lastCycleLatency} milliseconds',
-      );
-    }
+    // if (kDebugMode) {
+    //   print(
+    //     'EXAMPLE::Latency of this ping/pong cycle is ${client.lastCycleLatency} milliseconds',
+    //   );
+    // }
   }
 
   void dispose() {
@@ -213,7 +212,7 @@ class MqttConnectionRepository<T> {
 
   T? handleValueTypes(String value) {
     if (T.toString() == "ZenonValueUpdate") {
-      log("Is zenon update");
+      // log("Is zenon update");
 
       return ZenonValueUpdate.fromJson(
             jsonDecode(value) as Map<String, dynamic>,
@@ -222,7 +221,7 @@ class MqttConnectionRepository<T> {
     }
 
     if (T.toString() == "ConfigStructure") {
-      log("Is config structure");
+      // log("Is config structure");
 
       return ConfigStructure.fromJson(jsonDecode(value) as Map<String, dynamic>)
           as T;
