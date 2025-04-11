@@ -2,5 +2,13 @@
 	"@@locale": "de",
 	"current_delivery": "Aktuelle Lieferung",
 	"capacity": "Kapazität",
-	"capacity_ah": "Kapazität Ah"
+	"capacity_ah": "Kapazität Ah",
+	"no_config_applied": "Keine Konfiguration angewendet",
+	"reconnecting_to_server": "Verbindung wird wiederhergestellt",
+	"no_config_found": "Keine Konfiguration gefunden",
+	"last_change_before": "Letzte Änderung vor",
+	"day_short": "T",
+	"hour_short": "S",
+	"minute_short": "M",
+	"second_short": "Z"
 }

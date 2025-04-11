@@ -1,3 +1,6 @@
+import 'package:flutter/widgets.dart';
+import 'package:zenon_mqtt/l10n/app_localizations.dart';
+
 Duration getTimeDifference(String time, String time2) {
   var date1 = DateTime.parse(time);
   var date2 = DateTime.parse(time2);
@@ -13,7 +16,10 @@ Duration getTimeDifferenceFromNow(String? time) {
   return date1.difference(date2);
 }
 
-String representTimeDifferenceInWords(Duration difference) {
+String representTimeDifferenceInWords(
+  BuildContext context,
+  Duration difference,
+) {
   var days = difference.inDays;
   var hours = difference.inHours;
   var minutes = difference.inMinutes;
@@ -34,10 +40,22 @@ String representTimeDifferenceInWords(Duration difference) {
 
   String resultString = "";
 
-  if (days > 0) resultString = "$resultString ${days}d";
-  if (hours > 0) resultString = "$resultString ${hours}h";
-  if (minutes > 0) resultString = "$resultString ${minutes}m";
-  if (seconds >= 0) resultString = "$resultString ${seconds}s";
+  if (days > 0) {
+    resultString =
+        "$resultString $days${AppLocalizations.of(context)!.day_short}";
+  }
+  if (hours > 0) {
+    resultString =
+        "$resultString $hours${AppLocalizations.of(context)!.hour_short}";
+  }
+  if (minutes > 0) {
+    resultString =
+        "$resultString $minutes${AppLocalizations.of(context)!.minute_short}";
+  }
+  if (seconds >= 0) {
+    resultString =
+        "$resultString $seconds${AppLocalizations.of(context)!.second_short}";
+  }
 
   return resultString;
 }

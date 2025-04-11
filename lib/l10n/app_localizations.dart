@@ -114,6 +114,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Capacity Ah'**
   String get capacity_ah;
+
+  /// No configuration applied
+  ///
+  /// In en, this message translates to:
+  /// **'No configuration applied'**
+  String get no_config_applied;
+
+  /// Reconnecting to server
+  ///
+  /// In en, this message translates to:
+  /// **'Reconnecting to server'**
+  String get reconnecting_to_server;
+
+  /// No configuration found
+  ///
+  /// In en, this message translates to:
+  /// **'No configuration found'**
+  String get no_config_found;
+
+  /// Last change before
+  ///
+  /// In en, this message translates to:
+  /// **'Last change before'**
+  String get last_change_before;
+
+  /// Day short
+  ///
+  /// In en, this message translates to:
+  /// **'d'**
+  String get day_short;
+
+  /// Hour short
+  ///
+  /// In en, this message translates to:
+  /// **'h'**
+  String get hour_short;
+
+  /// Minute short
+  ///
+  /// In en, this message translates to:
+  /// **'m'**
+  String get minute_short;
+
+  /// Second short
+  ///
+  /// In en, this message translates to:
+  /// **'s'**
+  String get second_short;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

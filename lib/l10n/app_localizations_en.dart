@@ -16,4 +16,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get capacity_ah => 'Capacity Ah';
+
+  @override
+  String get no_config_applied => 'No configuration applied';
+
+  @override
+  String get reconnecting_to_server => 'Reconnecting to server';
+
+  @override
+  String get no_config_found => 'No configuration found';
+
+  @override
+  String get last_change_before => 'Last change before';
+
+  @override
+  String get day_short => 'd';
+
+  @override
+  String get hour_short => 'h';
+
+  @override
+  String get minute_short => 'm';
+
+  @override
+  String get second_short => 's';
 }
