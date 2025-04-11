@@ -13,6 +13,7 @@ void writeConfigStructure(
 Future<ConfigStructureTableData?> readConfigStructure(
   AppDatabase database,
 ) async {
+  // return null;
   try {
     final config = await (database.select(
       database.configStructureTable,
