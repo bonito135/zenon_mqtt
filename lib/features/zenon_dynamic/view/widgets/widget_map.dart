@@ -16,9 +16,23 @@ Widget widgetMap(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         if (connectionState == MqttConnectionState.disconnected)
-          const LinearProgressIndicator(color: Colors.red),
+          const LinearProgressIndicator(
+            color: Colors.red,
+            backgroundColor: Colors.redAccent,
+            minHeight: 3,
+          ),
         if (connectionState == MqttConnectionState.connecting)
-          const LinearProgressIndicator(),
+          const LinearProgressIndicator(
+            minHeight: 3,
+            color: Colors.blue,
+            backgroundColor: Colors.blueAccent,
+          ),
+        if (connectionState == MqttConnectionState.connected)
+          LinearProgressIndicator(
+            color: Colors.green,
+            backgroundColor: Theme.of(context).colorScheme.secondary,
+            minHeight: 3,
+          ),
         ExpansionTile(
           shape: LinearBorder.none,
           collapsedShape: LinearBorder.none,
