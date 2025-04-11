@@ -22,6 +22,7 @@ class _TimerTextState extends State<TimerText> {
             return Text(
               style: Theme.of(context).textTheme.bodySmall,
               representTimeDifferenceInWords(
+                context,
                 getTimeDifferenceFromNow(
                   widget.lastUpdateTime?.replaceAll('.', '-') ?? "",
                 ),

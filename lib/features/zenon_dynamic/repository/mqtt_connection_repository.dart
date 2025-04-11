@@ -212,8 +212,6 @@ class MqttConnectionRepository<T> {
 
   T? handleValueTypes(String value) {
     if (T.toString() == "ZenonValueUpdate") {
-      // log("Is zenon update");
-
       return ZenonValueUpdate.fromJson(
             jsonDecode(value) as Map<String, dynamic>,
           )
@@ -221,8 +219,6 @@ class MqttConnectionRepository<T> {
     }
 
     if (T.toString() == "ConfigStructure") {
-      // log("Is config structure");
-
       return ConfigStructure.fromJson(jsonDecode(value) as Map<String, dynamic>)
           as T;
     }

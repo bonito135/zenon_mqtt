@@ -22,7 +22,7 @@ class _DynamicPageState extends State<DynamicPage> {
         Expanded(
           child: CupertinoScrollbar(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(0, 20, 0, 0),
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
               child: ListView.builder(
                 itemCount: widget.structure.elements.length,
                 itemBuilder: (context, index) {

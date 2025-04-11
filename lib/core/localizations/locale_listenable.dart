@@ -1,14 +1,16 @@
+import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:zenon_mqtt/core/localizations/dynamic_localizations.dart';
 
 class LocaleListener extends StatefulWidget {
   final Locale defaultLocale;
-  final Widget? child;
+  final Widget Function(ValueNotifier<Locale>) child;
 
   const LocaleListener({
     super.key,
     this.defaultLocale = const Locale('en_US'),
-    this.child,
+    required this.child,
   });
 
   @override
@@ -17,9 +19,15 @@ class LocaleListener extends StatefulWidget {
 
 class _LocaleListenerState extends State<LocaleListener>
     with WidgetsBindingObserver {
+  // Locale currentLocale = Locale(Platform.localeName);
+  ValueNotifier<Locale> currentLocale = ValueNotifier(
+    Locale(Platform.localeName),
+  );
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
+
     super.initState();
   }
 
@@ -27,11 +35,11 @@ class _LocaleListenerState extends State<LocaleListener>
   void didChangeLocales(List<Locale>? locales) {
     super.didChangeLocales(locales);
 
-    final currentLocale = locales?.first ?? widget.defaultLocale;
+    currentLocale.value = locales?.first ?? widget.defaultLocale;
 
-    // log("Locale changed to: $currentLocale");
+    log("Locale changed to: $currentLocale");
 
-    DynamicLocalization.init(currentLocale);
+    DynamicLocalization.init(currentLocale.value);
 
     rebuildAllChildren(context);
   }
@@ -44,7 +52,7 @@ class _LocaleListenerState extends State<LocaleListener>
 
   @override
   Widget build(BuildContext context) {
-    return widget.child ?? const SizedBox.shrink();
+    return widget.child(currentLocale);
   }
 }
 

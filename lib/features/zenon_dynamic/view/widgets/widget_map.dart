@@ -4,7 +4,7 @@ import 'package:zenon_mqtt/core/localizations/dynamic_localizations.dart';
 import 'package:zenon_mqtt/core/utils/custom_rectangle_clipper.dart';
 import 'package:zenon_mqtt/core/view/widgets/timer_text.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
-// import 'package:zenon_mqtt/l10n/app_localizations.dart';
+import 'package:zenon_mqtt/l10n/app_localizations.dart';
 
 Widget widgetMap(
   BuildContext context,
@@ -15,7 +15,6 @@ Widget widgetMap(
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Divider(height: 0),
         if (connectionState == MqttConnectionState.disconnected)
           const LinearProgressIndicator(color: Colors.red),
         if (connectionState == MqttConnectionState.connecting)
@@ -67,7 +66,7 @@ Widget widgetMap(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  "Poslední změna před:",
+                  AppLocalizations.of(context)!.last_change_before,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
                 TimerText(lastUpdateTime: component.lastUpdateTime),

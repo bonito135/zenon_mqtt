@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
@@ -8,9 +9,27 @@ class DynamicLocalization {
   static Map<String, dynamic>? localizedMap = {};
 
   static init(Locale? locale) async {
-    var filePath = 'lib/l10n/app_${locale?.languageCode ?? 'en'}.arb';
-    arbContent = await rootBundle.loadString(filePath);
-    localizedMap = jsonDecode(arbContent!) as Map<String, dynamic>;
+    final fallbackLocale = locale?.languageCode.substring(0, 2);
+    log("Lang code: ${locale?.languageCode}");
+    log("Fallback locale: $fallbackLocale");
+    final filePath = 'lib/l10n/app_${locale?.languageCode}.arb';
+    final fallbackFilePath = 'lib/l10n/app_$fallbackLocale.arb';
+    final defaultFilePath = 'lib/l10n/app_en.arb';
+
+    try {
+      arbContent = await rootBundle.loadString(filePath);
+      localizedMap = jsonDecode(arbContent!) as Map<String, dynamic>;
+    } catch (e) {
+      try {
+        log("Fallback file path: $fallbackFilePath");
+        arbContent = await rootBundle.loadString(fallbackFilePath);
+        localizedMap = jsonDecode(arbContent!) as Map<String, dynamic>;
+      } catch (e) {
+        log("Default file path: $defaultFilePath");
+        arbContent = await rootBundle.loadString(defaultFilePath);
+        localizedMap = jsonDecode(arbContent!) as Map<String, dynamic>;
+      }
+    }
   }
 
   static String translate(String key) {

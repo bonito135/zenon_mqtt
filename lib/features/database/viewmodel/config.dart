@@ -33,6 +33,8 @@ Future<ConfigStructureTableData?> writeAndReturnConfigStructure(
     return null;
   }
 
+  // return null;
+
   try {
     await database.delete(database.configStructureTable).go();
   } catch (e) {

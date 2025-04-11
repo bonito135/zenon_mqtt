@@ -2,5 +2,13 @@
 	"@@locale": "cs",
 	"current_delivery": "Aktuální dodávka",
 	"capacity": "Kapacita",
-	"capacity_ah": "Kapacita Ah"
+	"capacity_ah": "Kapacita Ah",
+	"no_config_applied": "Žádná konfigurace aplikována",
+	"reconnecting_to_server": "Znovu se připojuje k serveru",
+	"no_config_found": "Nenalezena žádná konfigurace",
+	"last_change_before": "Poslední změna před",
+	"day_short": "d",
+	"hour_short": "h",
+	"minute_short": "m",
+	"second_short": "s"
 }

@@ -11,5 +11,37 @@
 	"capacity_ah": "Capacity Ah",
 	"@capacity_ah": {
 		"description": "Capacity of the ZenonMQTTPublisher/BMS/PV.Battery.SOCAbs MQTT topic"
+	},
+	"no_config_applied": "No configuration applied",
+	"@no_config_applied": {
+		"description": "No configuration applied"
+	},
+	"reconnecting_to_server": "Reconnecting to server",
+	"@reconnecting_to_server": {
+		"description": "Reconnecting to server"
+	},
+	"no_config_found": "No configuration found",
+	"@no_config_found": {
+		"description": "No configuration found"
+	},
+	"last_change_before": "Last change before",
+	"@last_change_before": {
+		"description": "Last change before"
+	},
+	"day_short": "d",
+	"@day_short": {
+		"description": "Day short"
+	},
+	"hour_short": "h",
+	"@hour_short": {
+		"description": "Hour short"
+	},
+	"minute_short": "m",
+	"@minute_short": {
+		"description": "Minute short"
+	},
+	"second_short": "s",
+	"@second_short": {
+		"description": "Second short"
 	}
 }
