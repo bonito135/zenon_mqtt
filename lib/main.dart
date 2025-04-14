@@ -146,7 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     if (configConnection == null) {
       if (kDebugMode) {
-        print("configConnection: ${configConnection}");
+        print("configConnection: $configConnection");
       }
       return FutureBuilder(
         future: getLastConfigTopic(),
