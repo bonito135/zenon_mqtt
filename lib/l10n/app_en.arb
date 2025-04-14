@@ -43,5 +43,85 @@
 	"second_short": "s",
 	"@second_short": {
 		"description": "Second short"
+	},
+	"topic": "Topic",
+	"@topic": {
+		"description": "Topic"
+	},
+	"language": "Language",
+	"@language": {
+		"description": "Language"
+	},
+	"apply": "Apply",
+	"@apply": {
+		"description": "Apply"
+	},
+	"applied": "Applied",
+	"@applied": {
+		"description": "Applied"
+	},
+	"submit": "Submit",
+	"@submit": {
+		"description": "Submit"
+	},
+	"processing_data": "Processing Data",
+	"@processing_data": {
+		"description": "Processing Data"
+	},
+	"connection_topic": "Connection topic",
+	"@connection_topic": {
+		"description": "Connection topic"
+	},
+	"connection_topic_is_required": "Connection topic is required",
+	"@connection_topic_is_required": {
+		"description": "Connection topic is required"
+	},
+	"connect_to_zenon_instace": "Connect to Zenon istance",
+	"@connect_to_zenon_instace": {
+		"description": "Connect to Zenon istance"
+	},
+	"unknown_type": "Unknown type",
+	"@unknown_type": {
+		"description": "Unknown type"
+	},
+	"photovoltaics": "Photovoltaics",
+	"@photovoltaics": {
+		"description": "Photovoltaics"
+	},
+	"temperatures": "Temperatures",
+	"@temperatures": {
+		"description": "Temperatures"
+	},
+	"battery_temperature": "Battery temperature",
+	"@battery_temperature": {
+		"description": "Battery temperature"
+	},
+	"total_power_load": "Total power load",
+	"@total_power_load": {
+		"description": "Total power load"
+	},
+	"battery_current": "Battery current",
+	"@battery_current": {
+		"description": "Battery current"
+	},
+	"battery_voltage": "Battery voltage",
+	"@battery_voltage": {
+		"description": "Battery voltage"
+	},
+	"battery_mode": "Battery mode",
+	"@battery_mode": {
+		"description": "Battery mode"
+	},
+	"temperature_sensor_presentation_room": "Presentation room",
+	"@temperature_sensor_presentation_room": {
+		"description": "Temperature sensor presentation room"
+	},
+	"temperature_sensor_secretariat": "Secretariat",
+	"@temperature_sensor_secretariat": {
+		"description": "Temperature sensor secretariat"
+	},
+	"temperature_sensor_technicians": "Technicians",
+	"@temperature_sensor_technicians": {
+		"description": "Temperature sensor technicians"
 	}
 }

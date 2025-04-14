@@ -25,6 +25,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: any
+  shared_preferences: ^2.5.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -40,7 +41,6 @@ flutter:
     - .env
     - lib/l10n/app_en.arb
     - lib/l10n/app_de.arb
-    # - lib/l10n/app_de_DE.arb
     - lib/l10n/app_cs.arb
   fonts:
     - family: Montserrat

@@ -6,10 +6,12 @@ part "convert.g.dart";
 
 @j.JsonSerializable()
 class ConfigStructure extends Equatable {
+  @j.JsonKey(name: "title")
+  final String title;
   @j.JsonKey(name: "structure")
   final List<ConfigStructureItem> structure;
 
-  const ConfigStructure({required this.structure});
+  const ConfigStructure({required this.title, required this.structure});
 
   factory ConfigStructure.fromJson(Map<String, dynamic> json) =>
       _$ConfigStructureFromJson(json);
@@ -31,12 +33,15 @@ class ConfigStructure extends Equatable {
 
 @j.JsonSerializable()
 class ConfigStructureItem extends Equatable {
+  @j.JsonKey(name: "sectionIconCodePoint")
+  final String sectionIconCodePoint;
   @j.JsonKey(name: "sectionName")
   final String sectionName;
   @j.JsonKey(name: "elements")
   final List<ConfigStructureElement> elements;
 
   const ConfigStructureItem({
+    required this.sectionIconCodePoint,
     required this.sectionName,
     required this.elements,
   });
@@ -54,7 +59,7 @@ class ConfigStructureItem extends Equatable {
   );
 
   @override
-  List<Object> get props => [sectionName, elements];
+  List<Object> get props => [elements];
 
   @override
   bool get stringify => true;

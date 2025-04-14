@@ -92,31 +92,27 @@ class MqttConnectionRepository<T> {
           await client.connect();
 
           client.subscribe(topic, MqttQos.exactlyOnce);
-          // if (kDebugMode) {
-          //   log('EXAMPLE::Subscribing to the $topic topic');
-          // }
+          if (kDebugMode) {
+            print('EXAMPLE::Subscribing to the $topic topic');
+          }
         } catch (e) {
-          // if (kDebugMode) {
-          //   log('EXAMPLE::Error subscribing to the $topic topic');
-          //   log("$e");
-          // }
+          if (kDebugMode) {
+            print('EXAMPLE::Error subscribing to the $topic topic');
+            log("$e");
+          }
           stateNotifier.value = MqttConnectionState.disconnecting;
           client.disconnect();
         }
       });
     } else {
-      log("Can not connect to topic: $topic / Not disconnected");
+      if (kDebugMode) {
+        log("Can not connect to topic: $topic / Not disconnected");
+      }
     }
   }
 
   void onConnected() {
     stateNotifier.value = MqttConnectionState.connected;
-
-    // if (kDebugMode) {
-    //   print(
-    //     'EXAMPLE::OnConnected client callback - Client connection was successful',
-    //   );
-    // }
   }
 
   void onAutoReconnect() {
@@ -170,39 +166,11 @@ class MqttConnectionRepository<T> {
 
   void onDisconnected() {
     stateNotifier.value = MqttConnectionState.disconnected;
-
-    // if (client.connectionStatus!.disconnectionOrigin ==
-    //     MqttDisconnectionOrigin.solicited) {
-    //   if (kDebugMode) {
-    //     print('EXAMPLE::OnDisconnected callback is solicited, this is correct');
-    //   }
-    // } else {
-    //   if (kDebugMode) {
-    //     print(
-    //       'EXAMPLE::OnDisconnected callback is unsolicited or none, this is incorrect - exiting',
-    //     );
-    //   }
-    // }
   }
 
-  void onPingCallback() {
-    // if (kDebugMode) {
-    //   print('EXAMPLE::Ping sent client callback invoked');
-    // }
-    // pingCount++;
-  }
+  void onPingCallback() {}
 
-  void onPongCallback() {
-    // if (kDebugMode) {
-    //   print('EXAMPLE::Ping response client callback invoked');
-    // }
-    // pongCount++;
-    // if (kDebugMode) {
-    //   print(
-    //     'EXAMPLE::Latency of this ping/pong cycle is ${client.lastCycleLatency} milliseconds',
-    //   );
-    // }
-  }
+  void onPongCallback() {}
 
   void dispose() {
     client.disconnect();

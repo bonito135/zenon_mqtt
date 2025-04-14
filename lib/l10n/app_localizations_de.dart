@@ -40,4 +40,64 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get second_short => 'Z';
+
+  @override
+  String get topic => 'Thema';
+
+  @override
+  String get language => 'Sprache';
+
+  @override
+  String get apply => 'Anwenden';
+
+  @override
+  String get applied => 'Angewendet';
+
+  @override
+  String get submit => 'Absenden';
+
+  @override
+  String get processing_data => 'Datenverarbeitung';
+
+  @override
+  String get connection_topic => 'Verbindungsthema';
+
+  @override
+  String get connection_topic_is_required => 'Verbindungsthema ist erforderlich';
+
+  @override
+  String get connect_to_zenon_instace => 'Verbinden Sie mit Zenon-Instanz';
+
+  @override
+  String get unknown_type => 'Unbekannter Typ';
+
+  @override
+  String get photovoltaics => 'Photovoltaik';
+
+  @override
+  String get temperatures => 'Temperaturen';
+
+  @override
+  String get battery_temperature => 'Batterietemperatur';
+
+  @override
+  String get total_power_load => 'Gesamtladung';
+
+  @override
+  String get battery_current => 'Batterieintritt';
+
+  @override
+  String get battery_voltage => 'Batteriespannung';
+
+  @override
+  String get battery_mode => 'Batteriemodus';
+
+  @override
+  String get temperature_sensor_presentation_room => 'Präsentationsraum';
+
+  @override
+  String get temperature_sensor_secretariat => 'Sekretariat';
+
+  @override
+  String get temperature_sensor_technicians => 'Techniker';
 }

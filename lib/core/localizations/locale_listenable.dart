@@ -19,7 +19,6 @@ class LocaleListener extends StatefulWidget {
 
 class _LocaleListenerState extends State<LocaleListener>
     with WidgetsBindingObserver {
-  // Locale currentLocale = Locale(Platform.localeName);
   ValueNotifier<Locale> currentLocale = ValueNotifier(
     Locale(Platform.localeName),
   );
@@ -36,8 +35,6 @@ class _LocaleListenerState extends State<LocaleListener>
     super.didChangeLocales(locales);
 
     currentLocale.value = locales?.first ?? widget.defaultLocale;
-
-    log("Locale changed to: $currentLocale");
 
     DynamicLocalization.init(currentLocale.value);
 

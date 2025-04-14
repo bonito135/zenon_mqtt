@@ -162,6 +162,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'s'**
   String get second_short;
+
+  /// Topic
+  ///
+  /// In en, this message translates to:
+  /// **'Topic'**
+  String get topic;
+
+  /// Language
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get language;
+
+  /// Apply
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// Applied
+  ///
+  /// In en, this message translates to:
+  /// **'Applied'**
+  String get applied;
+
+  /// Submit
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get submit;
+
+  /// Processing Data
+  ///
+  /// In en, this message translates to:
+  /// **'Processing Data'**
+  String get processing_data;
+
+  /// Connection topic
+  ///
+  /// In en, this message translates to:
+  /// **'Connection topic'**
+  String get connection_topic;
+
+  /// Connection topic is required
+  ///
+  /// In en, this message translates to:
+  /// **'Connection topic is required'**
+  String get connection_topic_is_required;
+
+  /// Connect to Zenon istance
+  ///
+  /// In en, this message translates to:
+  /// **'Connect to Zenon istance'**
+  String get connect_to_zenon_instace;
+
+  /// Unknown type
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown type'**
+  String get unknown_type;
+
+  /// Photovoltaics
+  ///
+  /// In en, this message translates to:
+  /// **'Photovoltaics'**
+  String get photovoltaics;
+
+  /// Temperatures
+  ///
+  /// In en, this message translates to:
+  /// **'Temperatures'**
+  String get temperatures;
+
+  /// Battery temperature
+  ///
+  /// In en, this message translates to:
+  /// **'Battery temperature'**
+  String get battery_temperature;
+
+  /// Total power load
+  ///
+  /// In en, this message translates to:
+  /// **'Total power load'**
+  String get total_power_load;
+
+  /// Battery current
+  ///
+  /// In en, this message translates to:
+  /// **'Battery current'**
+  String get battery_current;
+
+  /// Battery voltage
+  ///
+  /// In en, this message translates to:
+  /// **'Battery voltage'**
+  String get battery_voltage;
+
+  /// Battery mode
+  ///
+  /// In en, this message translates to:
+  /// **'Battery mode'**
+  String get battery_mode;
+
+  /// Temperature sensor presentation room
+  ///
+  /// In en, this message translates to:
+  /// **'Presentation room'**
+  String get temperature_sensor_presentation_room;
+
+  /// Temperature sensor secretariat
+  ///
+  /// In en, this message translates to:
+  /// **'Secretariat'**
+  String get temperature_sensor_secretariat;
+
+  /// Temperature sensor technicians
+  ///
+  /// In en, this message translates to:
+  /// **'Technicians'**
+  String get temperature_sensor_technicians;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

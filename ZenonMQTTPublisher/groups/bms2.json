@@ -1,0 +1,105 @@
+{
+	"title": "KROPF BMS",
+	"structure": [
+		{
+			"sectionIconCodePoint": "0xea35",
+			"sectionName": "photovoltaics",
+			"elements": [
+				{
+					"type": "text",
+					"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.SOC",
+					"description": "capacity",
+					"unit": "%",
+					"digits": 3,
+					"value": 0
+				},
+				{
+					"type": "text",
+					"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.SOCAbs",
+					"description": "capacity_ah",
+					"unit": "Ah",
+					"digits": 4,
+					"value": 0
+				},
+				{
+					"type": "text",
+					"tagName": "ZenonMQTTPublisher/BMS/PV.DC.Total_PV_Input_Power",
+					"description": "current_delivery",
+					"unit": "kW",
+					"digits": 5,
+					"value": 0
+				},
+				{
+					"type": "text",
+					"tagName": "ZenonMQTTPublisher/BMS/PV.Load.Power Total",
+					"description": "total_power_load",
+					"unit": "kW",
+					"digits": 5,
+					"value": 0
+				},
+				{
+					"type": "text",
+					"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.Battery Current",
+					"description": "battery_current",
+					"unit": "A",
+					"digits": 4,
+					"value": 0
+				},
+				{
+					"type": "text",
+					"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.Battery Voltage",
+					"description": "battery_voltage",
+					"unit": "V",
+					"digits": 3,
+					"value": 0
+				},
+				{
+					"type": "boolean",
+					"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.Battery Mode",
+					"description": "battery_mode",
+					"unit": "",
+					"digits": 3,
+					"value": 0
+				},
+				{
+					"type": "text",
+					"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.BMS Pack Temperature",
+					"description": "battery_temperature",
+					"unit": "°C",
+					"digits": 2,
+					"value": 0
+				}
+			]
+		},
+		{
+			"sectionIconCodePoint": "0xe1ff",
+			"sectionName": "temperatures",
+			"elements": [
+				{
+					"type": "text",
+					"tagName": "ZenonMQTTPublisher/BMS/Teplotní_snímač_Prezentačka",
+					"description": "temperature_sensor_presentation_room",
+					"unit": "°C",
+					"digits": 2,
+					"value": 0
+				},
+				{
+					"type": "text",
+					"tagName": "ZenonMQTTPublisher/BMS/Teplotní_snímač_Sekretariát",
+					"description": "temperature_sensor_secretariat",
+					"unit": "°C",
+					"digits": 2,
+					"value": 0
+				},
+				{
+					"type": "text",
+					"tagName": "ZenonMQTTPublisher/BMS/Teplotní_snímač_Technici",
+					"description": "temperature_sensor_technicians",
+					"unit": "°C",
+					"digits": 2,
+					"value": 0
+				}
+			]
+		}
+	]
+}

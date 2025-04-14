@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/zenon_value_update.dart';
 
@@ -20,7 +21,9 @@ Future<StructureComponentTableData?> readStructureComponentByTagName(
 
     return entry;
   } catch (e) {
-    log("Get entry error: $e");
+    if (kDebugMode) {
+      print("Get entry error: $e");
+    }
     return null;
   }
 }
@@ -56,7 +59,9 @@ writeAndReturnStructureComponentFromZenonValueUpdate(
             ),
           );
     } catch (e) {
-      log("Create component error: $e");
+      if (kDebugMode) {
+        print("Create component error: $e");
+      }
       return null;
     }
   } else {
@@ -75,7 +80,9 @@ writeAndReturnStructureComponentFromZenonValueUpdate(
         ),
       );
     } catch (e) {
-      log("Update component error: $e");
+      if (kDebugMode) {
+        print("Update component error: $e");
+      }
       return null;
     }
   }
@@ -99,7 +106,9 @@ writeAndReturnStructureComponentFromZenonValueUpdate(
       valid: updatedEntry.valid,
     );
   } catch (e) {
-    log("Get updated entry error: $e");
+    if (kDebugMode) {
+      print("Get updated entry error: $e");
+    }
     return null;
   }
 }

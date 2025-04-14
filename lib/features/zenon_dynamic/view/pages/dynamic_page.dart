@@ -4,9 +4,8 @@ import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/view/widgets/dynamic_component.dart';
 
 class DynamicPage extends StatefulWidget {
-  const DynamicPage({super.key, required this.title, required this.structure});
+  const DynamicPage({super.key, required this.structure});
 
-  final Widget title;
   final ConfigStructureItem structure;
 
   @override
@@ -19,26 +18,24 @@ class _DynamicPageState extends State<DynamicPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Expanded(
-          child: CupertinoScrollbar(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
-              child: ListView.builder(
-                itemCount: widget.structure.elements.length,
-                itemBuilder: (context, index) {
-                  final data = widget.structure.elements[index];
+        CupertinoScrollbar(
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(0, 5, 0, 0),
+            child: Column(
+              children: [
+                ...widget.structure.elements.map((element) {
                   return DynamicComponent(
                     element: StructureComponentTableData(
-                      type: data.type,
-                      tagName: data.tagName,
-                      description: data.description,
-                      unit: data.unit,
-                      digits: data.digits,
-                      value: data.value.toString(),
+                      type: element.type,
+                      tagName: element.tagName,
+                      description: element.description,
+                      unit: element.unit,
+                      digits: element.digits,
+                      value: element.value.toString(),
                     ),
                   );
-                },
-              ),
+                }),
+              ],
             ),
           ),
         ),

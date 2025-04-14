@@ -1,5 +1,6 @@
 import 'dart:developer';
 import 'package:drift/drift.dart';
+import 'package:flutter/foundation.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 
@@ -13,7 +14,6 @@ void writeConfigStructure(
 Future<ConfigStructureTableData?> readConfigStructure(
   AppDatabase database,
 ) async {
-  // return null;
   try {
     final config = await (database.select(
       database.configStructureTable,
@@ -21,7 +21,9 @@ Future<ConfigStructureTableData?> readConfigStructure(
 
     return config;
   } catch (e) {
-    log("Config read error: $e");
+    if (kDebugMode) {
+      print("Config read error: $e");
+    }
     return null;
   }
 }
@@ -37,7 +39,9 @@ Future<ConfigStructureTableData?> writeAndReturnConfigStructure(
   try {
     await database.delete(database.configStructureTable).go();
   } catch (e) {
-    log("Delete error: $e");
+    if (kDebugMode) {
+      print("Delete error: $e");
+    }
   }
 
   try {
@@ -45,7 +49,9 @@ Future<ConfigStructureTableData?> writeAndReturnConfigStructure(
         .into(database.configStructureTable)
         .insert(ConfigStructureTableCompanion.insert(content: Value(content)));
   } catch (e) {
-    log("Insert error: $e");
+    if (kDebugMode) {
+      print("Insert error: $e");
+    }
     return null;
   }
 
@@ -56,7 +62,9 @@ Future<ConfigStructureTableData?> writeAndReturnConfigStructure(
 
     return config;
   } catch (e) {
-    log("Read error: $e");
+    if (kDebugMode) {
+      print("Read error: $e");
+    }
     return null;
   }
 }

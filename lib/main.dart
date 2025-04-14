@@ -1,9 +1,10 @@
-import 'dart:developer';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zenon_mqtt/core/localizations/default_lang_locale.dart';
 import 'package:zenon_mqtt/core/localizations/dynamic_localizations.dart';
 import 'package:zenon_mqtt/core/localizations/locale_listenable.dart';
@@ -13,7 +14,7 @@ import 'package:zenon_mqtt/features/database/viewmodel/config.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/repository/mqtt_connection_repository.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:zenon_mqtt/features/zenon_dynamic/view/widgets/config_structure_bottom_sheet.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/view/widgets/settings_bottom_sheet.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/view/widgets/dynamic_config_structure.dart';
 import 'package:zenon_mqtt/l10n/app_localizations.dart';
 
@@ -52,14 +53,15 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: widget.localeNotifier,
-      builder: (context, value, child) {
+      builder: (context, locale, child) {
+        DynamicLocalization.init(locale);
         return MaterialApp(
           title: 'Zenon MQTT',
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
-          locale: defaultLangLocale(value),
+          locale: defaultLangLocale(locale),
           theme: theme,
-          home: const MyHomePage(),
+          home: MyHomePage(localeNotifier: widget.localeNotifier),
         );
       },
     );
@@ -67,16 +69,32 @@ class _MyAppState extends State<MyApp> {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({super.key, required this.localeNotifier});
+
+  final ValueNotifier<Locale> localeNotifier;
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
   MqttConnectionRepository<ConfigStructure>? configConnection;
 
   int currentPageIndex = 0;
+
+  Future<String?> getLastConfigTopic() async {
+    return asyncPrefs.getString("last_config_topic");
+  }
+
+  Future<void> setLastConfigTopic(String topic) async {
+    return asyncPrefs.setString("last_config_topic", topic);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -86,27 +104,40 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void setConfig(String? topic) {
-    log("Set config: $topic");
     if (topic != null) {
-      setState(() {
-        configConnection = MqttConnectionRepository<ConfigStructure>(
-          MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
-          topic,
-          MqttConnectMessage().withClientIdentifier('Mqtt_config').startClean(),
-        );
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        setLastConfigTopic(topic);
+        setState(() {
+          configConnection = MqttConnectionRepository<ConfigStructure>(
+            MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
+            topic,
+            MqttConnectMessage()
+                .withClientIdentifier('Mqtt_config')
+                .startClean(),
+          );
+        });
       });
     }
   }
 
-  void showBottomSheet() {
+  void showSettingsSheet() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
+      useSafeArea: true,
       backgroundColor: Theme.of(context).colorScheme.secondary,
       barrierColor: Colors.black.withValues(alpha: 0.5),
       builder: (context) {
-        return ConfigStructureBottomSheet(setConfig: setConfig);
+        return SettingsBottomSheet(
+          setConfig: setConfig,
+          setLocale:
+              (locale) => {
+                setState(() {
+                  widget.localeNotifier.value = locale;
+                }),
+              },
+        );
       },
     );
   }
@@ -114,14 +145,23 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     if (configConnection == null) {
+      if (kDebugMode) {
+        print("configConnection: ${configConnection}");
+      }
       return FutureBuilder(
-        future: readConfigStructure(context.watch<AppDatabase>()),
+        future: getLastConfigTopic(),
         builder: (context, snapshot) {
+          if (kDebugMode) {
+            print("LAST CONFIG TOPIC: ${snapshot.data}");
+          }
+          if (snapshot.hasData) {
+            setConfig(snapshot.data);
+          }
+
           return DynamicConfigStructure(
-            configStructure: snapshot.data,
-            currentPageIndex: currentPageIndex,
-            showBottomSheet: showBottomSheet,
-            setPageIndex: (index) => {currentPageIndex = index},
+            connectionState: MqttConnectionState.disconnected,
+            configStructure: null,
+            showSettings: showSettingsSheet,
           );
         },
       );
@@ -148,20 +188,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       )
                       : readConfigStructure(context.watch<AppDatabase>()),
               builder: (context, snapshot) {
-                if (snapshot.hasData && snapshot.data != null) {
-                  final configStructure = snapshot.data!;
-                  return DynamicConfigStructure(
-                    configStructure: configStructure,
-                    currentPageIndex: currentPageIndex,
-                    showBottomSheet: showBottomSheet,
-                    setPageIndex: (index) => {currentPageIndex = index},
-                  );
-                }
+                final configStructure = snapshot.data;
                 return DynamicConfigStructure(
-                  configStructure: null,
-                  currentPageIndex: currentPageIndex,
-                  showBottomSheet: showBottomSheet,
-                  setPageIndex: (index) => {currentPageIndex = index},
+                  connectionState: connectionState,
+                  configStructure: configStructure,
+                  showSettings: showSettingsSheet,
                 );
               },
             );

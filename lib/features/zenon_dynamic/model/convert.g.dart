@@ -8,6 +8,7 @@ part of 'convert.dart';
 
 ConfigStructure _$ConfigStructureFromJson(Map<String, dynamic> json) =>
     ConfigStructure(
+      title: json['title'] as String,
       structure:
           (json['structure'] as List<dynamic>)
               .map(
@@ -17,10 +18,11 @@ ConfigStructure _$ConfigStructureFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$ConfigStructureToJson(ConfigStructure instance) =>
-    <String, dynamic>{'structure': instance.structure};
+    <String, dynamic>{'title': instance.title, 'structure': instance.structure};
 
 ConfigStructureItem _$ConfigStructureItemFromJson(Map<String, dynamic> json) =>
     ConfigStructureItem(
+      sectionIconCodePoint: json['sectionIconCodePoint'] as String,
       sectionName: json['sectionName'] as String,
       elements:
           (json['elements'] as List<dynamic>)
@@ -34,6 +36,7 @@ ConfigStructureItem _$ConfigStructureItemFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ConfigStructureItemToJson(
   ConfigStructureItem instance,
 ) => <String, dynamic>{
+  'sectionIconCodePoint': instance.sectionIconCodePoint,
   'sectionName': instance.sectionName,
   'elements': instance.elements,
 };

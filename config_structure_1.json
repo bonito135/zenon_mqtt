@@ -1,0 +1,33 @@
+{
+	"structure": [
+		{
+			"sectionName": "KROPF BMS",
+			"elements": [
+				{
+					"type": "text",
+					"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.SOC",
+					"description": "capacity",
+					"unit": "%",
+					"digits": 3,
+					"value": 0
+				},
+				{
+					"type": "text",
+					"tagName": "ZenonMQTTPublisher/BMS/PV.Battery.SOCAbs",
+					"description": "capacity_ah",
+					"unit": "Ah",
+					"digits": 4,
+					"value": 0
+				},
+				{
+					"type": "text",
+					"tagName": "ZenonMQTTPublisher/BMS/PV.DC.Total_PV_Input_Power",
+					"description": "current_delivery",
+					"unit": "kW",
+					"digits": 5,
+					"value": 0
+				}
+			]
+		}
+	]
+}

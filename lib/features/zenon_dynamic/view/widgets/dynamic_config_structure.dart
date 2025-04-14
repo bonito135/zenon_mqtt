@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mqtt_client/mqtt_client.dart';
+import 'package:zenon_mqtt/core/localizations/dynamic_localizations.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/view/pages/dynamic_page.dart';
 import 'package:zenon_mqtt/l10n/app_localizations.dart';
@@ -6,16 +8,14 @@ import 'package:zenon_mqtt/l10n/app_localizations.dart';
 class DynamicConfigStructure extends StatelessWidget {
   const DynamicConfigStructure({
     super.key,
+    required this.connectionState,
     required this.configStructure,
-    required this.currentPageIndex,
-    required this.showBottomSheet,
-    required this.setPageIndex,
+    required this.showSettings,
   });
 
+  final MqttConnectionState connectionState;
   final ConfigStructureTableData? configStructure;
-  final int currentPageIndex;
-  final Function() showBottomSheet;
-  final Function(int) setPageIndex;
+  final Function() showSettings;
 
   @override
   Widget build(BuildContext context) {
@@ -23,44 +23,17 @@ class DynamicConfigStructure extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.secondary,
-        title: Text(
-          configStructure?.content!.structure[currentPageIndex].sectionName ??
-              "",
-        ),
+        title: Text(configStructure?.content!.title ?? ""),
         titleTextStyle: Theme.of(context).textTheme.titleLarge,
         actions: [
           IconButton(
-            onPressed: () => showBottomSheet(),
-            icon: const Icon(Icons.settings_input_antenna, color: Colors.white),
+            onPressed: () => showSettings(),
+            icon: const Icon(Icons.settings, color: Colors.white),
           ),
         ],
       ),
-      bottomNavigationBar: SafeArea(
-        child:
-            (configStructure?.content!.structure.length ?? 0) < 2
-                ? const SizedBox.shrink()
-                : NavigationBar(
-                  labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-                  selectedIndex: currentPageIndex,
-                  onDestinationSelected: (int index) {
-                    setPageIndex(index);
-                  },
-                  destinations: List<Widget>.generate(
-                    configStructure?.content!.structure.length ?? 0,
-                    (index) => NavigationDestination(
-                      icon: const Icon(Icons.explore),
-                      label:
-                          configStructure
-                              ?.content!
-                              .structure[index]
-                              .sectionName ??
-                          "",
-                    ),
-                  ),
-                ),
-      ),
       body:
-          configStructure?.content!.structure[currentPageIndex] == null
+          connectionState == MqttConnectionState.disconnected
               ? SafeArea(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -74,9 +47,11 @@ class DynamicConfigStructure extends StatelessWidget {
                           backgroundColor:
                               Theme.of(context).colorScheme.secondary,
                         ),
-                        onPressed: () => showBottomSheet(),
+                        onPressed: () => showSettings(),
                         child: Text(
-                          "Connect to Zenon istance",
+                          AppLocalizations.of(
+                            context,
+                          )!.connect_to_zenon_instace,
                           style: TextStyle(color: Colors.white, fontSize: 14),
                         ),
                       ),
@@ -86,24 +61,103 @@ class DynamicConfigStructure extends StatelessWidget {
               )
               : SafeArea(
                 child:
-                    configStructure?.content!.structure.isEmpty ?? true
+                    configStructure?.content!.structure.isEmpty == true
                         ? Center(
                           child: Text(
                             AppLocalizations.of(context)!.no_config_applied,
                           ),
                         )
-                        : DynamicPage(
-                          title: Text(
-                            configStructure
-                                    ?.content!
-                                    .structure[currentPageIndex]
-                                    .sectionName ??
-                                "",
-                          ),
-                          structure:
-                              configStructure!
-                                  .content!
-                                  .structure[currentPageIndex],
+                        : Column(
+                          children: [
+                            Flexible(
+                              child: ListView.builder(
+                                itemCount:
+                                    configStructure
+                                        ?.content!
+                                        .structure
+                                        .length ??
+                                    0,
+                                itemBuilder: (context, index) {
+                                  return Column(
+                                    children: [
+                                      ExpansionTile(
+                                        shape: LinearBorder.none,
+                                        collapsedShape: LinearBorder.none,
+                                        tilePadding: const EdgeInsets.symmetric(
+                                          horizontal: 10,
+                                          vertical: 0,
+                                        ),
+                                        childrenPadding:
+                                            const EdgeInsets.symmetric(
+                                              horizontal: 10,
+                                              vertical: 5,
+                                            ),
+                                        iconColor: Colors.white,
+                                        collapsedIconColor: Colors.white,
+                                        title: Row(
+                                          children: [
+                                            configStructure
+                                                        ?.content
+                                                        ?.structure[index]
+                                                        .sectionIconCodePoint
+                                                        .isNotEmpty ==
+                                                    true
+                                                ? Icon(
+                                                  IconData(
+                                                    int.parse(
+                                                      configStructure!
+                                                          .content!
+                                                          .structure[index]
+                                                          .sectionIconCodePoint,
+                                                    ),
+                                                    fontFamily: 'MaterialIcons',
+                                                  ),
+                                                )
+                                                : SizedBox.shrink(),
+                                            SizedBox(width: 10),
+                                            Text(
+                                              DynamicLocalization.translate(
+                                                configStructure
+                                                        ?.content!
+                                                        .structure[index]
+                                                        .sectionName ??
+                                                    "",
+                                              ).toUpperCase(),
+                                              style:
+                                                  Theme.of(
+                                                    context,
+                                                  ).textTheme.bodyLarge,
+                                            ),
+                                          ],
+                                        ),
+                                        children: [
+                                          configStructure
+                                                      ?.content
+                                                      ?.structure
+                                                      .isNotEmpty ==
+                                                  true
+                                              ? DynamicPage(
+                                                structure:
+                                                    configStructure!
+                                                        .content!
+                                                        .structure[index],
+                                              )
+                                              : SizedBox.shrink(),
+                                        ],
+                                      ),
+                                      configStructure
+                                                  ?.content!
+                                                  .structure
+                                                  .length ==
+                                              index + 1
+                                          ? SizedBox(height: 40)
+                                          : SizedBox.shrink(),
+                                    ],
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
                         ),
               ),
     );
