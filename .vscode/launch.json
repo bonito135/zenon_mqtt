@@ -23,7 +23,7 @@
 			"request": "launch",
 			"type": "dart",
 			"flutterMode": "profile",
-			"args": ["--flavor", "staging", "--no-enable-impeller"]
+			"args": ["--flavor", "staging"]
 		},
 		{
 			"name": "zenon_mqtt (release mode)",

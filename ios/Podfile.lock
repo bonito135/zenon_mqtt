@@ -3,12 +3,17 @@ PODS:
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
+  - shared_preferences_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - sqlite3 (3.49.1):
     - sqlite3/common (= 3.49.1)
   - sqlite3/common (3.49.1)
   - sqlite3/dbstatvtab (3.49.1):
     - sqlite3/common
   - sqlite3/fts5 (3.49.1):
+    - sqlite3/common
+  - sqlite3/math (3.49.1):
     - sqlite3/common
   - sqlite3/perf-threadsafe (3.49.1):
     - sqlite3/common
@@ -20,12 +25,14 @@ PODS:
     - sqlite3 (~> 3.49.1)
     - sqlite3/dbstatvtab
     - sqlite3/fts5
+    - sqlite3/math
     - sqlite3/perf-threadsafe
     - sqlite3/rtree
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sqlite3_flutter_libs (from `.symlinks/plugins/sqlite3_flutter_libs/darwin`)
 
 SPEC REPOS:
@@ -37,15 +44,18 @@ EXTERNAL SOURCES:
     :path: Flutter
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  shared_preferences_foundation:
+    :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   sqlite3_flutter_libs:
     :path: ".symlinks/plugins/sqlite3_flutter_libs/darwin"
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
+  shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
   sqlite3: fc1400008a9b3525f5914ed715a5d1af0b8f4983
-  sqlite3_flutter_libs: f8fc13346870e73fe35ebf6dbb997fbcd156b241
+  sqlite3_flutter_libs: f6acaa2172e6bb3e2e70c771661905080e8ebcf2
 
-PODFILE CHECKSUM: ba0d7af98d1a0db7cbf744edd0331fd4de934cd6
+PODFILE CHECKSUM: 639897a7888f7227edde3c1190d113dc585e2e0b
 
 COCOAPODS: 1.16.2
