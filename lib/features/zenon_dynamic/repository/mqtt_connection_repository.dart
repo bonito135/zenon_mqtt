@@ -1,28 +1,33 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:zenon_mqtt/core/utils/debouncer_util.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/zenon_value_update.dart';
+// ignore: depend_on_referenced_packages
+import 'package:path/path.dart' as path;
 
 class MqttConnectionRepository<T> {
-  MqttConnectionRepository(
-    this.client,
-    this.topic,
-    this.connMess,
-    this.autoReconnect,
-  );
+  MqttConnectionRepository({
+    required this.client,
+    required this.topic,
+    required this.connMess,
+    required this.autoReconnect,
+    required this.secure,
+  });
 
   final MqttServerClient client;
   final String topic;
   final MqttConnectMessage connMess;
   final bool autoReconnect;
-  final ValueNotifier<MqttConnectionState> stateNotifier =
+  final bool secure;
+  ValueNotifier<MqttConnectionState> stateNotifier =
       ValueNotifier<MqttConnectionState>(MqttConnectionState.disconnected);
-  final ValueNotifier<T?> messageNotifier = ValueNotifier<T?>(null);
+  ValueNotifier<T?> messageNotifier = ValueNotifier<T?>(null);
 
   final _connectionDebouncer = Debouncer();
   final _messageDebouncer = Debouncer();
@@ -38,7 +43,7 @@ class MqttConnectionRepository<T> {
     client.setProtocolV311();
 
     /// If you intend to use a keep alive you must set it here otherwise keep alive will be disabled.
-    client.keepAlivePeriod = 2;
+    client.keepAlivePeriod = 20;
 
     /// The connection timeout period can be set, the default is 5 seconds.
     /// if [client.socketTimeout] is set then this will take precedence and this setting will be
@@ -52,7 +57,7 @@ class MqttConnectionRepository<T> {
 
     // client.pingCallback = onPingCallback;
 
-    client.pongCallback = onPongCallback;
+    // client.pongCallback = onPongCallback;
 
     /// Add the unsolicited disconnection callback
     client.onDisconnected = onDisconnected;
@@ -67,7 +72,7 @@ class MqttConnectionRepository<T> {
     /// Note you should somehow get your broker to stop sending ping responses without forcing a disconnect at the
     /// network level to run this example. On way to do this if you are using a wired network connection is to pull
     /// the wire, on some platforms no network events will be generated until the wire is re inserted.
-    client.disconnectOnNoResponsePeriod = 2;
+    client.disconnectOnNoResponsePeriod = autoReconnect ? 10 : 0;
 
     /// Set auto reconnect
     client.autoReconnect = autoReconnect;
@@ -85,6 +90,24 @@ class MqttConnectionRepository<T> {
     /// has completed. Note that re subscriptions may be occurring when this callback
     /// is invoked. See [resubscribeOnAutoReconnect] above.
     client.onAutoReconnected = onAutoReconnected;
+
+    /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    /// Set secure working
+    client.secure = secure;
+
+    // Set the port
+    client.port = secure ? 8883 : 1883;
+    // Secure port number for mosquitto, no client certificate required
+
+    /// Security context
+    // final currDir = '${path.current}${path.separator}example${path.separator}';
+    // final context = SecurityContext.defaultContext;
+    // Note if you get a 'TlsException: Failure trusting builtin roots (OS Error:
+    // 	CERT_ALREADY_IN_HASH_TABLE' error here comment out the following 2 lines
+    // context.setTrustedCertificates(
+    //   currDir + path.join('pem', 'mosquitto.org.crt'),
+    // );
   }
 
   Future<void> connect() async {
@@ -174,9 +197,9 @@ class MqttConnectionRepository<T> {
     stateNotifier.value = MqttConnectionState.disconnected;
   }
 
-  void onPingCallback() {}
+  // void onPingCallback() {}
 
-  void onPongCallback() {}
+  // void onPongCallback() {}
 
   void dispose() {
     client.disconnect();

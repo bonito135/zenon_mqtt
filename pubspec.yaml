@@ -43,6 +43,8 @@ flutter:
     - lib/l10n/app_en.arb
     - lib/l10n/app_de.arb
     - lib/l10n/app_cs.arb
+    # - assets/ca/ca-cert.pem
+    # - assets/ca/ca-key.pem
   fonts:
     - family: Montserrat
       fonts:

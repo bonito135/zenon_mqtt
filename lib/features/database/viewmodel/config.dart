@@ -33,7 +33,7 @@ Future<ConfigStructureTableData?> writeAndReturnConfigStructure(
   ConfigStructure? content,
 ) async {
   if (content == null) {
-    return null;
+    return readConfigStructure(database);
   }
 
   try {
@@ -59,8 +59,6 @@ Future<ConfigStructureTableData?> writeAndReturnConfigStructure(
     final config = await (database.select(
       database.configStructureTable,
     )).get().then((value) => value.last);
-
-    log("Write and return config: $config");
 
     return config;
   } catch (e) {

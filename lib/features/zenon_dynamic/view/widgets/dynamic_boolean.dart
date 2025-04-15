@@ -6,8 +6,8 @@ import 'package:zenon_mqtt/core/view/widgets/timer_text.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
 import 'package:zenon_mqtt/l10n/app_localizations.dart';
 
-class DynamicText extends StatelessWidget {
-  const DynamicText({
+class DynamicBoolean extends StatelessWidget {
+  const DynamicBoolean({
     super.key,
     required this.context,
     required this.component,
@@ -42,10 +42,17 @@ class DynamicText extends StatelessWidget {
               ),
               Stack(
                 children: [
-                  Text(
-                    "${component.value.toString().length <= (component.digits) ? component.value.toString() : component.value.toString().substring(0, component.digits)} ${component.unit.toString().replaceAll("@", "")}",
-                    style: Theme.of(context).textTheme.bodyLarge,
-                  ),
+                  int.parse(component.value.toString()) == 1
+                      ? Icon(
+                        Icons.toggle_on_outlined,
+                        color: Colors.green,
+                        size: 40,
+                      )
+                      : Icon(
+                        Icons.toggle_off_outlined,
+                        color: Colors.red,
+                        size: 40,
+                      ),
                   component.valid == true
                       ? SizedBox.shrink()
                       : Positioned(

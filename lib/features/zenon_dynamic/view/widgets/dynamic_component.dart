@@ -20,13 +20,21 @@ class DynamicComponent extends StatefulWidget {
 
 class _DynamicComponentState extends State<DynamicComponent> {
   late final componentConnection = MqttConnectionRepository<ZenonValueUpdate>(
-    MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
-    widget.element.tagName,
-    MqttConnectMessage()
-        .withClientIdentifier('Mqtt_${widget.element.tagName}')
-        .startClean(),
-    true,
+    client: MqttServerClient(
+      dotenv.env['MQTT_SERVER_PROVIDER']!,
+      'Mqtt_${widget.element.tagName}',
+    ),
+    topic: widget.element.tagName,
+    connMess: MqttConnectMessage(),
+    autoReconnect: true,
+    secure: false,
   );
+
+  @override
+  void initState() {
+    componentConnection.connect();
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -41,9 +49,9 @@ class _DynamicComponentState extends State<DynamicComponent> {
       valueListenable: componentConnection.stateNotifier,
       builder: (context, value, child) {
         final MqttConnectionState connectionState = value;
-        if (connectionState == MqttConnectionState.disconnected) {
-          componentConnection.connect();
-        }
+        // if (connectionState == MqttConnectionState.disconnected) {
+        //   componentConnection.connect();
+        // }
         if (connectionState == MqttConnectionState.connected) {
           componentConnection.listen();
         }

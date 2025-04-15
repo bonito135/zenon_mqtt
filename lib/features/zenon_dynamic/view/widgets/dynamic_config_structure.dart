@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -53,9 +51,6 @@ class DynamicConfigStructure extends StatelessWidget {
                       itemCount:
                           configStructure?.content!.structure.length ?? 0,
                       itemBuilder: (context, index) {
-                        log(
-                          '<svg xmlns="http://www.w3.org/2000/svg" viewBox="${configStructure?.content?.structure[index].svgViewBox}"><path fill="${configStructure?.content?.structure[index].svgColor}" d="${configStructure?.content?.structure[index].svgPath}"/></svg>',
-                        );
                         return Column(
                           children: [
                             ExpansionTile(

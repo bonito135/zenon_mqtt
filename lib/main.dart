@@ -96,12 +96,14 @@ class _MyHomePageState extends State<MyHomePage> {
         await setLastConfigTopic(topic);
         setState(() {
           configConnection = MqttConnectionRepository<ConfigStructure>(
-            MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
-            topic,
-            MqttConnectMessage()
-                .withClientIdentifier('Mqtt_config')
-                .startClean(),
-            false,
+            client: MqttServerClient(
+              dotenv.env['MQTT_SERVER_PROVIDER']!,
+              'Mqtt_config',
+            ),
+            topic: topic,
+            connMess: MqttConnectMessage(),
+            autoReconnect: true,
+            secure: false,
           );
         });
       });

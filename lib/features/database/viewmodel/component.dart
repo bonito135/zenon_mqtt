@@ -1,4 +1,3 @@
-import 'dart:developer';
 import 'package:drift/drift.dart';
 import 'package:flutter/foundation.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
@@ -35,7 +34,7 @@ writeAndReturnStructureComponentFromZenonValueUpdate(
   ZenonValueUpdate? zenonValueUpdate,
 ) async {
   if (zenonValueUpdate == null) {
-    return null;
+    return readStructureComponentByTagName(database, widget.tagName);
   }
 
   final entry =
