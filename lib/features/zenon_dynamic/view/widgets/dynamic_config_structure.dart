@@ -33,132 +33,97 @@ class DynamicConfigStructure extends StatelessWidget {
         ],
       ),
       body:
-          connectionState == MqttConnectionState.disconnected
-              ? SafeArea(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(AppLocalizations.of(context)!.no_config_applied),
-                    const SizedBox(height: 20),
-                    Center(
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.secondary,
-                        ),
-                        onPressed: () => showSettings(),
-                        child: Text(
-                          AppLocalizations.of(
-                            context,
-                          )!.connect_to_zenon_instace,
-                          style: TextStyle(color: Colors.white, fontSize: 14),
-                        ),
-                      ),
+          configStructure?.content!.structure.isEmpty == true
+              ? Column(
+                children: [
+                  Center(
+                    child: Text(
+                      AppLocalizations.of(context)!.no_config_applied,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               )
-              : SafeArea(
-                child:
-                    configStructure?.content!.structure.isEmpty == true
-                        ? Center(
-                          child: Text(
-                            AppLocalizations.of(context)!.no_config_applied,
-                          ),
-                        )
-                        : Column(
+              : Column(
+                children: [
+                  Flexible(
+                    child: ListView.builder(
+                      itemCount:
+                          configStructure?.content!.structure.length ?? 0,
+                      itemBuilder: (context, index) {
+                        return Column(
                           children: [
-                            Flexible(
-                              child: ListView.builder(
-                                itemCount:
-                                    configStructure
-                                        ?.content!
-                                        .structure
-                                        .length ??
-                                    0,
-                                itemBuilder: (context, index) {
-                                  return Column(
-                                    children: [
-                                      ExpansionTile(
-                                        shape: LinearBorder.none,
-                                        collapsedShape: LinearBorder.none,
-                                        tilePadding: const EdgeInsets.symmetric(
-                                          horizontal: 10,
-                                          vertical: 0,
-                                        ),
-                                        childrenPadding:
-                                            const EdgeInsets.symmetric(
-                                              horizontal: 10,
-                                              vertical: 5,
-                                            ),
-                                        iconColor: Colors.white,
-                                        collapsedIconColor: Colors.white,
-                                        title: Row(
-                                          children: [
-                                            configStructure
-                                                        ?.content
-                                                        ?.structure[index]
-                                                        .sectionIconCodePoint
-                                                        .isNotEmpty ==
-                                                    true
-                                                ? Icon(
-                                                  IconData(
-                                                    int.parse(
-                                                      configStructure!
-                                                          .content!
-                                                          .structure[index]
-                                                          .sectionIconCodePoint,
-                                                    ),
-                                                    fontFamily: 'MaterialIcons',
-                                                  ),
-                                                )
-                                                : SizedBox.shrink(),
-                                            SizedBox(width: 10),
-                                            Text(
-                                              DynamicLocalization.translate(
-                                                configStructure
-                                                        ?.content!
-                                                        .structure[index]
-                                                        .sectionName ??
-                                                    "",
-                                              ).toUpperCase(),
-                                              style:
-                                                  Theme.of(
-                                                    context,
-                                                  ).textTheme.bodyLarge,
-                                            ),
-                                          ],
-                                        ),
-                                        children: [
-                                          configStructure
-                                                      ?.content
-                                                      ?.structure
-                                                      .isNotEmpty ==
-                                                  true
-                                              ? DynamicPage(
-                                                structure:
-                                                    configStructure!
-                                                        .content!
-                                                        .structure[index],
-                                              )
-                                              : SizedBox.shrink(),
-                                        ],
-                                      ),
-                                      configStructure
-                                                  ?.content!
-                                                  .structure
-                                                  .length ==
-                                              index + 1
-                                          ? SizedBox(height: 40)
-                                          : SizedBox.shrink(),
-                                    ],
-                                  );
-                                },
+                            ExpansionTile(
+                              shape: LinearBorder.none,
+                              collapsedShape: LinearBorder.none,
+                              tilePadding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 0,
                               ),
+                              childrenPadding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                                vertical: 5,
+                              ),
+                              iconColor: Colors.white,
+                              collapsedIconColor: Colors.white,
+                              title: Row(
+                                children: [
+                                  configStructure
+                                              ?.content
+                                              ?.structure[index]
+                                              .sectionIconCodePoint
+                                              .isNotEmpty ==
+                                          true
+                                      ? Icon(
+                                        IconData(
+                                          int.parse(
+                                            configStructure!
+                                                .content!
+                                                .structure[index]
+                                                .sectionIconCodePoint,
+                                          ),
+                                          fontFamily: 'MaterialIcons',
+                                        ),
+                                      )
+                                      : SizedBox.shrink(),
+                                  SizedBox(width: 10),
+                                  Text(
+                                    DynamicLocalization.translate(
+                                      configStructure
+                                              ?.content!
+                                              .structure[index]
+                                              .sectionName ??
+                                          "",
+                                    ).toUpperCase(),
+                                    style:
+                                        Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                ],
+                              ),
+                              children: [
+                                configStructure
+                                            ?.content
+                                            ?.structure
+                                            .isNotEmpty ==
+                                        true
+                                    ? DynamicPage(
+                                      structure:
+                                          configStructure!
+                                              .content!
+                                              .structure[index],
+                                    )
+                                    : SizedBox.shrink(),
+                              ],
                             ),
+                            configStructure?.content!.structure.length ==
+                                    index + 1
+                                ? SizedBox(height: 40)
+                                : SizedBox.shrink(),
                           ],
-                        ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
     );
   }

@@ -77,29 +77,23 @@ class DynamicText extends StatelessWidget {
                   AppLocalizations.of(context)!.last_change_before,
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
-                TimerText(lastUpdateTime: component.lastUpdateTime),
+                Row(
+                  children: [
+                    TimerText(lastUpdateTime: component.lastUpdateTime),
+                    SizedBox(width: 6),
+                    if (connectionState == MqttConnectionState.disconnected)
+                      const Icon(Icons.album, color: Colors.red, size: 10),
+                    if (connectionState == MqttConnectionState.connecting)
+                      const Icon(Icons.album, color: Colors.blue, size: 10),
+                    if (connectionState == MqttConnectionState.connected)
+                      const Icon(Icons.album, color: Colors.green, size: 10),
+                  ],
+                ),
               ],
             ),
           ],
         ),
-        if (connectionState == MqttConnectionState.disconnected)
-          const LinearProgressIndicator(
-            color: Colors.red,
-            backgroundColor: Colors.redAccent,
-            minHeight: 3,
-          ),
-        if (connectionState == MqttConnectionState.connecting)
-          const LinearProgressIndicator(
-            minHeight: 3,
-            color: Colors.blue,
-            backgroundColor: Colors.blueAccent,
-          ),
-        if (connectionState == MqttConnectionState.connected)
-          LinearProgressIndicator(
-            color: Colors.green,
-            backgroundColor: Theme.of(context).colorScheme.secondary,
-            minHeight: 3,
-          ),
+        Divider(),
       ],
     );
   }

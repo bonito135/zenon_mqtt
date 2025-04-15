@@ -25,6 +25,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
     MqttConnectMessage()
         .withClientIdentifier('Mqtt_${widget.element.tagName}')
         .startClean(),
+    true,
   );
 
   @override

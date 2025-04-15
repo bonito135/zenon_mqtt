@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -83,30 +82,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int currentPageIndex = 0;
 
-  Future<String?> getLastConfigTopic() async {
-    return asyncPrefs.getString("last_config_topic");
-  }
-
   Future<void> setLastConfigTopic(String topic) async {
-    return asyncPrefs.setString("last_config_topic", topic);
+    return await asyncPrefs.setString("last_config_topic", topic);
   }
 
-  @override
-  void initState() {
-    super.initState();
+  Future<String?> getLastConfigTopic() async {
+    return await asyncPrefs.getString("last_config_topic");
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-
-    configConnection?.dispose();
-  }
-
-  void setConfig(String? topic) {
+  void setConfig(String? topic) async {
     if (topic != null) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        setLastConfigTopic(topic);
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+        await setLastConfigTopic(topic);
         setState(() {
           configConnection = MqttConnectionRepository<ConfigStructure>(
             MqttServerClient(dotenv.env['MQTT_SERVER_PROVIDER']!, ''),
@@ -114,9 +101,17 @@ class _MyHomePageState extends State<MyHomePage> {
             MqttConnectMessage()
                 .withClientIdentifier('Mqtt_config')
                 .startClean(),
+            false,
           );
         });
       });
+    }
+  }
+
+  Future<void> setConfigBasedOnLastTopic() async {
+    final configTopic = await getLastConfigTopic();
+    if (configTopic != null) {
+      setConfig(configTopic);
     }
   }
 
@@ -143,41 +138,35 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (configConnection == null) {
-      if (kDebugMode) {
-        print("configConnection: $configConnection");
-      }
-      return FutureBuilder(
-        future: getLastConfigTopic(),
-        builder: (context, snapshot) {
-          if (kDebugMode) {
-            print("LAST CONFIG TOPIC: ${snapshot.data}");
-          }
-          if (snapshot.hasData) {
-            setConfig(snapshot.data);
-          }
+  void initState() {
+    setConfigBasedOnLastTopic();
+    super.initState();
+  }
 
-          return DynamicConfigStructure(
-            connectionState: MqttConnectionState.disconnected,
-            configStructure: null,
-            showSettings: showSettingsSheet,
-          );
-        },
-      );
-    }
+  @override
+  void dispose() {
+    super.dispose();
+
+    configConnection?.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: configConnection!.stateNotifier,
+      valueListenable:
+          configConnection?.stateNotifier ??
+          ValueNotifier(MqttConnectionState.disconnected),
       builder: (context, value, child) {
         final MqttConnectionState connectionState = value;
         if (connectionState == MqttConnectionState.disconnected) {
-          configConnection!.connect();
+          configConnection?.connect();
         }
         if (connectionState == MqttConnectionState.connected) {
-          configConnection!.listen();
+          configConnection?.listen();
         }
         return ValueListenableBuilder(
-          valueListenable: configConnection!.messageNotifier,
+          valueListenable:
+              configConnection?.messageNotifier ?? ValueNotifier(null),
           builder: (context, value, child) {
             return FutureBuilder(
               future:

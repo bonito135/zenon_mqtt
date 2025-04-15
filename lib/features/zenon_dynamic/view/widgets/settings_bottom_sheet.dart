@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:zenon_mqtt/l10n/app_localizations.dart';
 

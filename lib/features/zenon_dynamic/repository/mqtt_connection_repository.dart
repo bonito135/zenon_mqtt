@@ -9,11 +9,17 @@ import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/zenon_value_update.dart';
 
 class MqttConnectionRepository<T> {
-  MqttConnectionRepository(this.client, this.topic, this.connMess);
+  MqttConnectionRepository(
+    this.client,
+    this.topic,
+    this.connMess,
+    this.autoReconnect,
+  );
 
   final MqttServerClient client;
   final String topic;
   final MqttConnectMessage connMess;
+  final bool autoReconnect;
   final ValueNotifier<MqttConnectionState> stateNotifier =
       ValueNotifier<MqttConnectionState>(MqttConnectionState.disconnected);
   final ValueNotifier<T?> messageNotifier = ValueNotifier<T?>(null);
@@ -61,10 +67,10 @@ class MqttConnectionRepository<T> {
     /// Note you should somehow get your broker to stop sending ping responses without forcing a disconnect at the
     /// network level to run this example. On way to do this if you are using a wired network connection is to pull
     /// the wire, on some platforms no network events will be generated until the wire is re inserted.
-    client.disconnectOnNoResponsePeriod = 1;
+    client.disconnectOnNoResponsePeriod = 2;
 
     /// Set auto reconnect
-    client.autoReconnect = true;
+    client.autoReconnect = autoReconnect;
 
     /// If you do not want active confirmed subscriptions to be automatically re subscribed
     /// by the auto connect sequence do the following, otherwise leave this defaulted.
