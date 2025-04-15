@@ -2,7 +2,6 @@ import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 // ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
-// import 'package:zenon_mqtt/features/database/model/index.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 
 part "database.g.dart";
@@ -21,7 +20,7 @@ class AppDatabase extends _$AppDatabase {
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
-      name: 'database2',
+      name: 'database3',
       native: const DriftNativeOptions(
         // By default, `driftDatabase` from `package:drift_flutter` stores the
         // database files in `getApplicationDocumentsDirectory()`.
@@ -31,20 +30,3 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 }
-
-// class ConfigStructureTable extends Table {
-//   IntColumn get id => integer().autoIncrement()();
-//   BlobColumn get content =>
-//       blob().map(ConfigStructure.binaryConverter).nullable()();
-// }
-
-// class StructureComponentTable extends Table {
-//   TextColumn get type => text()();
-//   TextColumn get tagName => text()();
-//   TextColumn get description => text()();
-//   TextColumn get unit => text()();
-//   IntColumn get digits => integer()();
-//   TextColumn get value => text().nullable()();
-//   TextColumn get lastUpdateTime => text().nullable()();
-//   BoolColumn get valid => boolean().nullable()();
-// }

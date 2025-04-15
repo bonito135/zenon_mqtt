@@ -33,15 +33,18 @@ class ConfigStructure extends Equatable {
 
 @j.JsonSerializable()
 class ConfigStructureItem extends Equatable {
-  @j.JsonKey(name: "sectionIconCodePoint")
-  final String sectionIconCodePoint;
+  @j.JsonKey(name: "svgPath")
+  final String? svgPath;
+  @j.JsonKey(name: "svgColor")
+  final String? svgColor;
   @j.JsonKey(name: "sectionName")
   final String sectionName;
   @j.JsonKey(name: "elements")
   final List<ConfigStructureElement> elements;
 
   const ConfigStructureItem({
-    required this.sectionIconCodePoint,
+    required this.svgPath,
+    required this.svgColor,
     required this.sectionName,
     required this.elements,
   });

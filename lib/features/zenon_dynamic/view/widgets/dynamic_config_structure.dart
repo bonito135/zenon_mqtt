@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:zenon_mqtt/core/localizations/dynamic_localizations.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
@@ -67,24 +68,12 @@ class DynamicConfigStructure extends StatelessWidget {
                               collapsedIconColor: Colors.white,
                               title: Row(
                                 children: [
-                                  configStructure
-                                              ?.content
-                                              ?.structure[index]
-                                              .sectionIconCodePoint
-                                              .isNotEmpty ==
-                                          true
-                                      ? Icon(
-                                        IconData(
-                                          int.parse(
-                                            configStructure!
-                                                .content!
-                                                .structure[index]
-                                                .sectionIconCodePoint,
-                                          ),
-                                          fontFamily: 'MaterialIcons',
-                                        ),
-                                      )
-                                      : SizedBox.shrink(),
+                                  SvgPicture.string(
+                                    width: 20,
+                                    height: 20,
+                                    '<svg xmlns="http://www.w3.org/2000/svg"><path fill=${configStructure?.content?.structure[index].svgColor ?? "#ffffff"} d="${configStructure?.content?.structure[index].svgPath ?? ""}"/></svg>',
+                                  ),
+
                                   SizedBox(width: 10),
                                   Text(
                                     DynamicLocalization.translate(
