@@ -60,6 +60,8 @@ Future<ConfigStructureTableData?> writeAndReturnConfigStructure(
       database.configStructureTable,
     )).get().then((value) => value.last);
 
+    log("Write and return config: $config");
+
     return config;
   } catch (e) {
     if (kDebugMode) {

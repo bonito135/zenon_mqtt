@@ -22,8 +22,10 @@ Map<String, dynamic> _$ConfigStructureToJson(ConfigStructure instance) =>
 
 ConfigStructureItem _$ConfigStructureItemFromJson(Map<String, dynamic> json) =>
     ConfigStructureItem(
+      svgViewBox: json['svgViewBox'] as String?,
       svgPath: json['svgPath'] as String?,
       svgColor: json['svgColor'] as String?,
+      iconLink: json['iconLink'] as String?,
       sectionName: json['sectionName'] as String,
       elements:
           (json['elements'] as List<dynamic>)
@@ -37,8 +39,10 @@ ConfigStructureItem _$ConfigStructureItemFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ConfigStructureItemToJson(
   ConfigStructureItem instance,
 ) => <String, dynamic>{
+  'svgViewBox': instance.svgViewBox,
   'svgPath': instance.svgPath,
   'svgColor': instance.svgColor,
+  'iconLink': instance.iconLink,
   'sectionName': instance.sectionName,
   'elements': instance.elements,
 };

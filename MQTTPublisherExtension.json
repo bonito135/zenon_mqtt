@@ -92,7 +92,10 @@
 				"title": "KROPF BMS",
 				"structure": [
 					{
-						"sectionIconCodePoint": "0xea35",
+						"svgPath": "M122.2 0C91.7 0 65.5 21.5 59.5 51.4L8.3 307.4C.4 347 30.6 384 71 384l217 0 0 64-64 0c-17.7 0-32 14.3-32 32s14.3 32 32 32l192 0c17.7 0 32-14.3 32-32s-14.3-32-32-32l-64 0 0-64 217 0c40.4 0 70.7-36.9 62.8-76.6l-51.2-256C574.5 21.5 548.3 0 517.8 0L122.2 0zM260.9 64l118.2 0 10.4 104-139 0L260.9 64zM202.3 168l-100.8 0L122.2 64l90.4 0L202.3 168zM91.8 216l105.6 0L187.1 320 71 320 91.8 216zm153.9 0l148.6 0 10.4 104-169.4 0 10.4-104zm196.8 0l105.6 0L569 320l-116 0L442.5 216zm96-48l-100.8 0L427.3 64l90.4 0 31.4-6.3L517.8 64l20.8 104z",
+						"svgColor": "#ffffff",
+						"svgViewBox": "0 0 640 512",
+						"iconLink": "",
 						"sectionName": "photovoltaics",
 						"elements": [
 							{
@@ -162,7 +165,10 @@
 						]
 					},
 					{
-						"sectionIconCodePoint": "0xe1ff",
+						"svgPath": "M160 64c-26.5 0-48 21.5-48 48l0 164.5c0 17.3-7.1 31.9-15.3 42.5C86.2 332.6 80 349.5 80 368c0 44.2 35.8 80 80 80s80-35.8 80-80c0-18.5-6.2-35.4-16.7-48.9c-8.2-10.6-15.3-25.2-15.3-42.5L208 112c0-26.5-21.5-48-48-48zM48 112C48 50.2 98.1 0 160 0s112 50.1 112 112l0 164.4c0 .1 .1 .3 .2 .6c.2 .6 .8 1.6 1.7 2.8c18.9 24.4 30.1 55 30.1 88.1c0 79.5-64.5 144-144 144S16 447.5 16 368c0-33.2 11.2-63.8 30.1-88.1c.9-1.2 1.5-2.2 1.7-2.8c.1-.3 .2-.5 .2-.6L48 112zM208 368c0 26.5-21.5 48-48 48s-48-21.5-48-48c0-20.9 13.4-38.7 32-45.3L144 144c0-8.8 7.2-16 16-16s16 7.2 16 16l0 178.7c18.6 6.6 32 24.4 32 45.3z",
+						"svgViewBox": "0 0 320 512",
+						"svgColor": "#ffffff",
+						"iconLink": "",
 						"sectionName": "temperatures",
 						"elements": [
 							{
@@ -170,7 +176,7 @@
 								"tagName": "ZenonMQTTPublisher/BMS/Teplotní_snímač_Prezentačka",
 								"description": "temperature_sensor_presentation_room",
 								"unit": "°C",
-								"digits": 2,
+								"digits": 4,
 								"value": 0
 							},
 							{
@@ -178,7 +184,7 @@
 								"tagName": "ZenonMQTTPublisher/BMS/Teplotní_snímač_Sekretariát",
 								"description": "temperature_sensor_secretariat",
 								"unit": "°C",
-								"digits": 2,
+								"digits": 4,
 								"value": 0
 							},
 							{
@@ -186,7 +192,7 @@
 								"tagName": "ZenonMQTTPublisher/BMS/Teplotní_snímač_Technici",
 								"description": "temperature_sensor_technicians",
 								"unit": "°C",
-								"digits": 2,
+								"digits": 4,
 								"value": 0
 							}
 						]
