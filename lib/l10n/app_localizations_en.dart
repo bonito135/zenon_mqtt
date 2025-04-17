@@ -60,6 +60,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get processing_data => 'Processing Data';
 
   @override
+  String get connection_server => 'Connection server';
+
+  @override
   String get connection_topic => 'Connection topic';
 
   @override
@@ -100,4 +103,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get temperature_sensor_technicians => 'Technicians';
+
+  @override
+  String connAckReturnCode(String returnCode) {
+    String _temp0 = intl.Intl.selectLogic(
+      returnCode,
+      {
+        'connectionAccepted': 'Connection accepted',
+        'unacceptedProtocolVersion': 'Connection refused, unacceptable protocol version',
+        'identifierRejected': 'Connection refused, identifier rejected',
+        'brokerUnavailable': 'Connection refused, server unavailable',
+        'badUsernameOrPassword': 'Connection refused, bad user name or password',
+        'notAuthorized': 'Connection refused, not authorized',
+        'noneSpecified': 'Unknown return code',
+        'other': 'Unknown return code',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get connection => 'Connection';
+
+  @override
+  String get public => 'Public';
+
+  @override
+  String get secure => 'Secure';
+
+  @override
+  String get server_configuration_is_required => 'Server configuration is required';
+
+  @override
+  String get username => 'Username';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get username_is_required => 'Username is required';
+
+  @override
+  String get password_is_required => 'Password is required';
 }

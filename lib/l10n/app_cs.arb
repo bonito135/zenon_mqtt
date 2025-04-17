@@ -17,6 +17,7 @@
 	"applied": "Použito",
 	"submit": "Odeslat",
 	"processing_data": "Zpracování dat",
+	"connection_server": "Připojení serveru",
 	"connection_topic": "Připojení tématu",
 	"connection_topic_is_required": "Je vyžadován připojení tématu",
 	"connect_to_zenon_instace": "Připojte se k instanci Zenonu",
@@ -30,5 +31,22 @@
 	"battery_mode": "Mód baterie",
 	"temperature_sensor_presentation_room": "Prezentační místnost",
 	"temperature_sensor_secretariat": "Sekretariát",
-	"temperature_sensor_technicians": "Technická místnost"
+	"temperature_sensor_technicians": "Technická místnost",
+	"connAckReturnCode": "{returnCode, select, connectionAccepted{Připojení přijato} unacceptedProtocolVersion{Připojení odmítnuto, nepřijatelná verze protokolu} identifierRejected{Připojení odmítnuto, identifikátor zamítnut} brokerUnavailable{Připojení odmítnuto, server nedostupný} badUsernameOrPassword{Připojení odmítnuto, špatné uživatelské jméno nebo heslo} notAuthorized{Připojení odmítnuto, není autorizováno} noneSpecified{Neznámý návratový kód}  other{Neznámý návratový kód}}",
+	"@connAckReturnCode": {
+		"description": "Hodnota pro návratový kód paketu CONNACK.",
+		"placeholders": {
+			"returnCode": {
+				"type": "String"
+			}
+		}
+	},
+	"connection": "Připojení",
+	"public": "Veřejné",
+	"secure": "Zabezpečené",
+	"server_configuration_is_required": "Je vyžadována konfigurace serveru",
+	"username": "Uživatelské jméno",
+	"password": "Heslo",
+	"username_is_required": "Uživatelské jméno je vyžadováno",
+	"password_is_required": "Heslo je vyžadováno"
 }

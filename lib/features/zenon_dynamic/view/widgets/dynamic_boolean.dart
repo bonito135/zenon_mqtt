@@ -16,7 +16,7 @@ class DynamicBoolean extends StatelessWidget {
 
   final BuildContext context;
   final StructureComponentTableData component;
-  final MqttConnectionState connectionState;
+  final MqttClientConnectionStatus? connectionState;
 
   @override
   Widget build(BuildContext context) {
@@ -84,12 +84,12 @@ class DynamicBoolean extends StatelessWidget {
                   children: [
                     TimerText(lastUpdateTime: component.lastUpdateTime),
                     SizedBox(width: 6),
-                    if (connectionState == MqttConnectionState.disconnected)
-                      const Icon(Icons.album, color: Colors.red, size: 10),
-                    if (connectionState == MqttConnectionState.connecting)
-                      const Icon(Icons.album, color: Colors.blue, size: 10),
-                    if (connectionState == MqttConnectionState.connected)
-                      const Icon(Icons.album, color: Colors.green, size: 10),
+                    connectionState?.state == MqttConnectionState.connected
+                        ? const Icon(Icons.album, color: Colors.green, size: 10)
+                        : connectionState?.state ==
+                            MqttConnectionState.connecting
+                        ? const Icon(Icons.album, color: Colors.blue, size: 10)
+                        : const Icon(Icons.album, color: Colors.red, size: 10),
                   ],
                 ),
               ],

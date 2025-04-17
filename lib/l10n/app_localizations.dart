@@ -199,6 +199,12 @@ abstract class AppLocalizations {
   /// **'Processing Data'**
   String get processing_data;
 
+  /// Connection server
+  ///
+  /// In en, this message translates to:
+  /// **'Connection server'**
+  String get connection_server;
+
   /// Connection topic
   ///
   /// In en, this message translates to:
@@ -282,6 +288,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Technicians'**
   String get temperature_sensor_technicians;
+
+  /// Value for the return code of the CONNACK packet.
+  ///
+  /// In en, this message translates to:
+  /// **'{returnCode, select, connectionAccepted{Connection accepted} unacceptedProtocolVersion{Connection refused, unacceptable protocol version} identifierRejected{Connection refused, identifier rejected} brokerUnavailable{Connection refused, server unavailable} badUsernameOrPassword{Connection refused, bad user name or password} notAuthorized{Connection refused, not authorized} noneSpecified{Unknown return code}  other{Unknown return code}}'**
+  String connAckReturnCode(String returnCode);
+
+  /// Connection
+  ///
+  /// In en, this message translates to:
+  /// **'Connection'**
+  String get connection;
+
+  /// Public
+  ///
+  /// In en, this message translates to:
+  /// **'Public'**
+  String get public;
+
+  /// Secure
+  ///
+  /// In en, this message translates to:
+  /// **'Secure'**
+  String get secure;
+
+  /// Server configuration is required
+  ///
+  /// In en, this message translates to:
+  /// **'Server configuration is required'**
+  String get server_configuration_is_required;
+
+  /// Username
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get username;
+
+  /// Password
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get password;
+
+  /// Username is required for secure Mqtt connection
+  ///
+  /// In en, this message translates to:
+  /// **'Username is required'**
+  String get username_is_required;
+
+  /// Password is required for secure Mqtt connection
+  ///
+  /// In en, this message translates to:
+  /// **'Password is required'**
+  String get password_is_required;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -17,6 +17,7 @@
 	"applied": "Angewendet",
 	"submit": "Absenden",
 	"processing_data": "Datenverarbeitung",
+	"connection_server": "Verbindungsserver",
 	"connection_topic": "Verbindungsthema",
 	"connection_topic_is_required": "Verbindungsthema ist erforderlich",
 	"connect_to_zenon_instace": "Verbinden Sie mit Zenon-Instanz",
@@ -30,5 +31,22 @@
 	"battery_mode": "Batteriemodus",
 	"temperature_sensor_presentation_room": "Präsentationsraum",
 	"temperature_sensor_secretariat": "Sekretariat",
-	"temperature_sensor_technicians": "Techniker"
+	"temperature_sensor_technicians": "Techniker",
+	"connAckReturnCode": "{returnCode, select, connectionAccepted{Verbindung akzeptiert} unacceptedProtocolVersion{Verbindung abgelehnt, nicht akzeptable Protokollversion} identifierRejected{Verbindung abgelehnt, Kennung zurückgewiesen} brokerUnavailable{Verbindung abgelehnt, Server nicht verfügbar} badUsernameOrPassword{Verbindung abgelehnt, falscher Benutzername oder falsches Passwort} notAuthorized{Verbindung abgelehnt, nicht autorisiert} noneSpecified{Unbekannter Rückkehrcode}  other{Unbekannter Rückkehrcode}}",
+	"@connAckReturnCode": {
+		"description": "Wert für den Rückgabecode des CONNACK-Pakets.",
+		"placeholders": {
+			"returnCode": {
+				"type": "String"
+			}
+		}
+	},
+	"connection": "Verbindung",
+	"public": "Öffentlich",
+	"secure": "Sicher",
+	"server_configuration_is_required": "Serverkonfiguration ist erforderlich",
+	"username": "Benutzername",
+	"password": "Passwort",
+	"username_is_required": "Benutzername ist erforderlich",
+	"password_is_required": "Passwort ist erforderlich"
 }

@@ -60,6 +60,9 @@ class AppLocalizationsCs extends AppLocalizations {
   String get processing_data => 'Zpracování dat';
 
   @override
+  String get connection_server => 'Připojení serveru';
+
+  @override
   String get connection_topic => 'Připojení tématu';
 
   @override
@@ -100,4 +103,46 @@ class AppLocalizationsCs extends AppLocalizations {
 
   @override
   String get temperature_sensor_technicians => 'Technická místnost';
+
+  @override
+  String connAckReturnCode(String returnCode) {
+    String _temp0 = intl.Intl.selectLogic(
+      returnCode,
+      {
+        'connectionAccepted': 'Připojení přijato',
+        'unacceptedProtocolVersion': 'Připojení odmítnuto, nepřijatelná verze protokolu',
+        'identifierRejected': 'Připojení odmítnuto, identifikátor zamítnut',
+        'brokerUnavailable': 'Připojení odmítnuto, server nedostupný',
+        'badUsernameOrPassword': 'Připojení odmítnuto, špatné uživatelské jméno nebo heslo',
+        'notAuthorized': 'Připojení odmítnuto, není autorizováno',
+        'noneSpecified': 'Neznámý návratový kód',
+        'other': 'Neznámý návratový kód',
+      },
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get connection => 'Připojení';
+
+  @override
+  String get public => 'Veřejné';
+
+  @override
+  String get secure => 'Zabezpečené';
+
+  @override
+  String get server_configuration_is_required => 'Je vyžadována konfigurace serveru';
+
+  @override
+  String get username => 'Uživatelské jméno';
+
+  @override
+  String get password => 'Heslo';
+
+  @override
+  String get username_is_required => 'Uživatelské jméno je vyžadováno';
+
+  @override
+  String get password_is_required => 'Heslo je vyžadováno';
 }

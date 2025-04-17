@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:zenon_mqtt/core/localizations/dynamic_localizations.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
+// import 'package:zenon_mqtt/features/zenon_dynamic/repository/mqtt_connection_repository.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/view/pages/dynamic_page.dart';
 import 'package:zenon_mqtt/l10n/app_localizations.dart';
 
@@ -14,7 +15,7 @@ class DynamicConfigStructure extends StatelessWidget {
     required this.showSettings,
   });
 
-  final MqttConnectionState connectionState;
+  final MqttClientConnectionStatus? connectionState;
   final ConfigStructureTableData? configStructure;
   final Function() showSettings;
 
@@ -24,9 +25,18 @@ class DynamicConfigStructure extends StatelessWidget {
       backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.secondary,
-        title: Text(configStructure?.content!.title ?? ""),
+        title: Row(children: [Text(configStructure?.content!.title ?? "")]),
         titleTextStyle: Theme.of(context).textTheme.titleLarge,
         actions: [
+          Row(
+            children: [
+              connectionState?.state == MqttConnectionState.connected
+                  ? const Icon(Icons.album, color: Colors.green, size: 10)
+                  : connectionState?.state == MqttConnectionState.connecting
+                  ? const Icon(Icons.album, color: Colors.blue, size: 10)
+                  : const Icon(Icons.album, color: Colors.red, size: 10),
+            ],
+          ),
           IconButton(
             onPressed: () => showSettings(),
             icon: const Icon(Icons.settings, color: Colors.white),

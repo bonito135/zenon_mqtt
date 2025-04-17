@@ -13,7 +13,7 @@ import 'package:zenon_mqtt/features/database/viewmodel/config.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/repository/mqtt_connection_repository.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:zenon_mqtt/features/zenon_dynamic/view/widgets/settings_bottom_sheet.dart';
+import 'package:zenon_mqtt/features/zenon_dynamic/view/pages/settings_bottom_sheet.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/view/widgets/dynamic_config_structure.dart';
 import 'package:zenon_mqtt/l10n/app_localizations.dart';
 
@@ -82,39 +82,67 @@ class _MyHomePageState extends State<MyHomePage> {
 
   int currentPageIndex = 0;
 
-  Future<void> setLastConfigTopic(String topic) async {
-    return await asyncPrefs.setString("last_config_topic", topic);
+  Future<MqttConnectionRepository<ConfigStructure>> getLastConfig() async {
+    final server = await asyncPrefs.getString("last_config_server") ?? "";
+    final clientIdentifier =
+        await asyncPrefs.getString("last_config_client_identifier") ?? "";
+    final topic = await asyncPrefs.getString("last_config_topic") ?? "";
+    final autoReconnect =
+        await asyncPrefs.getBool("last_config_auto_reconnect") ?? false;
+    final secure = await asyncPrefs.getBool("last_config_secure") ?? false;
+    final username = await asyncPrefs.getString("last_config_username") ?? "";
+    final password = await asyncPrefs.getString("last_config_password") ?? "";
+
+    if (secure) {
+      return MqttConnectionRepository<ConfigStructure>(
+        client: MqttServerClient(server, clientIdentifier),
+        topic: topic,
+        connMess: MqttConnectMessage(),
+        autoReconnect: autoReconnect,
+        secure: secure,
+        username: username,
+        password: password,
+      );
+    }
+
+    return MqttConnectionRepository<ConfigStructure>(
+      client: MqttServerClient(server, clientIdentifier),
+      topic: topic,
+      connMess: MqttConnectMessage(),
+      autoReconnect: autoReconnect,
+      secure: secure,
+    );
   }
 
-  Future<String?> getLastConfigTopic() async {
-    return await asyncPrefs.getString("last_config_topic");
+  Future<void> setLastConfig(
+    MqttConnectionRepository<ConfigStructure> config,
+  ) async {
+    await asyncPrefs.setString("last_config_server", config.client.server);
+    await asyncPrefs.setString(
+      "last_config_client_identifier",
+      config.client.clientIdentifier,
+    );
+    await asyncPrefs.setString("last_config_topic", config.topic);
+    await asyncPrefs.setBool(
+      "last_config_auto_reconnect",
+      config.autoReconnect,
+    );
+    await asyncPrefs.setBool("last_config_secure", config.secure);
+    await asyncPrefs.setString("last_config_username", config.username ?? "");
+    await asyncPrefs.setString("last_config_password", config.password ?? "");
   }
 
-  void setConfig(String? topic) async {
-    if (topic != null) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-        await setLastConfigTopic(topic);
-        setState(() {
-          configConnection = MqttConnectionRepository<ConfigStructure>(
-            client: MqttServerClient(
-              dotenv.env['MQTT_SERVER_PROVIDER']!,
-              'Mqtt_config',
-            ),
-            topic: topic,
-            connMess: MqttConnectMessage(),
-            autoReconnect: true,
-            secure: false,
-          );
-        });
+  Future<void> setConfig(
+    MqttConnectionRepository<ConfigStructure> config,
+  ) async {
+    return WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      configConnection?.dispose();
+      await setLastConfig(config);
+
+      setState(() {
+        configConnection = config;
       });
-    }
-  }
-
-  Future<void> setConfigBasedOnLastTopic() async {
-    final configTopic = await getLastConfigTopic();
-    if (configTopic != null) {
-      setConfig(configTopic);
-    }
+    });
   }
 
   void showSettingsSheet() {
@@ -141,8 +169,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    setConfigBasedOnLastTopic();
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      final config = await getLastConfig();
+      setConfig(config);
+    });
   }
 
   @override
@@ -157,13 +189,19 @@ class _MyHomePageState extends State<MyHomePage> {
     return ValueListenableBuilder(
       valueListenable:
           configConnection?.stateNotifier ??
-          ValueNotifier(MqttConnectionState.disconnected),
+          ValueNotifier(
+            MqttClientConnectionStatus()
+              ..state = MqttConnectionState.disconnected
+              ..returnCode = MqttConnectReturnCode.noneSpecified
+              ..disconnectionOrigin = MqttDisconnectionOrigin.none
+              ..connectAckMessage = null,
+          ),
       builder: (context, value, child) {
-        final MqttConnectionState connectionState = value;
-        if (connectionState == MqttConnectionState.disconnected) {
+        final MqttClientConnectionStatus connectionState = value;
+        if (connectionState.state == MqttConnectionState.disconnected) {
           configConnection?.connect();
         }
-        if (connectionState == MqttConnectionState.connected) {
+        if (connectionState.state == MqttConnectionState.connected) {
           configConnection?.listen();
         }
         return ValueListenableBuilder(
@@ -172,7 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
           builder: (context, value, child) {
             return FutureBuilder(
               future:
-                  connectionState == MqttConnectionState.connected
+                  connectionState.state == MqttConnectionState.connected
                       ? writeAndReturnConfigStructure(
                         context.watch<AppDatabase>(),
                         value,

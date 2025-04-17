@@ -68,6 +68,10 @@
 	"@processing_data": {
 		"description": "Processing Data"
 	},
+	"connection_server": "Connection server",
+	"@connection_server": {
+		"description": "Connection server"
+	},
 	"connection_topic": "Connection topic",
 	"@connection_topic": {
 		"description": "Connection topic"
@@ -123,5 +127,46 @@
 	"temperature_sensor_technicians": "Technicians",
 	"@temperature_sensor_technicians": {
 		"description": "Temperature sensor technicians"
+	},
+	"connAckReturnCode": "{returnCode, select, connectionAccepted{Connection accepted} unacceptedProtocolVersion{Connection refused, unacceptable protocol version} identifierRejected{Connection refused, identifier rejected} brokerUnavailable{Connection refused, server unavailable} badUsernameOrPassword{Connection refused, bad user name or password} notAuthorized{Connection refused, not authorized} noneSpecified{Unknown return code}  other{Unknown return code}}",
+	"@connAckReturnCode": {
+		"description": "Value for the return code of the CONNACK packet.",
+		"placeholders": {
+			"returnCode": {
+				"type": "String"
+			}
+		}
+	},
+	"connection": "Connection",
+	"@connection": {
+		"description": "Connection"
+	},
+	"public": "Public",
+	"@public": {
+		"description": "Public"
+	},
+	"secure": "Secure",
+	"@secure": {
+		"description": "Secure"
+	},
+	"server_configuration_is_required": "Server configuration is required",
+	"@server_configuration_is_required": {
+		"description": "Server configuration is required"
+	},
+	"username": "Username",
+	"@username": {
+		"description": "Username"
+	},
+	"password": "Password",
+	"@password": {
+		"description": "Password"
+	},
+	"username_is_required": "Username is required",
+	"@username_is_required": {
+		"description": "Username is required for secure Mqtt connection"
+	},
+	"password_is_required": "Password is required",
+	"@password_is_required": {
+		"description": "Password is required for secure Mqtt connection"
 	}
 }

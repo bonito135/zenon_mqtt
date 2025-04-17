@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -25,7 +27,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
       'Mqtt_${widget.element.tagName}',
     ),
     topic: widget.element.tagName,
-    connMess: MqttConnectMessage(),
+    connMess: MqttConnectMessage().startClean(),
     autoReconnect: true,
     secure: false,
   );
@@ -48,11 +50,13 @@ class _DynamicComponentState extends State<DynamicComponent> {
     return ValueListenableBuilder(
       valueListenable: componentConnection.stateNotifier,
       builder: (context, value, child) {
-        final MqttConnectionState connectionState = value;
-        // if (connectionState == MqttConnectionState.disconnected) {
-        //   componentConnection.connect();
-        // }
-        if (connectionState == MqttConnectionState.connected) {
+        final MqttClientConnectionStatus connectionState = value;
+        log("Connection value component: ${connectionState.state}");
+        if (connectionState.state == MqttConnectionState.disconnected ||
+            connectionState.state == MqttConnectionState.faulted) {
+          componentConnection.connect();
+        }
+        if (connectionState.state == MqttConnectionState.connected) {
           componentConnection.listen();
         }
         return ValueListenableBuilder(
@@ -60,7 +64,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
           builder: (context, value, child) {
             return FutureBuilder(
               future:
-                  connectionState == MqttConnectionState.connected
+                  connectionState.state == MqttConnectionState.connected
                       ? writeAndReturnStructureComponentFromZenonValueUpdate(
                         context.watch<AppDatabase>(),
                         widget.element,

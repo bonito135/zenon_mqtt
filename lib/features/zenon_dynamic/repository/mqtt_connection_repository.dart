@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -9,7 +8,7 @@ import 'package:zenon_mqtt/core/utils/debouncer_util.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/zenon_value_update.dart';
 // ignore: depend_on_referenced_packages
-import 'package:path/path.dart' as path;
+// import 'package:path/path.dart' as path;
 
 class MqttConnectionRepository<T> {
   MqttConnectionRepository({
@@ -18,6 +17,8 @@ class MqttConnectionRepository<T> {
     required this.connMess,
     required this.autoReconnect,
     required this.secure,
+    this.username,
+    this.password,
   });
 
   final MqttServerClient client;
@@ -25,12 +26,22 @@ class MqttConnectionRepository<T> {
   final MqttConnectMessage connMess;
   final bool autoReconnect;
   final bool secure;
-  ValueNotifier<MqttConnectionState> stateNotifier =
-      ValueNotifier<MqttConnectionState>(MqttConnectionState.disconnected);
+  String? username;
+  String? password;
+
+  ValueNotifier<MqttClientConnectionStatus> stateNotifier =
+      ValueNotifier<MqttClientConnectionStatus>(
+        MqttClientConnectionStatus()
+          ..state = MqttConnectionState.disconnected
+          ..returnCode = MqttConnectReturnCode.noneSpecified
+          ..disconnectionOrigin = MqttDisconnectionOrigin.none
+          ..connectAckMessage = null,
+      );
+
   ValueNotifier<T?> messageNotifier = ValueNotifier<T?>(null);
 
-  final _connectionDebouncer = Debouncer();
-  final _messageDebouncer = Debouncer();
+  final _connectionDebouncer = Debouncer(delay: Duration(seconds: 1));
+  final _messageDebouncer = Debouncer(delay: Duration(seconds: 1));
 
   var pongCount = 0; // Pong counter
   var pingCount = 0; // Ping counter
@@ -43,17 +54,17 @@ class MqttConnectionRepository<T> {
     client.setProtocolV311();
 
     /// If you intend to use a keep alive you must set it here otherwise keep alive will be disabled.
-    client.keepAlivePeriod = 20;
+    client.keepAlivePeriod = 5;
 
     /// The connection timeout period can be set, the default is 5 seconds.
     /// if [client.socketTimeout] is set then this will take precedence and this setting will be
     /// disabled.
-    client.connectTimeoutPeriod = 5000; // milliseconds
+    client.connectTimeoutPeriod = 2000; // milliseconds
 
     /// Create a connection message to use or use the default one. The default one sets the
     /// client identifier, any supplied username/password and clean session,
     /// an example of a specific one below.
-    client.connectionMessage = connMess;
+    client.connectionMessage = connMess..authenticateAs(username, password);
 
     // client.pingCallback = onPingCallback;
 
@@ -66,6 +77,8 @@ class MqttConnectionRepository<T> {
     client.onConnected = onConnected;
 
     client.onSubscribed = _onSubscribed;
+
+    // client.onFailedConnectionAttempt = (i) => _onFailedConnectionAttempt(i);
 
     /// Set the ping response disconnect period, if a ping response is not received from the broker in this period
     /// the client will disconnect itself.
@@ -111,41 +124,68 @@ class MqttConnectionRepository<T> {
   }
 
   Future<void> connect() async {
-    if (stateNotifier.value == MqttConnectionState.disconnected) {
-      _connectionDebouncer.call(() async {
+    _connectionDebouncer.call(() async {
+      if (stateNotifier.value.state == MqttConnectionState.disconnected ||
+          stateNotifier.value.state == MqttConnectionState.faulted) {
         try {
           init();
 
-          stateNotifier.value = MqttConnectionState.connecting;
+          MqttClientConnectionStatus? connRes = await client.connect();
 
-          await client.connect();
+          stateNotifier.value = connRes!;
 
-          client.subscribe(topic, MqttQos.exactlyOnce);
+          client.subscribe(topic, MqttQos.atLeastOnce);
           if (kDebugMode) {
             print('EXAMPLE::Subscribing to the $topic topic');
           }
-        } catch (e) {
-          if (kDebugMode) {
-            print('EXAMPLE::Error subscribing to the $topic topic');
-            log("$e");
-          }
-          stateNotifier.value = MqttConnectionState.disconnecting;
+        } catch (e, stackTrace) {
+          stateNotifier.value =
+              stateNotifier.value =
+                  MqttClientConnectionStatus()
+                    ..state = client.connectionStatus!.state
+                    ..returnCode = client.connectionStatus?.returnCode
+                    ..connectAckMessage =
+                        client.connectionStatus?.connectAckMessage
+                    ..disconnectionOrigin =
+                        client.connectionStatus!.disconnectionOrigin;
+
           client.disconnect();
+
+          if (kDebugMode) {
+            print("Exception: $e");
+            print("Stacktrace: $stackTrace");
+          }
         }
-      });
-    } else {
-      if (kDebugMode) {
-        log("Can not connect to topic: $topic / Not disconnected");
+      } else {
+        if (kDebugMode) {
+          log("Can not connect to topic: $topic / Not disconnected");
+        }
       }
-    }
+    });
   }
 
   void onConnected() {
-    stateNotifier.value = MqttConnectionState.connected;
+    stateNotifier.value =
+        stateNotifier.value =
+            MqttClientConnectionStatus()
+              ..state = client.connectionStatus!.state
+              ..returnCode = client.connectionStatus?.returnCode
+              ..connectAckMessage = client.connectionStatus?.connectAckMessage
+              ..disconnectionOrigin =
+                  client.connectionStatus!.disconnectionOrigin;
   }
 
   void onAutoReconnect() {
-    stateNotifier.value = MqttConnectionState.connecting;
+    stateNotifier.value =
+        stateNotifier.value =
+            stateNotifier.value =
+                MqttClientConnectionStatus()
+                  ..state = client.connectionStatus!.state
+                  ..returnCode = client.connectionStatus?.returnCode
+                  ..connectAckMessage =
+                      client.connectionStatus?.connectAckMessage
+                  ..disconnectionOrigin =
+                      client.connectionStatus!.disconnectionOrigin;
 
     if (kDebugMode) {
       print(
@@ -155,7 +195,16 @@ class MqttConnectionRepository<T> {
   }
 
   void onAutoReconnected() {
-    stateNotifier.value = MqttConnectionState.connected;
+    stateNotifier.value =
+        stateNotifier.value =
+            stateNotifier.value =
+                MqttClientConnectionStatus()
+                  ..state = client.connectionStatus!.state
+                  ..returnCode = client.connectionStatus?.returnCode
+                  ..connectAckMessage =
+                      client.connectionStatus?.connectAckMessage
+                  ..disconnectionOrigin =
+                      client.connectionStatus!.disconnectionOrigin;
 
     if (kDebugMode) {
       print(
@@ -165,13 +214,18 @@ class MqttConnectionRepository<T> {
   }
 
   void _onSubscribed(String topic) {
-    // if (kDebugMode) {
-    //   print('EXAMPLE::Subscription confirmed for topic $topic');
-    // }
+    stateNotifier.value =
+        stateNotifier.value =
+            MqttClientConnectionStatus()
+              ..state = client.connectionStatus!.state
+              ..returnCode = client.connectionStatus?.returnCode
+              ..connectAckMessage = client.connectionStatus?.connectAckMessage
+              ..disconnectionOrigin =
+                  client.connectionStatus!.disconnectionOrigin;
   }
 
   void listen() async {
-    if (stateNotifier.value == MqttConnectionState.connected) {
+    if (stateNotifier.value.state == MqttConnectionState.connected) {
       client.updates!.listen(
         (List<MqttReceivedMessage<MqttMessage?>>? c) async {
           final recMess = c![0].payload as MqttPublishMessage;
@@ -179,6 +233,7 @@ class MqttConnectionRepository<T> {
             recMess.payload.message,
           );
 
+          log('MESSAGE_LISTENER::message - $value');
           _messageDebouncer.call(() {
             messageNotifier.value = handleValueTypes(value);
           });
@@ -194,7 +249,14 @@ class MqttConnectionRepository<T> {
   }
 
   void onDisconnected() {
-    stateNotifier.value = MqttConnectionState.disconnected;
+    stateNotifier.value =
+        stateNotifier.value =
+            MqttClientConnectionStatus()
+              ..state = client.connectionStatus!.state
+              ..returnCode = client.connectionStatus?.returnCode
+              ..connectAckMessage = client.connectionStatus?.connectAckMessage
+              ..disconnectionOrigin =
+                  client.connectionStatus!.disconnectionOrigin;
   }
 
   // void onPingCallback() {}

@@ -4,6 +4,7 @@ import 'package:zenon_mqtt/core/localizations/dynamic_localizations.dart';
 import 'package:zenon_mqtt/core/utils/custom_rectangle_clipper.dart';
 import 'package:zenon_mqtt/core/view/widgets/timer_text.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
+// import 'package:zenon_mqtt/features/zenon_dynamic/repository/mqtt_connection_repository.dart';
 import 'package:zenon_mqtt/l10n/app_localizations.dart';
 
 class DynamicText extends StatelessWidget {
@@ -16,7 +17,7 @@ class DynamicText extends StatelessWidget {
 
   final BuildContext context;
   final StructureComponentTableData component;
-  final MqttConnectionState connectionState;
+  final MqttClientConnectionStatus? connectionState;
 
   @override
   Widget build(BuildContext context) {
@@ -77,12 +78,12 @@ class DynamicText extends StatelessWidget {
                   children: [
                     TimerText(lastUpdateTime: component.lastUpdateTime),
                     SizedBox(width: 6),
-                    if (connectionState == MqttConnectionState.disconnected)
-                      const Icon(Icons.album, color: Colors.red, size: 10),
-                    if (connectionState == MqttConnectionState.connecting)
-                      const Icon(Icons.album, color: Colors.blue, size: 10),
-                    if (connectionState == MqttConnectionState.connected)
-                      const Icon(Icons.album, color: Colors.green, size: 10),
+                    connectionState?.state == MqttConnectionState.connected
+                        ? const Icon(Icons.album, color: Colors.green, size: 10)
+                        : connectionState?.state ==
+                            MqttConnectionState.connecting
+                        ? const Icon(Icons.album, color: Colors.blue, size: 10)
+                        : const Icon(Icons.album, color: Colors.red, size: 10),
                   ],
                 ),
               ],
