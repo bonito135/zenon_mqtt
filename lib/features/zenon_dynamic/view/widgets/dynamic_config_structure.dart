@@ -28,15 +28,15 @@ class DynamicConfigStructure extends StatelessWidget {
         title: Row(children: [Text(configStructure?.content!.title ?? "")]),
         titleTextStyle: Theme.of(context).textTheme.titleLarge,
         actions: [
-          Row(
-            children: [
-              connectionState?.state == MqttConnectionState.connected
-                  ? const Icon(Icons.album, color: Colors.green, size: 10)
-                  : connectionState?.state == MqttConnectionState.connecting
-                  ? const Icon(Icons.album, color: Colors.blue, size: 10)
-                  : const Icon(Icons.album, color: Colors.red, size: 10),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     connectionState?.state == MqttConnectionState.connected
+          //         ? const Icon(Icons.album, color: Colors.green, size: 10)
+          //         : connectionState?.state == MqttConnectionState.connecting
+          //         ? const Icon(Icons.album, color: Colors.blue, size: 10)
+          //         : const Icon(Icons.album, color: Colors.red, size: 10),
+          //   ],
+          // ),
           IconButton(
             onPressed: () => showSettings(),
             icon: const Icon(Icons.settings, color: Colors.white),

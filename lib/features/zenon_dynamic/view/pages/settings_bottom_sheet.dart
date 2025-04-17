@@ -47,14 +47,14 @@ class _SettingsBottomSheetState extends State<SettingsBottomSheet> {
           bottom: TabBar(
             tabs: [
               Tab(
-                icon: Icon(IconData(0xe587, fontFamily: 'MaterialIcons')),
+                icon: Icon(Icons.swap_vertical_circle_outlined),
                 child: Text(
                   AppLocalizations.of(context)!.connection,
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
               ),
               Tab(
-                icon: Icon(IconData(0xe366, fontFamily: 'MaterialIcons')),
+                icon: Icon(Icons.language),
                 child: Text(
                   AppLocalizations.of(context)!.language,
                   style: Theme.of(context).textTheme.labelSmall,
