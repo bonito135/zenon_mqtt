@@ -1,4 +1,4 @@
-# zenon_mqtt
+# zenon_mqtt_viewer
 
 A new Flutter project.
 

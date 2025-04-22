@@ -116,16 +116,28 @@
 	"@battery_mode": {
 		"description": "Battery mode"
 	},
-	"temperature_sensor_presentation_room": "Presentation room",
-	"@temperature_sensor_presentation_room": {
+	"battery_charging": "Battery charging",
+	"@battery_charging": {
+		"description": "Battery charging"
+	},
+	"presentation_room": "Presentation room",
+	"@presentation_room": {
 		"description": "Temperature sensor presentation room"
 	},
-	"temperature_sensor_secretariat": "Secretariat",
-	"@temperature_sensor_secretariat": {
+	"meeting_room": "Meeting room",
+	"@meeting_room": {
+		"description": "Temperature sensor meeting room"
+	},
+	"secretariat": "Secretariat",
+	"@secretariat": {
 		"description": "Temperature sensor secretariat"
 	},
-	"temperature_sensor_technicians": "Technicians",
-	"@temperature_sensor_technicians": {
+	"business_room": "Business room",
+	"@business_room": {
+		"description": "Temperature sensor business room"
+	},
+	"technicians": "Technicians room",
+	"@technicians": {
 		"description": "Temperature sensor technicians"
 	},
 	"connAckReturnCode": "{returnCode, select, connectionAccepted{Connection accepted} unacceptedProtocolVersion{Connection refused, unacceptable protocol version} identifierRejected{Connection refused, identifier rejected} brokerUnavailable{Connection refused, server unavailable} badUsernameOrPassword{Connection refused, bad user name or password} notAuthorized{Connection refused, not authorized} noneSpecified{Unknown return code}  other{Unknown return code}}",

@@ -87,7 +87,7 @@ class AppLocalizationsCs extends AppLocalizations {
   String get total_power_load => 'Celkový výkon';
 
   @override
-  String get battery_current => 'Aktuální napětí';
+  String get battery_current => 'Proud baterie';
 
   @override
   String get battery_voltage => 'Napětí baterie';
@@ -96,13 +96,22 @@ class AppLocalizationsCs extends AppLocalizations {
   String get battery_mode => 'Mód baterie';
 
   @override
-  String get temperature_sensor_presentation_room => 'Prezentační místnost';
+  String get battery_charging => 'Nabíjení batterie';
 
   @override
-  String get temperature_sensor_secretariat => 'Sekretariát';
+  String get presentation_room => 'Prezentační místnost';
 
   @override
-  String get temperature_sensor_technicians => 'Technická místnost';
+  String get meeting_room => 'Zasedací místnost';
+
+  @override
+  String get secretariat => 'Sekretariát';
+
+  @override
+  String get business_room => 'Obchod';
+
+  @override
+  String get technicians => 'Technici';
 
   @override
   String connAckReturnCode(String returnCode) {

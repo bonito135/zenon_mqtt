@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mqtt_client/mqtt_client.dart';
@@ -51,7 +49,7 @@ class _DynamicComponentState extends State<DynamicComponent> {
       valueListenable: componentConnection.stateNotifier,
       builder: (context, value, child) {
         final MqttClientConnectionStatus connectionState = value;
-        log("Connection value component: ${connectionState.state}");
+        // log("Connection value component: ${connectionState.state}");
         if (connectionState.state == MqttConnectionState.disconnected ||
             connectionState.state == MqttConnectionState.faulted) {
           componentConnection.connect();

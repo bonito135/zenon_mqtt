@@ -47,16 +47,16 @@ class _SettingsBottomSheetState extends State<SettingsBottomSheet> {
           bottom: TabBar(
             tabs: [
               Tab(
-                icon: Icon(Icons.swap_vertical_circle_outlined),
+                icon: Icon(Icons.language),
                 child: Text(
-                  AppLocalizations.of(context)!.connection,
+                  AppLocalizations.of(context)!.language,
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
               ),
               Tab(
-                icon: Icon(Icons.language),
+                icon: Icon(Icons.swap_vertical_circle_outlined),
                 child: Text(
-                  AppLocalizations.of(context)!.language,
+                  AppLocalizations.of(context)!.connection,
                   style: Theme.of(context).textTheme.labelSmall,
                 ),
               ),
@@ -66,13 +66,13 @@ class _SettingsBottomSheetState extends State<SettingsBottomSheet> {
         body: TabBarView(
           children: [
             SingleChildScrollView(
-              child: SettingsBottomSheetTopicTab(
-                setConfig: (topic) => widget.setConfig(topic),
+              child: SettingsBottomSheetLocalization(
+                setLocale: (locale) => widget.setLocale(locale),
               ),
             ),
             SingleChildScrollView(
-              child: SettingsBottomSheetLocalization(
-                setLocale: (locale) => widget.setLocale(locale),
+              child: SettingsBottomSheetTopicTab(
+                setConfig: (topic) => widget.setConfig(topic),
               ),
             ),
           ],

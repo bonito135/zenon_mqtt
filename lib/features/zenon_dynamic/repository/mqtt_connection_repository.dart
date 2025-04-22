@@ -1,14 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'package:flutter/foundation.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 import 'package:zenon_mqtt/core/utils/debouncer_util.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/convert.dart';
 import 'package:zenon_mqtt/features/zenon_dynamic/model/zenon_value_update.dart';
-// ignore: depend_on_referenced_packages
-// import 'package:path/path.dart' as path;
 
 class MqttConnectionRepository<T> {
   MqttConnectionRepository({
@@ -41,7 +38,7 @@ class MqttConnectionRepository<T> {
   ValueNotifier<T?> messageNotifier = ValueNotifier<T?>(null);
 
   final _connectionDebouncer = Debouncer(delay: Duration(seconds: 1));
-  final _messageDebouncer = Debouncer(delay: Duration(seconds: 1));
+  final _messageDebouncer = Debouncer(delay: Duration(milliseconds: 500));
 
   var pongCount = 0; // Pong counter
   var pingCount = 0; // Ping counter
@@ -158,7 +155,7 @@ class MqttConnectionRepository<T> {
         }
       } else {
         if (kDebugMode) {
-          log("Can not connect to topic: $topic / Not disconnected");
+          // log("Can not connect to topic: $topic / Not disconnected");
         }
       }
     });
@@ -233,14 +230,14 @@ class MqttConnectionRepository<T> {
             recMess.payload.message,
           );
 
-          log('MESSAGE_LISTENER::message - $value');
+          // log('MESSAGE_LISTENER::message - $value');
           _messageDebouncer.call(() {
             messageNotifier.value = handleValueTypes(value);
           });
         },
         onError:
             (e) => {
-              if (kDebugMode) {log('MESSAGE_LISTENER::exception - $e')},
+              // if (kDebugMode) {log('MESSAGE_LISTENER::exception - $e')},
             },
       );
     } else {

@@ -78,11 +78,11 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final SharedPreferencesAsync asyncPrefs = SharedPreferencesAsync();
-  MqttConnectionRepository<ConfigStructure>? configConnection;
+  MqttConnectionRepository<ConfigStructure?>? configConnection;
 
   int currentPageIndex = 0;
 
-  Future<MqttConnectionRepository<ConfigStructure>> getLastConfig() async {
+  Future<MqttConnectionRepository<ConfigStructure?>?>? getLastConfig() async {
     final server = await asyncPrefs.getString("last_config_server") ?? "";
     final clientIdentifier =
         await asyncPrefs.getString("last_config_client_identifier") ?? "";
@@ -92,6 +92,10 @@ class _MyHomePageState extends State<MyHomePage> {
     final secure = await asyncPrefs.getBool("last_config_secure") ?? false;
     final username = await asyncPrefs.getString("last_config_username") ?? "";
     final password = await asyncPrefs.getString("last_config_password") ?? "";
+
+    if (server.isEmpty || clientIdentifier.isEmpty || topic.isEmpty) {
+      return null;
+    }
 
     if (secure) {
       return MqttConnectionRepository<ConfigStructure>(
@@ -115,25 +119,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> setLastConfig(
-    MqttConnectionRepository<ConfigStructure> config,
+    MqttConnectionRepository<ConfigStructure?>? config,
   ) async {
-    await asyncPrefs.setString("last_config_server", config.client.server);
+    await asyncPrefs.setString(
+      "last_config_server",
+      config?.client.server ?? "",
+    );
     await asyncPrefs.setString(
       "last_config_client_identifier",
-      config.client.clientIdentifier,
+      config?.client.clientIdentifier ?? "",
     );
-    await asyncPrefs.setString("last_config_topic", config.topic);
+    await asyncPrefs.setString("last_config_topic", config?.topic ?? "");
     await asyncPrefs.setBool(
       "last_config_auto_reconnect",
-      config.autoReconnect,
+      config?.autoReconnect ?? false,
     );
-    await asyncPrefs.setBool("last_config_secure", config.secure);
-    await asyncPrefs.setString("last_config_username", config.username ?? "");
-    await asyncPrefs.setString("last_config_password", config.password ?? "");
+    await asyncPrefs.setBool("last_config_secure", config?.secure ?? false);
+    await asyncPrefs.setString("last_config_username", config?.username ?? "");
+    await asyncPrefs.setString("last_config_password", config?.password ?? "");
   }
 
   Future<void> setConfig(
-    MqttConnectionRepository<ConfigStructure> config,
+    MqttConnectionRepository<ConfigStructure?>? config,
   ) async {
     return WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       configConnection?.dispose();

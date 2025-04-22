@@ -50,7 +50,7 @@ class DynamicBoolean extends StatelessWidget {
                       )
                       : Icon(
                         Icons.toggle_off_outlined,
-                        color: Colors.red,
+                        color: Colors.grey,
                         size: 40,
                       ),
                   component.valid == true

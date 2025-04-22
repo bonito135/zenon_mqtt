@@ -9,7 +9,7 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
-  String get current_delivery => 'Aktuelle Lieferung';
+  String get current_delivery => 'Aktuelle Leistung';
 
   @override
   String get capacity => 'Kapazität';
@@ -39,7 +39,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get minute_short => 'M';
 
   @override
-  String get second_short => 'Z';
+  String get second_short => 'S';
 
   @override
   String get topic => 'Thema';
@@ -84,10 +84,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get battery_temperature => 'Batterietemperatur';
 
   @override
-  String get total_power_load => 'Gesamtladung';
+  String get total_power_load => 'Aktueller Verbrauch';
 
   @override
-  String get battery_current => 'Batterieintritt';
+  String get battery_current => 'Batteriestrom';
 
   @override
   String get battery_voltage => 'Batteriespannung';
@@ -96,13 +96,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get battery_mode => 'Batteriemodus';
 
   @override
-  String get temperature_sensor_presentation_room => 'Präsentationsraum';
+  String get battery_charging => 'Batterieladung';
 
   @override
-  String get temperature_sensor_secretariat => 'Sekretariat';
+  String get presentation_room => 'Präsentationsraum';
 
   @override
-  String get temperature_sensor_technicians => 'Techniker';
+  String get meeting_room => 'Besprechungsraum';
+
+  @override
+  String get secretariat => 'Sekretariat';
+
+  @override
+  String get business_room => 'Business room';
+
+  @override
+  String get technicians => 'Techniker';
 
   @override
   String connAckReturnCode(String returnCode) {

@@ -271,23 +271,41 @@ abstract class AppLocalizations {
   /// **'Battery mode'**
   String get battery_mode;
 
+  /// Battery charging
+  ///
+  /// In en, this message translates to:
+  /// **'Battery charging'**
+  String get battery_charging;
+
   /// Temperature sensor presentation room
   ///
   /// In en, this message translates to:
   /// **'Presentation room'**
-  String get temperature_sensor_presentation_room;
+  String get presentation_room;
+
+  /// Temperature sensor meeting room
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting room'**
+  String get meeting_room;
 
   /// Temperature sensor secretariat
   ///
   /// In en, this message translates to:
   /// **'Secretariat'**
-  String get temperature_sensor_secretariat;
+  String get secretariat;
+
+  /// Temperature sensor business room
+  ///
+  /// In en, this message translates to:
+  /// **'Business room'**
+  String get business_room;
 
   /// Temperature sensor technicians
   ///
   /// In en, this message translates to:
-  /// **'Technicians'**
-  String get temperature_sensor_technicians;
+  /// **'Technicians room'**
+  String get technicians;
 
   /// Value for the return code of the CONNACK packet.
   ///

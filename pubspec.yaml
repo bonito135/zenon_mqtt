@@ -27,6 +27,7 @@ dependencies:
   intl: any
   shared_preferences: ^2.5.3
   flutter_svg: ^2.0.17
+  rename_app: ^1.6.3
 dev_dependencies:
   flutter_test:
     sdk: flutter
