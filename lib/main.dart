@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zenon_mqtt/core/localizations/default_lang_locale.dart';
 import 'package:zenon_mqtt/core/localizations/dynamic_localizations.dart';
-import 'package:zenon_mqtt/core/localizations/locale_listenable.dart';
+import 'package:zenon_mqtt/core/localizations/locale_listener.dart';
 import 'package:zenon_mqtt/core/theme/theme.dart';
 import 'package:zenon_mqtt/features/database/repository/database.dart';
 import 'package:zenon_mqtt/features/database/viewmodel/config.dart';
@@ -152,6 +152,23 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<Locale?> getLocale() async {
+    final languageCode = await asyncPrefs.getString("language_code");
+    if (languageCode == null) {
+      return null;
+    }
+    return Locale(languageCode);
+  }
+
+  Future<void> setLocale(Locale locale) async {
+    await asyncPrefs.setString("language_code", locale.languageCode.toString());
+    DynamicLocalization.init(locale);
+
+    setState(() {
+      widget.localeNotifier.value = locale;
+    });
+  }
+
   void showSettingsSheet() {
     showModalBottomSheet(
       context: context,
@@ -163,12 +180,7 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (context) {
         return SettingsBottomSheet(
           setConfig: setConfig,
-          setLocale:
-              (locale) => {
-                setState(() {
-                  widget.localeNotifier.value = locale;
-                }),
-              },
+          setLocale: (locale) => setLocale(locale),
         );
       },
     );
@@ -179,6 +191,11 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
+      final locale = await getLocale();
+      if (locale != null) {
+        setLocale(locale);
+      }
+
       final config = await getLastConfig();
       setConfig(config);
     });
